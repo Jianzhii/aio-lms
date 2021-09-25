@@ -1,17 +1,6 @@
 
+from __main__ import app, db
 from flask import jsonify
-from __main__ import app
-import os
-from flask_sqlalchemy import SQLAlchemy
-
-db_host = os.environ.get("DB_HOSTNAME")
-db_port = os.environ.get("DB_PORT")
-db_username = os.environ.get("DB_USERNAME")
-db_password = os.environ.get("DB_PASSWORD")
-
-app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+mysqlconnector://{db_username}:{db_password}@{db_host}:{db_port}/lms"
-db = SQLAlchemy(app)
-
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -54,28 +43,21 @@ def alluser():
         }
     ), 200
 
-# TODO
-@app.route("/user_one", methods=['GET'])
+@app.route("/user_role", methods=['GET'])
 def userwithrole():
     users = db.session.query(User, UserRole)\
-            .join(UserRole, UserRole.id == User.user_role_id).all()
-    for row in users:
-        print("(")
-        for item in row:
-            print("   ", item)
-        print(")")
+            .join(UserRole, UserRole.id == User.user_role_id).all() 
+    # join query above returns query from each table as separate so need to loop through to put them together and return 
+    data = []
+    for user, user_role in users: 
+        user_info = user.json()
+        user_info["role_name"] = user_role.role_name 
+        data.append(user_info)
     return jsonify(
         {
             "code": 200,
-            "data": "Asd"
+            "data": data
         }
     ), 200
 
-# to jsonify results from joined tables TODO
-def to_json(query_results):
-    result = []
-    for row in query_results:
-        row_item = {}
-        for item in row:
-            print("   ", item)
-    return result
+
