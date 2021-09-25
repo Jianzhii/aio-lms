@@ -1,16 +1,25 @@
-from flask import Flask, jsonify
 import os
+from flask import Flask, jsonify
+from flask_sqlalchemy import SQLAlchemy
+
 
 app = Flask(__name__)
-import dbsample ## import the name of the file containing that module
+db_host = os.environ.get("DB_HOSTNAME")
+db_port = os.environ.get("DB_PORT")
+db_username = os.environ.get("DB_USERNAME")
+db_password = os.environ.get("DB_PASSWORD")
 
-@app.route("/db_port", methods=['GET'])
+app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+mysqlconnector://{db_username}:{db_password}@{db_host}:{db_port}/lms"
+db = SQLAlchemy(app)
+import dbsample  # # import the name of the file containing that module
+
+@app.route("/test", methods=['GET'])
 def test():
 
     return jsonify(
         {
             "code": 200,
-            "data": os.environ.get("DB_PORT")
+            "data": "test"
         }
     ), 200
 
