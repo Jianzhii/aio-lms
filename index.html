@@ -1,11 +1,78 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>asdsad</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
+
+    <title>asddasadsadasdsad</title>
 </head>
 <body>
 
+    <div class='container'>
+        <h1>HeeEEeeLllLlooo</h1>
+        
+        <table class="table table-striped table-sm" id='user'>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Job Title</th>  
+                    <th>Role</th> 
+                </tr>
+            </thead>
+        </table>
+    </div>
+
 </body>
+
+<script>
+
+    // On load 
+    $(async () => {
+
+        // API Endpoint
+        var user_api = "http://127.0.0.1:8000/"  + "user_role"
+
+        try {
+            const response =
+                await fetch(
+                    user_api, {
+                    method: 'GET'
+                }
+            );
+
+            const result = await response.json();
+            if (response.status === 200) {
+                console.log(result)
+                let data = result.data
+                for (let user of data) {
+                    row = `
+                    <tr>
+                        <td>${user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.phone_number}</td>
+                        <td>${user.job_title}</td>
+                        <td>${user.role_name}</td>
+                    </tr>
+                    `
+                    $('#user').append(row)
+                }
+            }
+        } catch(err) {
+            alert(err)
+            console.log(err)
+        }
+    })
+
+</script> 
+
 </html>
 
