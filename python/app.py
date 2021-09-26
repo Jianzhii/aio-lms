@@ -16,7 +16,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+mysqlconnector://{db_username}:{
 db = SQLAlchemy(app)
 import dbsample  # # import the name of the file containing that module
 
-
 @app.route("/test", methods=['GET'])
 def test():
 
