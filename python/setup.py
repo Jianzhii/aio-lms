@@ -8,6 +8,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'flask',
+        "python-dotenv",
         'flask_sqlalchemy',
         'flask_cors',
         'SQLAlchemy',
