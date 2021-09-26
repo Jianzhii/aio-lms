@@ -59,5 +59,3 @@ def userwithrole():
             "data": data
         }
     ), 200
-
-
