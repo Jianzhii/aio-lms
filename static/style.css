@@ -1,0 +1,12 @@
+.btn{
+    font-family: 'Montserrat';
+    font-size: 1em;
+    font-weight: bolder;
+    color:white;
+    background-color: #FF922D;
+}
+
+#landing_text{
+    font-weight: bold;
+    font-size:2em;
+}
