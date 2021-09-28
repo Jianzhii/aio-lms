@@ -25,6 +25,6 @@ def test():
             "data": "test"
         }
     ), 200
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000, debug=True)
+    
+os.environ["FLASK_RUN_FROM_CLI"] = "false"
+app.run(host='0.0.0.0', port=8000, debug=True)
