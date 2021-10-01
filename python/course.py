@@ -1,10 +1,11 @@
 from app import app, db
 from flask import jsonify, request
+from user import User
 
 class Course(db.Model):
 
     __tablename__ = 'course'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
 
@@ -17,7 +18,7 @@ class Course(db.Model):
 
 # Get all Courses
 @app.route("/all_course", methods=['GET'])
-def getAll():
+def getAllCourse():
     courses = Course.query.all()
     return jsonify(
         {
@@ -28,7 +29,7 @@ def getAll():
 
 # Get one course
 @app.route("/course/<int:id>", methods=['GET'])
-def getOne(id):
+def getoneCourse(id):
     course = Course.query.filter_by(id=id).first()
     if course:
         return jsonify(

@@ -33,7 +33,7 @@ class UserRole(db.Model):
         }
 
 @app.route("/user", methods=['GET'])
-def alluser():
+def getAllUser():
     users = User.query.all()
     return jsonify(
         {
@@ -43,7 +43,7 @@ def alluser():
     ), 200
 
 @app.route("/user_role", methods=['GET'])
-def userwithrole():
+def getAllUserWithRole():
     users = db.session.query(User, UserRole)\
             .join(UserRole, UserRole.id == User.user_role_id).all()
     # join query above returns query from each table as separate
