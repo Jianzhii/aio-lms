@@ -1,77 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-
-
-    <title>asddasadsadasdsad</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>   
+    <link rel="stylesheet" href="static/style.css">
+    <!-- Start of Page Icon -->
+    <title> All-in-One LMS </title>
+    <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
+    <!-- End of Page Icon -->
 </head>
 <body>
-
-    <div class='container'>
-        <h1>HeeEEeeLllLlooo</h1>
-        
-        <table class="table table-striped table-sm" id='user'>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Phone Number</th>
-                    <th>Job Title</th>  
-                    <th>Role</th> 
-                </tr>
-            </thead>
-        </table>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-s-12 col-md-1 mx-0  ">
+            <img  src="static/imgs/All-In-One 1.png" width="270px" height="125px"/>
+        </div>
+        <div class="col-xs-12 col-s-12 col-md-8">
+        </div>
+        <div class="col-xs-12 col-s-12 col-md-1 py-5  mx-0">
+            <a href="login.html" class="btn">Login</a>
+        </div>
     </div>
 
+    <div class="row">
+        <div class="col-xs-12 col-s-12 col-md-6">
+            <p id="landing_text">Learn <br/> new product <br/> knowledge and skills</p>
+            <a href="login.html" class="btn">Start Learning now</a>
+        </div>
+        <div class="col-xs-12 col-s-12 col-md-6 ">
+            <img src="static/imgs/Reading book 1.png" id="read_book" alt="person reading book" width="382px" height="407" />
+        </div>
+       
+    </div>
+</div>
+    
+
 </body>
-
-<script>
-
-    // On load 
-    $(async () => {
-
-        // API Endpoint
-        var user_api = "http://18.221.7.176:8000/"  + "user_role" // on server
-        // var user_api = "http://localhost:8000/"  + "user_role" // localhost
-
-        try {
-            const response =
-                await fetch(
-                    user_api, {
-                    method: 'GET'
-                }
-            );
-
-            const result = await response.json();
-            if (response.status === 200) {
-                console.log(result)
-                let data = result.data
-                for (let user of data) {
-                    row = `
-                    <tr>
-                        <td>${user.id}</td>
-                        <td>${user.name}</td>
-                        <td>${user.email}</td>
-                        <td>${user.phone_number}</td>
-                        <td>${user.job_title}</td>
-                        <td>${user.role_name}</td>
-                    </tr>
-                    `
-                    $('#user').append(row)
-                }
-            }
-        } catch(err) {
-            alert(err)
-            console.log(err)
-        }
-    })
-
-</script> 
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js" integrity="sha384-W8fXfP3gkOKtndU4JGtKDvXbO53Wy8SZCQHczT5FMiiqmQfUpWbYdTil/SxwZgAN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.min.js" integrity="sha384-skAcpIdS7UcVUC05LJ9Dxay8AXcDYfBJqt1CJ85S/CFujBsIzCIv+l9liuYLaMQ/" crossorigin="anonymous"></script>
 </html>
