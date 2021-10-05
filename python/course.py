@@ -27,6 +27,36 @@ def getAllCourse():
         }
     ), 200
 
+@app.route("/search_course", methods=["POST"])
+def searchCourse():
+    data = request.get_json()
+    try:
+        courses = Course.query.filter(
+                    Course.name.like(f"%{data['search']}%"),
+                    Course.name.like(f"%{data['search']}%")
+                ).all()
+        if courses: 
+            return jsonify(
+                {
+                    "code": 200,
+                    "data": [course.json() for course in courses]
+                }
+            ), 200
+        else:
+            return jsonify(
+                {
+                    "code": 200,
+                    "data": []
+                }
+            ), 200
+    except Exception as e:
+        return jsonify(
+            {
+                "code":404,
+                "message": f"Error while searching: {e}."
+            }
+        )
+
 # Get one course
 @app.route("/course/<int:id>", methods=['GET'])
 def getoneCourse(id):
