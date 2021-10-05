@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="static/uploadCM.css">
+    <!-- Start of Page Icon -->
+    <title> All-in-One LMS </title>
+    <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
+    <!-- End of Page Icon -->
+</head>
+<body>
+    <div class="row">
+        <div class="col-3">
+            <!-- Start of Page Icon  -->
+            <div class="col-xs-12 col-s-12 col-md-1 mx-0  ">
+                <img  src="static/imgs/All-In-One 1.png" width="270px" height="125px"/>
+            </div>
+            <!-- End of Page Icon  -->
+
+            <!-- Start of Content Page  -->
+            <h5 id="ContentName"><u>Engineering Basics 101</u></h5>
+            <h6 id="ContentName">Class 3</h6>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">Section 1</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Section 2</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Section 3</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Section 4</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Section 5</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Final Quiz</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Forum Discussions</a>
+                </li>
+            </ul>
+            <!-- End of Content Page  -->
+        </div>
+        <!-- Start of Vertical Line -->
+        <div class="col-1">
+            <div class="vl"></div>
+        </div>
+        <!-- End of Vertical Line -->
+        <div class="col-8">
+            <!-- Start of NavBar -->
+            <nav class="nav" id="topnavbar">
+                <a class="nav-link active" aria-current="page" href="#">Courses</a>
+                <a class="nav-link" href="#">Chat</a>
+                <a href="logout.html" class="btn">Log Out</a>
+            </nav>
+            <!-- End of NavBar -->
+
+            <h4 id="SectionNo"> Section 1: </h4>
+            <h5> Introduction to tools </h5>
+
+            <a href="add_vid.html"><img src="static/imgs/Video-btn.png" style="width:75px;height:28px;"></a>
+            <a href="add_quiz.html"><img src="static/imgs/Quiz-btn.png" style="width:75px;height:28px;"></a>
+            <a href="add_reading.html"><img src="static/imgs/Reading-btn.png" style="width:92px;height:28px;"></a>
+
+            <br> 
+            <!-- Start of Video Link -->
+            <div class="video">
+                <a href="video.html">
+                    <h6> Video: Introduction to tools </h6>
+                </a>
+                <!-- video icon --> 
+                <i data-feather="link"></i> Link
+                <!-- Start of Edit Video Button  -->
+                    <a href="edit_video.html" class="btn">Edit</a>
+                <!-- End of Edit Video Button  -->
+            </div>
+            <!-- End of Video Link -->
+            
+            <!-- Start of Reading Link -->
+            <div class="reading">
+                <a href="reading.html">
+                    <h6> Reading: Introduction to tools </h6>
+                </a>
+                <!-- Reading icon --> 
+                <i data-feather="file-text"></i> PDF
+                <!-- Start of Edit Reading Button  -->
+                    <a href="edit_reading.html" class="btn">Edit</a>
+                <!-- End of Edit Reading Button  -->
+            </div>
+            <!-- End of Reading Link -->
+
+            <!-- Start of Quiz Link -->
+            <div class="quiz">
+                <a href="quiz.html">
+                    <h6> Quiz 1: Introduction to tools </h6>
+                </a>
+                <!-- Reading icon --> 
+                <i data-feather="book"></i> Quiz
+                <!-- Start of Edit Reading Button  -->
+                    <a href="edit_quiz.html" class="btn">Edit</a>
+                <!-- End of Edit Reading Button  -->
+            </div>
+            <!-- End of Quiz Link -->
+
+        </div>
+    </div>
+
+    <script>
+        feather.replace()
+    </script>
+</body>
