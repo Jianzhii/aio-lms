@@ -1,7 +1,7 @@
-from __main__ import app, db
+from app import app, db
 from flask import jsonify, request
 
-from user import User,UserRole
+from user import User, UserRole
 
 
 # Login API endpoint implementation
