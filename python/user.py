@@ -2,7 +2,7 @@ from app import app, db
 from flask import jsonify
 
 class User(db.Model):
-
+    
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -17,10 +17,12 @@ class User(db.Model):
             'id': self.id,
             'name': self.name,
             'phone_number': self.phone_number,
+            'password' : self.password,
             'email': self.email,
             'user_role_id': self.user_role_id,
             'job_title': self.job_title
         }
+    
 class UserRole(db.Model):
     __tablename__ = 'user_role'
     id = db.Column(db.Integer, primary_key=True)

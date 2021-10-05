@@ -18,6 +18,8 @@ db = SQLAlchemy(app)
 import user  # # import the name of the file containing that module
 import course
 import section
+import login
+
 
 @app.route("/test", methods=['GET'])
 def test():

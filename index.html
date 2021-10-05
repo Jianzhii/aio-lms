@@ -42,3 +42,49 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js" integrity="sha384-W8fXfP3gkOKtndU4JGtKDvXbO53Wy8SZCQHczT5FMiiqmQfUpWbYdTil/SxwZgAN" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.min.js" integrity="sha384-skAcpIdS7UcVUC05LJ9Dxay8AXcDYfBJqt1CJ85S/CFujBsIzCIv+l9liuYLaMQ/" crossorigin="anonymous"></script>
 </html>
+
+<script>
+
+    // On load 
+    $(async () => {
+
+        // API Endpoint
+        // var user_api = "http://52.55.242.44:8000/"  + "user_role" // on server
+        var user_api = "http://localhost:8000/"  + "user_role" // localhost
+        
+        try {
+            const response =
+                await fetch(
+                    user_api, {
+                    method: 'GET'
+                }
+            );
+
+            const result = await response.json();
+            if (response.status === 200) {
+                console.log(result)
+                let data = result.data
+                for (let user of data) {
+                    row = `
+                    <tr>
+                        <td>${user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.phone_number}</td>
+                        <td>${user.job_title}</td>
+                        <td>${user.role_name}</td>
+                    </tr>
+                    `
+                    $('#user').append(row)
+                }
+            }
+        } catch(err) {
+            alert(err)
+            console.log(err)
+        }
+    })
+
+</script> 
+
+</html>
+
