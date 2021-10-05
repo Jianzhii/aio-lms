@@ -1,0 +1,60 @@
+body{
+    font-family: 'Montserrat', sans-serif;
+}
+
+.flex-column{
+    padding-top: 20px;
+    padding-left: 50px;
+}
+
+#ContentName{
+    padding-left: 30px;
+}
+
+#topnavbar{
+    padding-top: 20px;
+    padding-left: 100px;
+}
+
+#logout{
+    border: #FF922D
+}
+
+.vl {
+    padding-left: 70px;
+    border-left: 2px solid rgb(184, 185, 184);
+    height: 600px;
+}
+
+.btn{
+    font-family: 'Montserrat';
+    font-size: 1em;
+    font-weight: bolder;
+    color:white;
+    background-color: #FF922D;
+    margin-left: 450px;
+}
+
+#SectionNo{
+    padding-top: 20px;
+}
+
+.feather {
+    width: 15px;
+    height: 15px;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+}
+
+.video, .reading, .quiz {
+    font-size: 12px;
+    padding-top: 20px;
+}
+
+
+
+
+
