@@ -2,6 +2,11 @@ body{
     font-family: 'Montserrat', sans-serif;
 }
 
+.logo {
+    max-width: 100%;
+    max-height: 100%;
+}
+
 .flex-column{
     padding-bottom: 50px;
     padding-left: 30px;
