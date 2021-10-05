@@ -1,5 +1,5 @@
 
-from app import app, db
+from __main__ import app, db
 from flask import jsonify
 
 class User(db.Model):
@@ -18,6 +18,7 @@ class User(db.Model):
             'id': self.id,
             'name': self.name,
             'phone_number': self.phone_number,
+            'password' : self.password,
             'email': self.email,
             'user_role_id': self.user_role_id,
             'job_title': self.job_title
