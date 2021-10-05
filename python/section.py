@@ -100,6 +100,16 @@ def getOneSection(id):
         )
 
 # Add one section
+'''
+sample request
+{
+    "course_id": 1,
+    "size": 60,
+    "start_date": "2021-10-15 12:00:00",
+    "end_date": "2021-12-15 23:59:59",
+    "trainer_id": 1
+}
+'''
 @app.route("/section", methods=['POST'])
 def addSection():
     data = request.get_json()
@@ -133,32 +143,54 @@ def addSection():
         }
     ), 200
 
-#  Update Course TODO
-@app.route("/course", methods=['PUT'])
+#  Update Section TODO
+'''
+sample request
+{
+    "id": 3,
+    "course_id": 1,
+    "size": 60,
+    "start_date": "2021-10-15 12:00:00",
+    "end_date": "2021-12-15 23:59:59",
+    "trainer_id": 1
+}
+'''
+@app.route("/section", methods=['PUT'])
 def updatesection():
     try:
         data = request.get_json()
         id = data['id']
-        course = Course.query.filter_by(id=id).first()
-        if not course:
+        section = Section.query.filter_by(id=id).first()
+        if not section:
             return jsonify(
                 {
                     "code":404,
                     "data": {
                         "id": id
                     },
-                    "message": "Course not found."
+                    "message": "Section not found."
                 }
             )
-        course.name = data['name']
-        course.description = data['description']
+        section.course_id = data['course_id']
+        section.start_date = data['start_date']
+        section.end_date = data['end_date']
+        section.size = data['size']
+
+        assignment = TrainerAssignment.query.filter(TrainerAssignment.section_id == id, TrainerAssignment.assigned_end_dt == None).first()
+        if data['trainer_id'] != assignment.json()['trainer_id']:
+            assignment.assigned_end_dt = datetime.now()
+            new_assignment = TrainerAssignment(
+                                    trainer_id = data['trainer_id'], 
+                                    section_id = section.id,
+                                    assigned_dt = datetime.now())
+            db.session.add(new_assignment)
         db.session.commit()
         
         return jsonify(
             {
                 "code": 200,
                 "data": data,
-                "message": "Course successfully updated"
+                "message": "Section successfully updated"
             }
         )
 
@@ -166,37 +198,42 @@ def updatesection():
         return jsonify(
             {
                 "code":500,
-                "message": f"An error occurred while updating course: {e}"
+                "message": f"An error occurred while updating section: {e}"
             }
         )
 
-# Delete course TODO
-@app.route("/course/<int:id>", methods=['DELETE'])
+# Delete Section TODO
+@app.route("/section/<int:id>", methods=['DELETE'])
 def deleteSection(id):
-    course = Course.query.filter_by(id=id).first()
-    if not course:
+    section = Section.query.filter_by(id=id).first()
+    if not section:
         return jsonify(
             {
                 "code":404,
                 "data": {
                     "id": id
                 },
-                "message": "Course not found."
+                "message": "Section not found."
             }
         )
     try:
-        db.session.delete(course)
+        trainer_assignment = TrainerAssignment.query.filter(TrainerAssignment.section_id==id).all()
+        if trainer_assignment:
+            for assignment in trainer_assignment:
+                db.session.delete(assignment)
+            db.session.commit()
+        db.session.delete(section)
         db.session.commit()
     except Exception as e: 
         return jsonify( 
             {
                 "code":500,
-                "message": f"An error occurred while deleting course: {e}"
+                "message": f"An error occurred while deleting section: {e}"
             }
         )
     return jsonify(
         {
             "code": 200,
-            "message": "Course successfully deleted"
+            "message": "Section successfully deleted"
         }
     )

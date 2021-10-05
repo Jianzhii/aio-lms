@@ -50,6 +50,13 @@ def getoneCourse(id):
         )
 
 # Add one course
+'''
+sample request
+{
+    "name": "Engineering",
+    "description": "asdfasdsahdoashdioasdhoiashdoisahdoiashdosahdioh"
+}
+'''
 @app.route("/course", methods=['POST'])
 def addCourse():
     data = request.get_json()
@@ -73,6 +80,14 @@ def addCourse():
     ), 200
 
 #  Update Course
+'''
+sample request
+{
+    "id": 1,
+    "name": "Engineering",
+    "description": "asdfasdsahdoashdioasdhoiashdoisahdoiashdosahdioh"
+}
+'''
 @app.route("/course", methods=['PUT'])
 def updateCourse():
     try:
