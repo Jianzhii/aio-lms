@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <!-- Bootstrap/ CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link rel="stylesheet" href="static/course.css">
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <!-- Start of Page Icon -->
+    <title> All-in-One LMS </title>
+    <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
+    <!-- End of Page Icon -->
+
+</head>
+
+<body>
+    <div class="row">
+        <div class="col-3 v1">
+            
+            <!-- Start of Page Icon  -->
+            <img class="logo" src="static/imgs/All-In-One 1.png" width="270px" height="125px"/>
+            <!-- End of Page Icon  -->
+
+            <!-- Start of Content Page  -->
+            <ul class="nav flex-column">
+            <!-- Course Section -->
+                <li class="nav-item">
+                    <h5 class='nav-header'>Courses</h5>
+                    <ul class="nav flex-column">
+                        <li class="nav-item"> 
+                            <a class="nav-link" href="course.html"> View All Courses </a>
+                        </li>
+                        <li class="nav-item"> 
+                            <a class="nav-link" href="#">Create New Course </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Learners Section -->
+                <li class="nav-item">
+                    <h5 class='nav-header'>Learners</h5>
+                    <ul class="nav flex-column">
+                        <li class="nav-item"> 
+                            <a class="nav-link" href="#"> View All Learners </a>
+                        </li>
+                        <li class="nav-item"> 
+                            <a class="nav-link" href="#"> Notify Uncompleted Learners </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Trainers -->
+                <li class="nav-item">
+                    <h5 class='nav-header'>Trainers</h5>
+                    <ul class="nav flex-column">
+                        <li class="nav-item"> 
+                            <a class="nav-link" href="#"> View All Trainers </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <!-- End of Content Page  -->
+        </div>
+
+        <div class="col-9">
+            <!-- Start of NavBar -->
+            <nav class="nav" id="topnavbar">
+                <a class="nav-link active" aria-current="page" href="course.html">Courses</a>
+                <a class="nav-link" href="#">Chat</a>
+                <a href="logout.html" class="btn">Log Out</a>
+            </nav>
+            <!-- End of NavBar -->
+            
+            <!-- Start of Main Content -->
+            <div class="container ">
+                <div class="row d-flex align-items-center">
+                    <div class="col">
+                        <h4 id="title"> 
+                            <a class='icon' href="course.html"><i data-feather="chevron-left"></i></a> 
+                            <b> Sections under <a id='courseName'></a> </b> 
+                        </h4>
+                    </div>
+                    <div class="col-3 d-flex justify-content-end">
+                        <button type="button" class="btn addBtn">Add Section</button>
+                    </div>
+                </div>
+
+                <br>
+
+                <div class="row">
+                    <!-- Table -->
+                    <table class="table">
+                        <thead class="tableHead">
+                            <th scope="col"> Start DateTime </th>
+                            <th scope="col"> End DateTime </th>
+                            <th scope="col"> Size </th>
+                            <th scope="col"> Trainer </th>
+                            <th scope="col"> Actions </th>
+                        </thead>
+                        <tbody id='sectionBody'>
+                        </tbody>
+                    </table>
+                    <div id="loading">
+                        <img id="loading-image" src="static/imgs/loading.gif" alt="Loading..." />
+                    </div>       
+                    <!-- End of Table -->
+                </div>                
+            </div>
+            <!-- End of Main Content -->
+    
+        </div>
+    </div>
+
+    <script>
+
+        feather.replace()
+
+        const api_endpoint = "http://localhost:8000/" 
+
+        // Load Course table contents
+        $(async () => {
+            let query = window.location.search.substring(1);
+            params = query.split('&');
+            data = {};
+            for (var i = 0, l = params.length; i < l; i++) {
+                tmp = params[i].split('=');
+                data[tmp[0]] = tmp[1];
+            }
+            $('#courseName').append(data['courseName'].replace("%20", " "))
+            // API Endpoint
+            var user_api = api_endpoint + "all_section/" + data.id // localhost
+
+            try {
+                const response =
+                    await fetch(
+                        user_api, {
+                        method: 'GET'
+                    }
+                );
+
+                const result = await response.json();
+                if (response.status === 200) {
+                    let data = result.data
+                    if (data.length) {
+                        for (let section of data) {
+                            row = `
+                            <tr>
+                                <td>${section.start_date}</td>
+                                <td>${section.end_date}</td>
+                                <td>${section.size}</td>
+                                <td>${section.trainer_name}</td>
+                                <td> 
+                                    <a href="#" class="icon" title="View Details"><i data-feather="eye"></i></a> 
+                                    </td>
+                            </tr>
+                            `
+                            $('#sectionBody').append(row)
+                        }
+                        feather.replace()
+                    } else {
+                        $('#sectionBody').append(`
+                            <tr>
+                                <td> No Results </td>
+                            </tr>
+                        `)
+                    }
+                }
+            } catch(err) {
+                alert(err)
+                console.log(err)
+            }
+
+            $('#loading').hide();
+        });
+
+    </script>
+</body>

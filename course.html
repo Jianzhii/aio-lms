@@ -30,7 +30,7 @@
 <body>
     <div class="row">
         <div class="col-3 v1">
-            
+
             <!-- Start of Page Icon  -->
             <img class="logo" src="static/imgs/All-In-One 1.png" width="270px" height="125px"/>
             <!-- End of Page Icon  -->
@@ -42,7 +42,7 @@
                     <h5 class='nav-header'>Courses</h5>
                     <ul class="nav flex-column">
                         <li class="nav-item"> 
-                            <a class="nav-link" href="#">New Course </a>
+                            <a class="nav-link" href="course.html"> View All Courses </a>
                         </li>
                         <li class="nav-item"> 
                             <a class="nav-link" href="#">Create New Course </a>
@@ -79,7 +79,7 @@
         <div class="col-9">
             <!-- Start of NavBar -->
             <nav class="nav" id="topnavbar">
-                <a class="nav-link active" aria-current="page" href="#">Courses</a>
+                <a class="nav-link active" aria-current="page" href="course.html">Courses</a>
                 <a class="nav-link" href="#">Chat</a>
                 <a href="logout.html" class="btn">Log Out</a>
             </nav>
@@ -102,7 +102,7 @@
                     <thead class="tableHead">
                         <th scope="col"> Course Name </th>
                         <th scope="col"> Course Description </th>
-                        <th scope="col"> Sections </th>
+                        <th scope="col"> Actions </th>
                     </thead>
                     <tbody id='courseBody'>
                     </tbody>
@@ -141,7 +141,10 @@
                         <tr>
                             <td>${course.name}</td>
                             <td>${course.description}</td>
-                            <td> <a href="#"> View sections </a> </td>
+                            <td> 
+                                <a href="#" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+                                <a href="./section.html?id=${course.id}&courseName=${course.name}" class="icon" title="View Sections"><i data-feather="eye"></i></a>
+                            </td>
                         </tr>
                         `
                         $('#courseBody').append(row)
@@ -153,6 +156,7 @@
             }
 
             $('#loading').hide();
+            feather.replace()
         })
 
         // function for search bar
@@ -190,7 +194,10 @@
                                     <tr>
                                         <td>${course.name}</td>
                                         <td>${course.description}</td>
-                                        <td> <a href="#"> View sections </a> </td>
+                                        <td> 
+                                            <a href="#" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+                                            <a href="./section.html?id=${course.id}&courseName=${course.name}" class="icon" title="View Sections"><i data-feather="eye"></i></a>
+                                        </td>   
                                     </tr>
                                     `
                                     $('#courseBody').append(row)
