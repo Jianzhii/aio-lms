@@ -42,20 +42,23 @@
 
     <div class="row">
         <div class="col-6">
-            <!-- Start of Title Field -->
-            <div class="mb-3">
-                <label for="formGroupExampleInput" class="form-label">Title</label>
-                <input type="text" class="form-control" id="formGroupExampleInput">
-            </div>
-            <!-- End of Title Field -->
+            <!-- Start of Form  -->
+            <form method="POST" action="{{ url_for('vidaddsuccess')}}>">
+                <!-- Start of Title Field -->
+                <div class="mb-3">
+                    <label for="formGroupExampleInput" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="formGroupExampleInput">
+                </div>
+                <!-- End of Title Field -->
 
-            <!-- Start of Link Field -->
-            <div class="mb-3">
-                <label for="formGroupExampleInput" class="form-label">Link</label>
-                <input type="text" class="form-control" id="formGroupExampleInput">
-            </div>
-            <!-- End of Link Field -->
+                <!-- Start of Link Field -->
+                <div class="mb-3">
+                    <label for="formGroupExampleInput" class="form-label">Link</label>
+                    <input type="text" class="form-control" id="formGroupExampleInput">
+                </div>
+                <!-- End of Link Field -->
         </div>
+        
         <div class="col-5">
             <!-- Start of Date Uploaded Field -->
             <div id="dateuploadedgroup">
@@ -65,37 +68,42 @@
             <!-- End of Date Uploaded Field -->
 
             <!-- Start of Add Button  -->
-            <!-- <a href="addsuccessful.html" class="addbutton">Add</a> -->
-
-            <!-- Button trigger modal -->
-            <button type="button" class="addbutton" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                Add
-            </button>
-            <!-- Modal -->
-            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
+            <div class="container">
+                <!-- Trigger the modal with a button -->
+                <button type="button" class="addbutton" data-toggle="modal" data-target="#myModal">Add</button>
+                <!-- Modal -->
+                <div class="modal fade" id="myModal" role="dialog">
+                    <div class="modal-dialog">
+                    
+                        <!-- Modal content-->
+                        <div class="modal-content">
                         <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Confirmation</h4>
                         </div>
                         <div class="modal-body">
-                        ...
+                            <p>Would you like to add?</p>
                         </div>
                         <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Save changes</button>
+                            <button type="submit" class="cfmaddbutton" data-dismiss="modal">Add</button>
+                            </form>
+                        </div>
                         </div>
                     </div>
                 </div>
             </div>
+                <!-- End of Add Button  -->
+            </form>
+            <!-- End of Form  -->
 
-            <!-- End of Add Button  -->
         </div>
     </div>
             
-
-
-
     
+
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 </body>
+</html>
