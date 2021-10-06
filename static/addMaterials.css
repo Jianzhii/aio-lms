@@ -71,3 +71,20 @@ input {
 /* End of Add Button  */
 
 /* End of Form */
+
+.cfmaddbutton {
+    background-color: #566E92;
+    border: none;
+    color: white;
+    padding: 3px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    /* margin: 70px 320px; */
+}
+
+.close{
+    color: #566E92;
+}
