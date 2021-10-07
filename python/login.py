@@ -38,6 +38,3 @@ def login():
             "status": 404,
             "msg": f"Error: {e}"
         }), 404
-
-
- 

@@ -7,6 +7,7 @@ from sqlalchemy.sql.expression import null
 from app import app, db
 from course import Course
 from user import User
+from datetime import datetime
 
 
 class Section(db.Model):
@@ -22,8 +23,8 @@ class Section(db.Model):
         return {
             'id': self.id,
             'course_id': self.course_id,
-            'start_date': self.start_date,
-            'end_date': self.end_date,
+            'start_date': self.start_date.strftime("%d/%m/%Y, %H:%M:%S"),
+            'end_date': self.end_date.strftime("%d/%m/%Y, %H:%M:%S"),
             'size': self.size
         }
 
@@ -45,9 +46,9 @@ class TrainerAssignment(db.Model):
         }
 
 # Get all Section
-@app.route("/all_section", methods=['GET'])
-def getAllSections():
-    sections = db.session.query(Section, TrainerAssignment, User, Course)\
+@app.route("/all_section/<int:id>", methods=['GET'])
+def getAllSections(id):
+    sections = db.session.query(Section, TrainerAssignment, User, Course).filter(Section.course_id==id)\
             .outerjoin(TrainerAssignment, 
                 and_(
                     Section.id == TrainerAssignment.section_id,

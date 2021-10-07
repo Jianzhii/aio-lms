@@ -50,9 +50,20 @@ body{
     margin-left: 450px;
 }
 
+.addBtn{
+    font-family: 'Montserrat';
+    font-size: 1em;
+    font-weight: bolder;
+    color:white;
+    background-color: #FF922D;
+    width: 50%;
+    height: 50%;
+}
+
 #title{
     padding-top: 20px;
     padding-left: 10px;
+    display: inline;
 }
 
 .tableHead {
@@ -74,4 +85,10 @@ body{
 #loading-image {
     margin-top: 50px;
     z-index: 100;
+}
+
+.icon {
+    color: #FF922D;
+    width: 32px;
+    height: 32px;
 }
