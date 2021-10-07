@@ -1,4 +1,4 @@
-from __main__ import app, db
+from app import app, db
 from flask import jsonify
 
 class User(db.Model):
