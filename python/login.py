@@ -1,4 +1,4 @@
-from app import app, db
+from __main__ import app, db
 from flask import jsonify, request
 
 from user import User, UserRole
