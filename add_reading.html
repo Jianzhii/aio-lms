@@ -43,7 +43,7 @@
     <div class="row">
         <div class="col-6">
             <!-- Start of Form  -->
-
+            <form action ="uploadCM.html" method = "POST" enctype = "multipart/form-data">
             <!-- Start of Title Field -->
             <div class="mb-3">
                 <label for="formGroupExampleInput" class="form-label">Title</label>
@@ -53,8 +53,8 @@
 
             <!-- Start of Select File Field -->
             <div class="mb-3">
-                <label for="formFileMultiple" class="form-label">File Upload</label>
-                <input class="form-control" type="file" id="formFileMultiple" multiple>
+                <label for="formFile" class="form-label">File Upload</label>
+                <input class="form-control" type="file" name="file" id="formFile">
             </div>
             <!-- End of Select File Field -->
         </div>
@@ -92,7 +92,7 @@
                 </div>
             </div>
             <!-- End of Add Button  -->
-
+            </form>
             <!-- End of Form  -->
         </div>
     </div>
