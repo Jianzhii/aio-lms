@@ -117,7 +117,8 @@
     </div>
 
     <script>
-        const api_endpoint = "http://localhost:8000/" 
+        // const api_endpoint = "http://localhost:8000/" 
+        const api_endpoint = "http://18.221.7.176:8000/" 
 
         // Load Course table contents
         $(async () => {
@@ -143,7 +144,7 @@
                             <td>${course.description}</td>
                             <td> 
                                 <a href="#" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
-                                <a href="./section.html?id=${course.id}&courseName=${course.name}" class="icon" title="View Sections"><i data-feather="eye"></i></a>
+                                <a href="./group.html?id=${course.id}&courseName=${course.name}" class="icon" title="View Groups"><i data-feather="eye"></i></a>
                             </td>
                         </tr>
                         `
@@ -196,7 +197,7 @@
                                         <td>${course.description}</td>
                                         <td> 
                                             <a href="#" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
-                                            <a href="./section.html?id=${course.id}&courseName=${course.name}" class="icon" title="View Sections"><i data-feather="eye"></i></a>
+                                            <a href="./group.html?id=${course.id}&courseName=${course.name}" class="icon" title="View Groups"><i data-feather="eye"></i></a>
                                         </td>   
                                     </tr>
                                     `

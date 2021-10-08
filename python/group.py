@@ -10,9 +10,9 @@ from user import User
 from datetime import datetime
 
 
-class Section(db.Model):
+class Group(db.Model):
 
-    __tablename__ = 'section'
+    __tablename__ = 'group'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     course_id = db.Column(db.Integer, primary_key=True, nullable=False)
     start_date = db.Column(db.DateTime, nullable=False)
@@ -33,34 +33,34 @@ class TrainerAssignment(db.Model):
     __tablename__ = 'trainer_assignment'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     trainer_id = db.Column(db.Integer, primary_key=True, nullable=False)
-    section_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    group_id = db.Column(db.Integer, primary_key=True, nullable=False)
     assigned_dt = db.Column(db.DateTime, nullable=False)
     assigned_end_dt = db.Column(db.DateTime, nullable=False)
 
     def json(self):
         return {
             'id': self.id,
-            'section_id': self.section_id,
+            'group_id': self.group_id,
             'trainer_id': self.trainer_id,
             'assigned_dt': self.assigned_dt
         }
 
-# Get all Section
-@app.route("/all_section/<int:id>", methods=['GET'])
-def getAllSections(id):
-    sections = db.session.query(Section, TrainerAssignment, User, Course).filter(Section.course_id==id)\
+# Get all group
+@app.route("/all_group/<int:id>", methods=['GET'])
+def getAllGroups(id):
+    groups = db.session.query(Group, TrainerAssignment, User, Course).filter(Group.course_id==id)\
             .outerjoin(TrainerAssignment, 
                 and_(
-                    Section.id == TrainerAssignment.section_id,
+                    Group.id == TrainerAssignment.group_id,
                     TrainerAssignment.assigned_end_dt == None))\
             .outerjoin(User, TrainerAssignment.trainer_id == User.id)\
-            .outerjoin(Course, Section.course_id == Course.id).all()
+            .outerjoin(Course, Group.course_id == Course.id).all()
     data = []
-    for section, trainer_assignment, user, course in sections:
-        section = section.json()
-        section['course_name'] = course.name
-        section['trainer_name'] = user.name
-        data.append(section)
+    for group, trainer_assignment, user, course in groups:
+        group = group.json()
+        group['course_name'] = course.name
+        group['trainer_name'] = user.name
+        data.append(group)
     return jsonify(
         {
             "code": 200,
@@ -68,25 +68,24 @@ def getAllSections(id):
         }
     ), 200
 
-# Get one section
-@app.route("/section/<int:id>", methods=['GET'])
-def getOneSection(id):
-    section, trainer_assignment, user, course = db.session.query(Section, TrainerAssignment, User, Course).filter_by(id=id)\
+# Get one group
+@app.route("/group/<int:id>", methods=['GET'])
+def getOneGroup(id):
+    group, trainer_assignment, user, course = db.session.query(Group, TrainerAssignment, User, Course).filter_by(id=id)\
         .outerjoin(TrainerAssignment, 
             and_(
-                Section.id == TrainerAssignment.section_id,
+                Group.id == TrainerAssignment.group_id,
                 TrainerAssignment.assigned_end_dt == None))\
         .outerjoin(User, TrainerAssignment.trainer_id == User.id)\
-        .outerjoin(Course, Section.course_id == Course.id).first()
-    print(section)
-    if section:
-        section = section.json()
-        section['course_name'] = course.name
-        section['trainer_name'] = user.name
+        .outerjoin(Course, Group.course_id == Course.id).first()
+    if group:
+        group = group.json()
+        group['course_name'] = course.name
+        group['trainer_name'] = user.name
         return jsonify(
             {
                 "code": 200,
-                "data": section
+                "data": group
             }
         ), 200
     else:
@@ -96,11 +95,11 @@ def getOneSection(id):
                 "data": {
                     "id": id
                 },
-                "message": "Section not found."
+                "message": "Group not found."
             }
         )
 
-# Add one section
+# Add one group
 '''
 sample request
 {
@@ -111,21 +110,21 @@ sample request
     "trainer_id": 1
 }
 '''
-@app.route("/section", methods=['POST'])
-def addSection():
+@app.route("/group", methods=['POST'])
+def addGroup():
     data = request.get_json()
-    section = Section(
+    group = Group(
         course_id = data['course_id'],
         start_date = data['start_date'],
         end_date = data['end_date'],
         size = data['size']
     )
     try:
-        db.session.add(section)
+        db.session.add(group)
         db.session.commit()
         trainer_assignment = TrainerAssignment(
                                     trainer_id = data['trainer_id'], 
-                                    section_id = section.id,
+                                    group_id = group.id,
                                     assigned_dt = datetime.now())
         db.session.add(trainer_assignment)
         db.session.commit()
@@ -133,18 +132,18 @@ def addSection():
         return jsonify(
             {
                 "code":500,
-                "message": f"An error occurred while adding sections: {e}"
+                "message": f"An error occurred while adding groups: {e}"
             }
         )
     
     return jsonify(
         {
             "code": 200,
-            "data": section.json()
+            "data": group.json()
         }
     ), 200
 
-#  Update Section TODO
+#  Update Group
 '''
 sample request
 {
@@ -156,33 +155,33 @@ sample request
     "trainer_id": 1
 }
 '''
-@app.route("/section", methods=['PUT'])
-def updatesection():
+@app.route("/group", methods=['PUT'])
+def updateGroup():
     try:
         data = request.get_json()
         id = data['id']
-        section = Section.query.filter_by(id=id).first()
-        if not section:
+        group = Group.query.filter_by(id=id).first()
+        if not group:
             return jsonify(
                 {
                     "code":404,
                     "data": {
                         "id": id
                     },
-                    "message": "Section not found."
+                    "message": "Group not found."
                 }
             )
-        section.course_id = data['course_id']
-        section.start_date = data['start_date']
-        section.end_date = data['end_date']
-        section.size = data['size']
+        group.course_id = data['course_id']
+        group.start_date = data['start_date']
+        group.end_date = data['end_date']
+        group.size = data['size']
 
-        assignment = TrainerAssignment.query.filter(TrainerAssignment.section_id == id, TrainerAssignment.assigned_end_dt == None).first()
+        assignment = TrainerAssignment.query.filter(TrainerAssignment.group_id == id, TrainerAssignment.assigned_end_dt == None).first()
         if data['trainer_id'] != assignment.json()['trainer_id']:
             assignment.assigned_end_dt = datetime.now()
             new_assignment = TrainerAssignment(
                                     trainer_id = data['trainer_id'], 
-                                    section_id = section.id,
+                                    group_id = group.id,
                                     assigned_dt = datetime.now())
             db.session.add(new_assignment)
         db.session.commit()
@@ -191,7 +190,7 @@ def updatesection():
             {
                 "code": 200,
                 "data": data,
-                "message": "Section successfully updated"
+                "message": "Group successfully updated"
             }
         )
 
@@ -199,42 +198,42 @@ def updatesection():
         return jsonify(
             {
                 "code":500,
-                "message": f"An error occurred while updating section: {e}"
+                "message": f"An error occurred while updating group: {e}"
             }
         )
 
-# Delete Section TODO
-@app.route("/section/<int:id>", methods=['DELETE'])
-def deleteSection(id):
-    section = Section.query.filter_by(id=id).first()
-    if not section:
+# Delete group
+@app.route("/group/<int:id>", methods=['DELETE'])
+def deleteGroup(id):
+    group = Group.query.filter_by(id=id).first()
+    if not group:
         return jsonify(
             {
                 "code":404,
                 "data": {
                     "id": id
                 },
-                "message": "Section not found."
+                "message": "Group not found."
             }
         )
     try:
-        trainer_assignment = TrainerAssignment.query.filter(TrainerAssignment.section_id==id).all()
+        trainer_assignment = TrainerAssignment.query.filter(TrainerAssignment.group_id==id).all()
         if trainer_assignment:
             for assignment in trainer_assignment:
                 db.session.delete(assignment)
             db.session.commit()
-        db.session.delete(section)
+        db.session.delete(group)
         db.session.commit()
     except Exception as e: 
         return jsonify( 
             {
                 "code":500,
-                "message": f"An error occurred while deleting section: {e}"
+                "message": f"An error occurred while deleting group: {e}"
             }
         )
     return jsonify(
         {
             "code": 200,
-            "message": "Section successfully deleted"
+            "message": "Group successfully deleted"
         }
     )
