@@ -91,11 +91,11 @@
                     <div class="col">
                         <h4 id="title"> 
                             <a class='icon' href="course.html"><i data-feather="chevron-left"></i></a> 
-                            <b> Sections under <a id='courseName'></a> </b> 
+                            <b> Groups under <a id='courseName'></a> </b> 
                         </h4>
                     </div>
                     <div class="col-3 d-flex justify-content-end">
-                        <button type="button" class="btn addBtn">Add Section</button>
+                        <button type="button" class="btn addBtn">Add Group</button>
                     </div>
                 </div>
 
@@ -142,7 +142,7 @@
             }
             $('#courseName').append(data['courseName'].replace("%20", " "))
             // API Endpoint
-            var user_api = api_endpoint + "all_section/" + data.id // localhost
+            var user_api = api_endpoint + "all_group/" + data.id // localhost
 
             try {
                 const response =
@@ -156,13 +156,13 @@
                 if (response.status === 200) {
                     let data = result.data
                     if (data.length) {
-                        for (let section of data) {
+                        for (let group of data) {
                             row = `
                             <tr>
-                                <td>${section.start_date}</td>
-                                <td>${section.end_date}</td>
-                                <td>${section.size}</td>
-                                <td>${section.trainer_name}</td>
+                                <td>${group.start_date}</td>
+                                <td>${group.end_date}</td>
+                                <td>${group.size}</td>
+                                <td>${group.trainer_name}</td>
                                 <td> 
                                     <a href="#" class="icon" title="View Details"><i data-feather="eye"></i></a> 
                                     </td>
