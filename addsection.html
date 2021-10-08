@@ -5,9 +5,16 @@
 
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Fonts  -->
         <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
         <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
         <style>
 
@@ -185,11 +192,7 @@
                             </div>
                             <div class="col">
                                 <select id="trainer" name="trainer">
-                                    <option value=""></option>  <!-- retrieve list of trainers -->
-                                    <option value=""></option>
-                                    <option value=""></option>
-                                    <option value=""></option>
-                                    <option value=""></option>
+                                    <option value="" disabled selected>Please select trainer</option>
                                 </select>
                             </div>
                             <div class="col">
@@ -197,7 +200,7 @@
                             </div>
                             <div class="col">
                                 <select id="learners" name="learners" size="4" multiple> <!-- get value of size attribute from class size -->
-                                    <option value=""></option> <!-- retrieve list of learners -->
+                                    <option value="" disabled selected>Select whatever learner or whatever</option> <!-- retrieve list of learners -->
                                     <option value=""></option> <!-- need to hold down ctrl button to multi-select??? wtf man -->
                                     <option value=""></option>
                                     <option value=""></option>
@@ -214,4 +217,41 @@
         
 
     </body>
+
+    <script> 
+
+        const api_endpoint = "http://localhost:8000/" 
+
+        // Populate trainer dropdown
+        $(async () => {
+            // API Endpoint
+            var user_api = api_endpoint + "all_trainer"
+
+            try {
+                const response =
+                    await fetch(
+                        user_api, {
+                        method: 'GET'
+                    }
+                );
+
+                const result = await response.json();
+                if (response.status === 200) {
+                    let data = result.data
+                    console.log(data)
+                    if (data.length) {
+                        for (let trainer of data) {
+                            option = `<option value=${trainer.id}> ${trainer.name}</option>`
+                            $('#trainer').append(option)
+                        }
+                    } else {
+                        $('#trainer').append(`<option> No trainers available </option`)
+                    }
+                }
+            } catch(err) {
+                alert(err)
+                console.log(err)
+            }
+        });
+    </script>
 </html>
