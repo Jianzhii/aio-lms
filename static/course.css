@@ -20,6 +20,11 @@ body{
     color: black
 }
 
+.selected {
+    color: #FF922D ;
+    font-weight: bold ;
+}
+
 #ContentName{
     padding-left: 30px;
 }
