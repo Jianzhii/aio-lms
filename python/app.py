@@ -5,7 +5,7 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "http://18.221.7.176/"}})
 
 db_host = os.environ.get("DB_HOSTNAME")
 db_port = os.environ.get("DB_PORT")
