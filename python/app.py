@@ -32,4 +32,4 @@ def test():
     ), 200
 
 os.environ["FLASK_RUN_FROM_CLI"] = "false"
-app.run(host='127.0.0.1', port=8000, debug=True)
+app.run(host='0.0.0.0', port=8000, debug=True)
