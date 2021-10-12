@@ -38,14 +38,18 @@
             <!-- Start of Content Page  -->
             <ul class="nav flex-column">
             <!-- Course Section -->
+                <!-- Course Section -->
                 <li class="nav-item">
                     <h5 class='nav-header'>Courses</h5>
                     <ul class="nav flex-column">
                         <li class="nav-item"> 
-                            <a class="nav-link" href="course.html"> View All Courses </a>
+                            <a class="nav-link selected" href="course.html"> View All Courses </a>
                         </li>
                         <li class="nav-item"> 
-                            <a class="nav-link" href="#">Create New Course </a>
+                            <a class="nav-link" href="createcourse.html"> Create New Course </a>
+                        </li>
+                        <li class="nav-item"> 
+                            <a class="nav-link" href="addsection.html"> Create New Group </a>
                         </li>
                     </ul>
                 </li>
@@ -56,9 +60,6 @@
                     <ul class="nav flex-column">
                         <li class="nav-item"> 
                             <a class="nav-link" href="#"> View All Learners </a>
-                        </li>
-                        <li class="nav-item"> 
-                            <a class="nav-link" href="#"> Notify Uncompleted Learners </a>
                         </li>
                     </ul>
                 </li>
@@ -91,11 +92,11 @@
                     <div class="col">
                         <h4 id="title"> 
                             <a class='icon' href="course.html"><i data-feather="chevron-left"></i></a> 
-                            <b> Sections under <a id='courseName'></a> </b> 
+                            <b> Groups under <a id='courseName'></a> </b> 
                         </h4>
                     </div>
                     <div class="col-3 d-flex justify-content-end">
-                        <button type="button" class="btn addBtn">Add Section</button>
+                        <button type="button" class="btn addBtn">Add Group</button>
                     </div>
                 </div>
 
@@ -142,7 +143,7 @@
             }
             $('#courseName').append(data['courseName'].replace("%20", " "))
             // API Endpoint
-            var user_api = api_endpoint + "all_section/" + data.id // localhost
+            var user_api = api_endpoint + "all_group/" + data.id // localhost
 
             try {
                 const response =
@@ -156,13 +157,13 @@
                 if (response.status === 200) {
                     let data = result.data
                     if (data.length) {
-                        for (let section of data) {
+                        for (let group of data) {
                             row = `
                             <tr>
-                                <td>${section.start_date}</td>
-                                <td>${section.end_date}</td>
-                                <td>${section.size}</td>
-                                <td>${section.trainer_name}</td>
+                                <td>${group.start_date}</td>
+                                <td>${group.end_date}</td>
+                                <td>${group.size}</td>
+                                <td>${group.trainer_name}</td>
                                 <td> 
                                     <a href="#" class="icon" title="View Details"><i data-feather="eye"></i></a> 
                                     </td>
