@@ -15,6 +15,8 @@ class Group(db.Model):
     course_id = db.Column(db.Integer, primary_key=True, nullable=False)
     start_date = db.Column(db.DateTime, nullable=False)
     end_date = db.Column(db.DateTime, nullable=False)
+    enrol_start_date = db.Column(db.DateTime, nullable=False)
+    enrol_end_date = db.Column(db.DateTime, nullable=False)
     size = db.Column(db.Integer, nullable=False)
 
     def json(self):
@@ -23,6 +25,8 @@ class Group(db.Model):
             'course_id': self.course_id,
             'start_date': self.start_date.strftime("%d/%m/%Y, %H:%M:%S"),
             'end_date': self.end_date.strftime("%d/%m/%Y, %H:%M:%S"),
+            'enrol_start_date': self.enrol_start_date.strftime("%d/%m/%Y, %H:%M:%S"),
+            'enrol_end_date': self.enrol_end_date.strftime("%d/%m/%Y, %H:%M:%S"),
             'size': self.size
         }
 

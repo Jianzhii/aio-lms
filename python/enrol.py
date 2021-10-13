@@ -84,15 +84,37 @@ def addEnrolment():
         existing_enrolment = Enrolment.query.filter_by(user_id = data['user_id'], group_id = data['group_id']).all()
         if existing_enrolment: 
             user = User.query.filter_by(id=data['user_id']).first()
-            raise Exception(f"{user.name} has already been enrolled in this course")
+            return jsonify(
+                {
+                    "code":404,
+                    "data": {
+                        "id": id
+                    },
+                    "message": f"{user.name} has already been enrolled in this course"
+                }
+            )
+        
+        group = Group.query.filter_by(id=data['group_id']).first()
+        current_group_size = Enrolment.query.filter_by(group_id = data['group_id']).count()
+        if current_group_size == group.size:
+            return jsonify(
+                {
+                    "code":404,
+                    "data": {
+                        "id": id
+                    },
+                    "message": "Group enrollment is already full."
+                }
+            )
+        
         enrol = Enrolment(
             group_id = data['group_id'],
             user_id = data['user_id'],
             enrolled_dt = datetime.now(),
             completed = False
         )
-        db.session.add(enrol)
-        db.session.commit()
+        # db.session.add(enrol)
+        # db.session.commit()
 
         return jsonify(
             {
