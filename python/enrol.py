@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from flask import jsonify, request
-from sqlalchemy import and_
 
 from app import app, db
 from course import Course
@@ -27,6 +26,8 @@ class Enrolment(db.Model):
             'enrolled_dt': self.enrolled_dt.strftime("%d/%m/%Y, %H:%M:%S"),
             'completed': self.completed
         }
+
+
 
 # Get enrolment within a group
 @app.route("/enrolment/group/<int:group_id>", methods=['GET'])
@@ -68,7 +69,6 @@ def getEnrolmentByUser(user_id):
         }
     ), 200
 
-
 # Enrol learner
 '''
 sample request
@@ -93,6 +93,14 @@ def addEnrolment():
         )
         db.session.add(enrol)
         db.session.commit()
+
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Successfully enrolled learner",
+                "data": enrol.json()
+            }
+        ), 200
     except Exception as e:
         return jsonify(
             {
@@ -100,15 +108,6 @@ def addEnrolment():
                 "message": f"An error occurred while enrolling learner: {e}"
             }
         )
-    
-    return jsonify(
-        {
-            "code": 200,
-            "message": "Successfully enrolled learner",
-            "data": enrol.json()
-        }
-    ), 200
-
 
 # Delete enrolment
 @app.route("/enrolment/<int:id>", methods=['DELETE'])
@@ -127,6 +126,12 @@ def deleteEnrolment(id):
             )
         db.session.delete(enrolment)
         db.session.commit()
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Enrolment successfully deleted"
+            }
+        ),200
     except Exception as e: 
         return jsonify( 
             {
@@ -134,9 +139,3 @@ def deleteEnrolment(id):
                 "message": f"An error occurred while deleting enrolment: {e}"
             }
         )
-    return jsonify(
-        {
-            "code": 200,
-            "message": "Enrolment successfully deleted"
-        }
-    )
