@@ -103,8 +103,8 @@ sample request
 @app.route("/course", methods=['POST'])
 def addCourse():
     data = request.get_json()
-    course = Course(**data)
     try:
+        course = Course(**data)
         db.session.add(course)
         db.session.commit()
         badge = Badge(
@@ -113,6 +113,13 @@ def addCourse():
         )
         db.session.add(badge)
         db.session.commit()
+
+        return jsonify(
+            {
+                "code": 200,
+                "data": course.json()
+            }
+        ), 200
     except Exception as e:
         return jsonify(
             {
@@ -120,13 +127,6 @@ def addCourse():
                 "message": f"An error occurred while creating course: {e}"
             }
         )
-    
-    return jsonify(
-        {
-            "code": 200,
-            "data": course.json()
-        }
-    ), 200
 
 #  Update Course
 '''
@@ -176,22 +176,29 @@ def updateCourse():
 # Delete course
 @app.route("/course/<int:id>", methods=['DELETE'])
 def deleteCourse(id):
-    course = Course.query.filter_by(id=id).first()
-    badge = Badge.query.filter_by(course_id=id).first()
-    if not course:
-        return jsonify(
-            {
-                "code":404,
-                "data": {
-                    "id": id
-                },
-                "message": "Course not found."
-            }
-        )
     try:
+        course = Course.query.filter_by(id=id).first()
+        badge = Badge.query.filter_by(course_id=id).first()
+        if not course:
+            return jsonify(
+                {
+                    "code":404,
+                    "data": {
+                        "id": id
+                    },
+                    "message": "Course not found."
+                }
+            )
         db.session.delete(badge)
         db.session.delete(course)
         db.session.commit()
+
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Course successfully deleted"
+            }
+        )    
     except Exception as e: 
         return jsonify( 
             {
@@ -199,10 +206,3 @@ def deleteCourse(id):
                 "message": f"An error occurred while deleting course: {e}"
             }
         )
-    return jsonify(
-        {
-            "code": 200,
-            "message": "Course successfully deleted"
-        }
-    )
-    
