@@ -200,10 +200,7 @@
                             </div>
                             <div class="col">
                                 <select id="learners" name="learners" size="4" multiple> <!-- get value of size attribute from class size -->
-                                    <option value="" disabled selected>Select whatever learner or whatever</option> <!-- retrieve list of learners -->
-                                    <option value=""></option> <!-- need to hold down ctrl button to multi-select??? wtf man -->
-                                    <option value=""></option>
-                                    <option value=""></option>
+                                    <option value="" disabled selected>Please select learner</option> <!-- retrieve list of learners --><!-- need to hold down ctrl button to multi-select??? wtf man -->
                                 </select>
                             </div>
                         </div>
@@ -220,17 +217,17 @@
 
     <script> 
 
-        const api_endpoint = "http://localhost:8000/" 
+        const api_endpoint = "http://localhost:8000/"
 
         // Populate trainer dropdown
         $(async () => {
             // API Endpoint
-            var user_api = api_endpoint + "all_trainer"
+            var trainer_api = api_endpoint + "all_trainer"
 
             try {
                 const response =
                     await fetch(
-                        user_api, {
+                        trainer_api, {
                         method: 'GET'
                     }
                 );
@@ -253,5 +250,45 @@
                 console.log(err)
             }
         });
+
+        $(async () => {
+
+        // API Endpoint
+        var learner_api = api_endpoint + "all_learner"
+
+        try {
+            const response =
+                await fetch(
+                    learner_api, {
+                    method: 'GET'
+                }
+            );
+
+            const result = await response.json();
+            if (response.status === 200) {
+                let data = result.data
+                console.log(data)
+                if (data.length) {
+                    for (let learner of data) {
+                        option = `<option value=${learner.id}> ${learner.name}</option>`
+                        $('#learners').append(option)
+                    }
+                } else {
+                    $('#learner').append(`<option> No learners available </option`)
+                }
+            }
+        } catch(err) {
+            alert(err)
+            console.log(err)
+        }
+    });
     </script>
+
+<script> 
+
+    // Populate learner dropdown
+    
+</script>
+
+
 </html>
