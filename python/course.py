@@ -15,6 +15,19 @@ class Course(db.Model):
             'name': self.name,
             'description': self.description
         }
+class Badge(db.Model):
+
+    __tablename__ = 'badges'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    course_id = db.Column(db.Integer, nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+
+    def json(self):
+        return {
+            'id': self.id,
+            'course_id': self.course_id,
+            'name': self.name
+        }
 
 # Get all Courses
 @app.route("/all_course", methods=['GET'])
@@ -94,6 +107,12 @@ def addCourse():
     try:
         db.session.add(course)
         db.session.commit()
+        badge = Badge(
+            course_id = course.id,
+            name = course.name
+        )
+        db.session.add(badge)
+        db.session.commit()
     except Exception as e:
         return jsonify(
             {
@@ -158,6 +177,7 @@ def updateCourse():
 @app.route("/course/<int:id>", methods=['DELETE'])
 def deleteCourse(id):
     course = Course.query.filter_by(id=id).first()
+    badge = Badge.query.filter_by(course_id=id).first()
     if not course:
         return jsonify(
             {
@@ -169,6 +189,7 @@ def deleteCourse(id):
             }
         )
     try:
+        db.session.delete(badge)
         db.session.delete(course)
         db.session.commit()
     except Exception as e: 
