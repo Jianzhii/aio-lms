@@ -15,11 +15,15 @@ db_password = os.environ.get("DB_PASSWORD")
 app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+mysqlconnector://{db_username}:{db_password}@{db_host}:{db_port}/lms"
 db = SQLAlchemy(app)
 
-import user  # # import the name of the file containing that module
+
+# Importing all modules
+import login
+import user  
 import course
 import group
-import login
-
+import course_section
+# import upload
+import enrol
 
 @app.route("/test", methods=['GET'])
 def test():

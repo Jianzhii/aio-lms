@@ -13,6 +13,7 @@ setup(
         'flask_cors',
         'SQLAlchemy',
         'mysql-connector-python',
-        'requests'
+        'requests',
+        'werkzeug'
     ],
 )

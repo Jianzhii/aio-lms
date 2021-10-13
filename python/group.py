@@ -2,7 +2,6 @@ from datetime import datetime
 
 from flask import jsonify, request
 from sqlalchemy import and_
-from sqlalchemy.sql.expression import null
 
 from app import app, db
 from course import Course

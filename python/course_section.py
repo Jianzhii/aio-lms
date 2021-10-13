@@ -1,12 +1,6 @@
-from flask import Flask, redirect, url_for, render_template, request 
+from flask import Flask, jsonify, redirect, render_template, request, url_for
 from app import app, db
-from flask import jsonify, request
-from user import User
 
-app = Flask(__name__)
-
-if __name__ == "__main__":
-    app.run(debug=True) 
 
 class CourseSection(db.Model):
 
