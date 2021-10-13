@@ -102,6 +102,7 @@
                     <thead class="tableHead">
                         <th scope="col"> Course Name </th>
                         <th scope="col"> Course Description </th>
+                        <th scope="col"> Prerequisite Course(s) </th>
                         <th scope="col"> Actions </th>
                     </thead>
                     <tbody id='courseBody'>
@@ -138,10 +139,13 @@
                 if (response.status === 200) {
                     let data = result.data
                     for (let course of data) {
+                        console.log(course)
+
                         row = `
                         <tr>
                             <td>${course.name}</td>
                             <td>${course.description}</td>
+                            <td>${course.prerequisite}</td>
                             <td> 
                                 <a href="#" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
                                 <a href="./group.html?id=${course.id}&courseName=${course.name}" class="icon" title="View Groups"><i data-feather="eye"></i></a>
@@ -191,10 +195,12 @@
                             let data = result.data
                             if (data.length) {
                                 for (let course of data) {
+                                    console.log(course)
                                     row = `
                                     <tr>
                                         <td>${course.name}</td>
                                         <td>${course.description}</td>
+                                        <td>${course.prerequisite}</td>
                                         <td> 
                                             <a href="#" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
                                             <a href="./group.html?id=${course.id}&courseName=${course.name}" class="icon" title="View Groups"><i data-feather="eye"></i></a>
@@ -212,6 +218,7 @@
                             }
                         }
                         $('#loading').hide();
+                        feather.replace();
                     } catch(err) {
                         alert(err)
                         console.log(err)

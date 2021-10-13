@@ -7,6 +7,7 @@ from course import Course
 from user import User
 from group import Group
 from datetime import datetime
+from sqlalchemy import and_
 
 
 class Enrolment(db.Model):
@@ -82,45 +83,59 @@ def addEnrolment():
     data = request.get_json()
     try:
         existing_enrolment = Enrolment.query.filter_by(user_id = data['user_id'], group_id = data['group_id']).all()
+        user = User.query.filter_by(id=data['user_id']).first()
         if existing_enrolment: 
-            user = User.query.filter_by(id=data['user_id']).first()
             return jsonify(
                 {
-                    "code":404,
-                    "data": {
-                        "id": id
-                    },
+                    "code":406,
+                    "data": data,
                     "message": f"{user.name} has already been enrolled in this course"
                 }
-            )
+            ), 406
         
         group = Group.query.filter_by(id=data['group_id']).first()
         current_group_size = Enrolment.query.filter_by(group_id = data['group_id']).count()
         if current_group_size == group.size:
             return jsonify(
                 {
-                    "code":404,
-                    "data": {
-                        "id": id
-                    },
+                    "code":406,
+                    "data": data,
                     "message": "Group enrollment is already full."
                 }
-            )
+            ),406
         
+        course_info = Course.query.filter_by(id=group.course_id).first()
+        if course_info.prerequisite:
+            completed_course = [ course.id for enrolment, group, course in db.session.query(Enrolment, Group, Course).filter_by(user_id=data['user_id'], completed=True)\
+                                                                                    .outerjoin(Group, Group.id == Enrolment.group_id)\
+                                                                                    .outerjoin(Course, Group.course_id == Course.id).all()]
+            incomplete = []
+            for each in course_info.prerequisite:
+                if each not in completed_course:
+                    prerequisite_course_info = Course.query.filter_by(id=each).first()
+                    incomplete.append(prerequisite_course_info.name)
+            if len(incomplete):
+                return jsonify(
+                    {
+                        "code":406,
+                        "data": data,
+                        "message": f"{user.name} has yet to complete the following prerequisite course(s): {', '.join(incomplete)}"
+                    }
+                ),406
+
         enrol = Enrolment(
             group_id = data['group_id'],
             user_id = data['user_id'],
             enrolled_dt = datetime.now(),
             completed = False
         )
-        # db.session.add(enrol)
-        # db.session.commit()
+        db.session.add(enrol)
+        db.session.commit()
 
         return jsonify(
             {
                 "code": 200,
-                "message": "Successfully enrolled learner",
-                "data": enrol.json()
+                "message": "Successfully enrolled learner"
             }
         ), 200
     except Exception as e:
@@ -129,7 +144,7 @@ def addEnrolment():
                 "code":500,
                 "message": f"An error occurred while enrolling learner: {e}"
             }
-        )
+        ), 500
 
 # Delete enrolment
 @app.route("/enrolment/<int:id>", methods=['DELETE'])
