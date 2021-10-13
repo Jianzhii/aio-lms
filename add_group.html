@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Add Section</title>
 
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -39,9 +38,10 @@
                 padding-left: 10px ;
             }
 
-            h4 {
+            h3 {
                 text-indent: 34px ;
                 font-size: 13px ;
+                font-weight: bold;
             }
 
             .sidenav a {
@@ -63,7 +63,7 @@
                 width: 200px ;
             }
 
-            #addsection {
+            #addgroup {
                 color: #FF922D ;
                 font-weight: bold ;
             }
@@ -95,33 +95,39 @@
             }
 
         </style>
+
+        <!-- start of page icon -->
+        <title>Add Group</title>
+        <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
+        <!-- end of page icon -->
+
     </head>
 
     <body>
         <div class="container" id="sidebar">
             <div class="sidenav">
                 <div>
-                    <img id="logo" src="static/imgs/All-In-One 1.png">
+                    <img id="logo" src="static/imgs/All-In-One 1.png" width="270px" height="125px">
                 </div>
-                <h4>Courses</h4>
+                <h3>Courses</h3>
                 <ul>
                     <li>
-                        <a href="course.html">View All Courses</a>
+                        <a id="viewcourse" href="admin_home.html">View All Courses</a>
                     </li>
                     <li>
                         <a id="createcourse" href="createcourse.html"> Create New Course</a>
                     </li>
                     <li>
-                        <a id="addsection" href="addsection.html"> Create New Section</a>
+                        <a id="addgroup" href="add_group.html"> Create New Group </a>
                     </li>
                 </ul>
-                <h4>Learners</h4>
+                <h3>Learners</h3>
                 <ul>
                     <li>
                         <a href="#">View All Learners</a>
                     </li>
                 </ul>
-                <h4>Trainers</h4>
+                <h3>Trainers</h3>
                 <ul>
                     <li>
                         <a href="#">View All Trainers</a>
@@ -133,7 +139,7 @@
         <div class="container" id="content">
             <div class="row">
                 <div class="col">
-                    <h2>Add Section</h2>
+                    <h2>Add Group</h2>
                 </div>
                 <div class="col" style="padding-top: 65px ;">
                     <input type="button" value="Log Out" id="logout">
@@ -152,10 +158,10 @@
                                 <input type="text" id="cname" name="coursename"> <!-- take from previous course page -->
                             </div>
                             <div class="col">
-                                <label for="ssize">Section Size</label>
+                                <label for="gsize">Group Size</label>
                             </div>
                             <div class="col">
-                                <input type="number" id="ssize" name="section size" min=1>
+                                <input type="number" id="ssize" name="group size" min=1>
                             </div>
                         </div>
                         <div class="row" style="padding-top: 43px">
@@ -171,20 +177,16 @@
                             <div class="col">
                                 <input type="date" id="enddate" name="enddate">
                             </div>
+
                         </div>
                         <div class="row" style="padding-top: 43px">
-                            <div class="col">
-                                <label for="enrollmentstart">Enrollment Start Date</label>
-                            </div>
-                            <div class="col">
-                                <input type="date" id="enrollmentstart" name="enrollmentstart">
-                            </div>
                             <div class="col">
                                 <label for="enrollmentend">Enrollment End Date</label>
                             </div>
                             <div class="col">
                                 <input type="date" id="enrollmentend" name="enrollmentend">
                             </div>
+                            <div class="col"></div><div class="col"></div>
                         </div>
                         <div class="row" style="padding-top: 43px">
                             <div class="col">
@@ -199,7 +201,7 @@
                                 <label for="learners">Learners</label>
                             </div>
                             <div class="col">
-                                <select id="learners" name="learners" size="4" multiple> <!-- get value of size attribute from class size -->
+                                <select id="learners" name="learners" size=4 multiple> <!-- get value of size attribute from class size -->
                                     <option value="" disabled selected>Please select learner</option> <!-- retrieve list of learners --><!-- need to hold down ctrl button to multi-select??? wtf man -->
                                 </select>
                             </div>
@@ -215,7 +217,7 @@
 
     </body>
 
-    <script> 
+    <script>
 
         const api_endpoint = "http://localhost:8000/"
 
