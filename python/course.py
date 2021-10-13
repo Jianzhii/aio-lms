@@ -184,4 +184,3 @@ def deleteCourse(id):
             "message": "Course successfully deleted"
         }
     )
-    
