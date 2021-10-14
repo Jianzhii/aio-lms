@@ -221,7 +221,7 @@
 
     <script>
 
-        const api_endpoint = "http://localhost:8000/"
+        const api_endpoint = "http://52.55.242.44:8000/"
 
         // Populate Course Dropdown
 
@@ -289,36 +289,35 @@
 
         // Populate Learner Dropdown
         $(async () => {
+            // API Endpoint
+            var learner_api = api_endpoint + "all_learner"
 
-        // API Endpoint
-        var learner_api = api_endpoint + "all_learner"
-
-        try {
-            const response =
-                await fetch(
-                    learner_api, {
-                    method: 'GET'
-                }
-            );
-
-            const result = await response.json();
-            if (response.status === 200) {
-                let data = result.data
-                console.log(data)
-                if (data.length) {
-                    for (let learner of data) {
-                        option = `<option value=${learner.id}> ${learner.name}</option>`
-                        $('#learners').append(option)
+            try {
+                const response =
+                    await fetch(
+                        learner_api, {
+                        method: 'GET'
                     }
-                } else {
-                    $('#learner').append(`<option> No learners available </option`)
+                );
+
+                const result = await response.json();
+                if (response.status === 200) {
+                    let data = result.data
+                    console.log(data)
+                    if (data.length) {
+                        for (let learner of data) {
+                            option = `<option value=${learner.id}> ${learner.name}</option>`
+                            $('#learner').append(option)
+                        }
+                    } else {
+                        $('#learner').append(`<option> No learners available </option`)
+                    }
                 }
+            } catch(err) {
+                alert(err)
+                console.log(err)
             }
-        } catch(err) {
-            alert(err)
-            console.log(err)
-        }
-    });
+        });
     </script>
 
 
