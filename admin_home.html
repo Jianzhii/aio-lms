@@ -4,16 +4,222 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>   
-    <link rel="stylesheet" href="static/style.css"> 
-    <title>Welcome Admin!</title>
-</head>
-<body>
-    <div class="container">
 
-    </div>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <!-- Bootstrap/ CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link rel="stylesheet" href="static/course.css">
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <!-- Start of Page Icon -->
+    <title> All-in-One LMS </title>
+    <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
+    <!-- End of Page Icon -->
+
+</head>
+
+<body>
+    <div class="row">
+        <div class="col-3 v1">
+
+            <!-- Start of Page Icon  -->
+            <img class="logo" src="static/imgs/All-In-One 1.png" width="270px" height="125px"/>
+            <!-- End of Page Icon  -->
+
+            <!-- Start of Content Page  -->
+            <ul class="nav flex-column">
+            <!-- Course Section -->
+                <li class="nav-item">
+                    <h5 class='nav-header'>Courses</h5>
+                    <ul class="nav flex-column">
+                        <li class="nav-item"> 
+                            <a class="nav-link selected" href="course.html"> View All Courses </a>
+                        </li>
+                        <li class="nav-item"> 
+                            <a class="nav-link" href="createcourse.html"> Create New Course </a>
+                        </li>
+                        <li class="nav-item"> 
+                            <a class="nav-link" href="add_group.html"> Create New Group </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Learners Section -->
+                <li class="nav-item">
+                    <h5 class='nav-header'>Learners</h5>
+                    <ul class="nav flex-column">
+                        <li class="nav-item"> 
+                            <a class="nav-link" href="#"> View All Learners </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Trainers -->
+                <li class="nav-item">
+                    <h5 class='nav-header'>Trainers</h5>
+                    <ul class="nav flex-column">
+                        <li class="nav-item"> 
+                            <a class="nav-link" href="#"> View All Trainers </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <!-- End of Content Page  -->
+        </div>
+
+        <div class="col-9">
+            <!-- Start of NavBar -->
+            <nav class="nav" id="topnavbar">
+                <a class="nav-link active" aria-current="page" href="course.html">Courses</a>
+                <a class="nav-link" href="#">Chat</a>
+                <a href="logout.html" class="btn">Log Out</a>
+            </nav>
+            <!-- End of NavBar -->
+            
+            <div class="container">
+                <h4 class='mt-4' id="title"> 
+                    <b>All Courses</b> 
+                </h4>
+                <br> 
     
+                <!-- Search bar -->
+                <div class='col-3'> 
+                    <input id="search" class="form-control" type="text" placeholder="Search Course" aria-label="Search">
+                </div>
+                <br>
+    
+                <!-- Table -->
+                <table class="table">
+                    <thead class="tableHead">
+                        <th scope="col"> Course Name </th>
+                        <th scope="col"> Course Description </th>
+                        <th scope="col"> Actions </th>
+                    </thead>
+                    <tbody id='courseBody'>
+                    </tbody>
+                </table>
+                <div id="loading">
+                    <img id="loading-image" src="static/imgs/loading.gif" alt="Loading..." />
+                </div>       
+                <!-- End of Table -->
+            </div>
+    
+        </div>
+    </div>
+
+    <script>
+        // const api_endpoint = "http://localhost:8000/" 
+        const api_endpoint = "http://52.55.242.44:8000/" 
+
+        // Load Course table contents
+        $(async () => {
+
+            // API Endpoint
+            var user_api = api_endpoint + "all_course" // localhost
+
+            try {
+                const response =
+                    await fetch(
+                        user_api, {
+                        method: 'GET'
+                    }
+                );
+
+                const result = await response.json();
+                if (response.status === 200) {
+                    let data = result.data
+                    for (let course of data) {
+                        row = `
+                        <tr>
+                            <td>${course.name}</td>
+                            <td>${course.description}</td>
+                            <td> 
+                                <a href="#" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+                                <a href="./group.html?id=${course.id}&courseName=${course.name}" class="icon" title="View Groups"><i data-feather="eye"></i></a>
+                            </td>
+                        </tr>
+                        `
+                        $('#courseBody').append(row)
+                    }
+                }
+            } catch(err) {
+                alert(err)
+                console.log(err)
+            }
+
+            $('#loading').hide();
+            feather.replace()
+        })
+
+        // function for search bar
+        var search = document.getElementById("search");
+
+        search.addEventListener("keyup", function (event) {
+            // Number 13 is the "Enter" key on the keyboard
+            if (event.keyCode === 13) {
+                // Cancel the default action, if needed
+                event.preventDefault();
+                $('#courseBody').empty();
+                $('#loading').show();
+                var input = document.getElementById("search").value;
+
+                $(async () => {
+                    // API Endpoint
+                    var user_api = api_endpoint + "search_course" // localhost
+
+                    try {
+                        const response =
+                            await fetch(
+                                user_api, {
+                                method: 'POST',
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({"search": input})
+                            }
+                        );
+
+                        const result = await response.json();
+                        if (response.status === 200) {
+                            let data = result.data
+                            if (data.length) {
+                                for (let course of data) {
+                                    row = `
+                                    <tr>
+                                        <td>${course.name}</td>
+                                        <td>${course.description}</td>
+                                        <td> 
+                                            <a href="#" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+                                            <a href="./group.html?id=${course.id}&courseName=${course.name}" class="icon" title="View Groups"><i data-feather="eye"></i></a>
+                                        </td>   
+                                    </tr>
+                                    `
+                                    $('#courseBody').append(row)
+                                }
+                            } else {
+                                $('#courseBody').append(`
+                                    <tr>
+                                        <td> No Results </td>
+                                    </tr>
+                                    `)
+                            }
+                        }
+                        $('#loading').hide();
+                    } catch(err) {
+                        alert(err)
+                        console.log(err)
+                        $('#loading').hide();
+                    }
+                });
+            }
+        });
+
+    </script>
 </body>
-</html>

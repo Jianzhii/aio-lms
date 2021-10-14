@@ -75,3 +75,21 @@ def getAllTrainers():
             "data": data
         }
     ), 200
+
+@app.route("/all_learner", methods=['GET'])
+def getAllLearners():
+    users = db.session.query(User, UserRole).filter(User.user_role_id == 3)\
+            .join(UserRole, UserRole.id == User.user_role_id).all()
+    # join query above returns query from each table as separate
+    # so need to loop through to put them together and return
+    data = []
+    for user, user_role in users:
+        user_info = user.json()
+        user_info["role_name"] = user_role.role_name
+        data.append(user_info)
+    return jsonify(
+        {
+            "code": 200,
+            "data": data
+        }
+    ), 200

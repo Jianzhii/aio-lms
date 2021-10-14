@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Create Course</title>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+        <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+
+        <style>
+
+            body {
+                font-family: 'Montserrat' ;
+                font-size: 12px ;
+            }
+
+            .sidenav {
+                height: 100% ;
+                width: 20% ;
+                position: fixed ;
+                top: 0 ;
+                left: 0 ;
+                z-index: 1 ;
+                overflow-x: hidden ;
+                border-right: solid lightgrey 2px ; 
+            }
+
+            h2 {
+                padding-top: 58px ;
+                padding-left: 10px ;
+            }
+
+            h4 {
+                text-indent: 34px ;
+                font-size: 13px ;
+            }
+
+            .sidenav a {
+                color: black ;
+                padding: 16px ;
+                display: block ;
+            }
+
+            a {
+                text-decoration: none ;
+            }
+
+            ul {
+                list-style-type: none ;
+            }
+
+            #logo {
+                height: 150px ;
+                width: 200px ;
+            }
+
+            #createcourse {
+                color: #FF922D ;
+                font-weight: bold ;
+            }
+
+            #sidebar {
+                width: 30% ;
+            }
+
+            #content {
+                width: 80% ;
+                margin-left: 20% ;
+            }
+
+            #form {
+                padding-top: 43px ;
+            }
+
+            input[type=text] {
+                width: 257px ;
+            }
+
+            input[type=button] {
+                background: #FF922D ;
+                color: white ; 
+                border: none ;
+                border-radius: 3px ; 
+                padding: 5px ;
+                width: 100px ;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <div class="container" id="sidebar">
+            <div class="sidenav">
+                <div>
+                    <img id="logo" src="static/imgs/All-In-One 1.png">
+                </div>
+                <h4>Courses</h4>
+                <ul>
+    
+                    <li>
+                        <a href="admin_home.html">View All Courses</a>
+                    </li>
+                    <li>
+                        <a id="createcourse" href="createcourse.html"> Create New Course</a>
+                    </li>
+                    <li>
+                        <a id="addgroup" href="add_group.html"> Create New Group</a>
+                    </li>
+                </ul>
+                <h4>Learners</h4>
+                <ul>
+                    <li>
+                        <a href="#">View All Learners</a>
+                    </li>
+                </ul>
+                <h4>Trainers</h4>
+                <ul>
+                    <li>
+                        <a href="#">View All Trainers</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    
+        <div class="container" id="content">
+            <div class="row">
+                <div class="col">
+                    <h2>Create Course</h2>
+                </div>
+                <div class="col" style="padding-top: 65px ;">
+                    <input type="button" value="Log Out" id="logout">
+                </div>
+                 
+            </div>
+                
+            <div class="container" id="form">
+                <form action="">
+                    <div class="row">
+                        <div class="col">
+                            <label for="cname">Course Name</label>
+                        </div>
+                        <div class="col">
+                            <input type="text" id="cname" name="coursename">
+                        </div>
+                    </div>
+                    <div class="row" style="padding-top: 43px">
+                        <div class="col-6">
+                            <label for="cdesc">Course Description</label>
+                        </div>
+                        <div class="col-6">
+                            <textarea id="cdesc" name="coursedescription" cols="35" rows="4"></textarea>
+                        </div>
+                    </div>
+                    <div class="row" style="padding-top: 43px ; padding-left: 15px" >
+                        <input type="button" value="Submit" onclick="window.location=''"> <!-- direct back to individual course page -->
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        </div>
+        
+
+    </body>
+</html>
