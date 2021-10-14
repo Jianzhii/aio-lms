@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Create Course</title>
 
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Fonts  -->
         <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
         <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
         <style>
 
@@ -32,9 +38,10 @@
                 padding-left: 10px ;
             }
 
-            h4 {
+            h3 {
                 text-indent: 34px ;
                 font-size: 13px ;
+                font-weight: bold;
             }
 
             .sidenav a {
@@ -56,7 +63,7 @@
                 width: 200px ;
             }
 
-            #createcourse {
+            #addgroup {
                 color: #FF922D ;
                 font-weight: bold ;
             }
@@ -88,34 +95,40 @@
             }
 
         </style>
+
+        <!-- start of page icon -->
+        <title>All Learners</title>
+        <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
+        <!-- end of page icon -->
+
     </head>
 
     <body>
+        <!-- start of sidebar -->
         <div class="container" id="sidebar">
             <div class="sidenav">
                 <div>
-                    <img id="logo" src="static/imgs/All-In-One 1.png">
+                    <img id="logo" src="static/imgs/All-In-One 1.png" width="270px" height="125px">
                 </div>
-                <h4>Courses</h4>
+                <h3>Courses</h3>
                 <ul>
-    
                     <li>
-                        <a href="admin_home.html">View All Courses</a>
+                        <a id="viewcourse" href="admin_home.html">View All Courses</a>
                     </li>
                     <li>
                         <a id="createcourse" href="createcourse.html"> Create New Course</a>
                     </li>
                     <li>
-                        <a id="addgroup" href="add_group.html"> Create New Group</a>
+                        <a id="addgroup" href="add_group.html"> Create New Group </a>
                     </li>
                 </ul>
-                <h4>Learners</h4>
+                <h3>Learners</h3>
                 <ul>
                     <li>
-                        <a href="view_all_learners.html">View All Learners</a>
+                        <a href="#">View All Learners</a>
                     </li>
                 </ul>
-                <h4>Trainers</h4>
+                <h3>Trainers</h3>
                 <ul>
                     <li>
                         <a href="view_all_trainers.html">View All Trainers</a>
@@ -123,45 +136,58 @@
                 </ul>
             </div>
         </div>
+        <!-- end of sidebar -->
     
         <div class="container" id="content">
             <div class="row">
                 <div class="col">
-                    <h2>Create Course</h2>
+                    <h2>All Learners</h2>
                 </div>
                 <div class="col-2" style="padding-top: 65px ;">
                     <input type="button" value="Log Out" id="logout">
                 </div>
                  
             </div>
-                
-            <div class="container" id="form">
-                <form action="">
-                    <div class="row">
-                        <div class="col">
-                            <label for="cname">Course Name</label>
-                        </div>
-                        <div class="col">
-                            <input type="text" id="cname" name="coursename">
-                        </div>
-                    </div>
-                    <div class="row" style="padding-top: 43px">
-                        <div class="col-6">
-                            <label for="cdesc">Course Description</label>
-                        </div>
-                        <div class="col-6">
-                            <textarea id="cdesc" name="coursedescription" cols="35" rows="4"></textarea>
-                        </div>
-                    </div>
-                    <div class="row" style="padding-top: 43px ; padding-left: 15px" >
-                        <input type="button" value="Submit" onclick="window.location=''"> <!-- direct back to individual course page -->
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        </div>
         
 
     </body>
+
+    <script>
+
+        const api_endpoint = "http://52.55.242.44:8000/"
+
+        // Populate Learner Dropdown
+        $(async () => {
+            // API Endpoint
+            var learner_api = api_endpoint + "all_learner"
+
+            try {
+                const response =
+                    await fetch(
+                        learner_api, {
+                        method: 'GET'
+                    }
+                );
+
+                const result = await response.json();
+                if (response.status === 200) {
+                    let data = result.data
+                    console.log(data)
+                    if (data.length) {
+                        for (let learner of data) {
+                            option = `<option value=${learner.id}> ${learner.name}</option>`
+                            $('#learner').append(option)
+                        }
+                    } else {
+                        $('#learner').append(`<option> No learners available </option`)
+                    }
+                }
+            } catch(err) {
+                alert(err)
+                console.log(err)
+            }
+        });
+    </script>
+
+
 </html>
