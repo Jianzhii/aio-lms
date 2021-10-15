@@ -96,7 +96,7 @@
                         </h4>
                     </div>
                     <div class="col-3 d-flex justify-content-end">
-                        <button type="button" class="btn addBtn">Add Group</button>
+                        <button type="button" onclick="window.location='./add_group.html'">Add Group</button>
                     </div>
                 </div>
 
@@ -108,6 +108,8 @@
                         <thead class="tableHead">
                             <th scope="col"> Start DateTime </th>
                             <th scope="col"> End DateTime </th>
+                            <th scope="col"> Enrolment Start DateTime </th>
+                            <th scope="col"> Enrolment End DateTime </th>
                             <th scope="col"> Size </th>
                             <th scope="col"> Trainer </th>
                             <th scope="col"> Actions </th>
@@ -130,8 +132,9 @@
 
         feather.replace()
 
-        const api_endpoint = "http://localhost:8000/" 
-
+        // const api_endpoint = "http://localhost:8000/" 
+        const api_endpoint = "http://52.55.242.44:8000/" 
+        
         // Load Course table contents
         $(async () => {
             let query = window.location.search.substring(1);
@@ -162,6 +165,8 @@
                             <tr>
                                 <td>${group.start_date}</td>
                                 <td>${group.end_date}</td>
+                                <td>${group.enrol_start_date}</td>
+                                <td>${group.enrol_end_date}</td>
                                 <td>${group.size}</td>
                                 <td>${group.trainer_name}</td>
                                 <td> 
@@ -187,6 +192,7 @@
 
             $('#loading').hide();
         });
+
 
     </script>
 </body>

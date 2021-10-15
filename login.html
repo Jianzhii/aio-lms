@@ -48,8 +48,8 @@
 </body>
 <script>
     // API Endpoint
-    // var login_api = "http://52.55.242.44:8000/"  + "login" // on server
-    var login_api = "http://localhost:8000/"  + "login" // localhost  
+    const login_api = "http://52.55.242.44:8000/" + "login" // server
+    // var login_api = "http://localhost:8000/"  + "login" // localhost  
 
  async function validate_user(){
     try{
@@ -71,7 +71,7 @@
       if(userObj.status == 200){
         role_name = userObj.data.role_name.toLowerCase();
         if(role_name == "admin"){
-          window.location.href = 'admin_home.html';
+          window.location.href = 'course.html';
         }else if(role_name == "trainer"){
           window.location.href = 'trainer_home.html';
         }else{

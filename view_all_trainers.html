@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Fonts  -->
+        <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+        <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+        <style>
+
+            body {
+                font-family: 'Montserrat' ;
+                font-size: 12px ;
+            }
+
+            .sidenav {
+                height: 100% ;
+                width: 20% ;
+                position: fixed ;
+                top: 0 ;
+                left: 0 ;
+                z-index: 1 ;
+                overflow-x: hidden ;
+                border-right: solid lightgrey 2px ; 
+            }
+
+            h2 {
+                padding-top: 58px ;
+                padding-left: 10px ;
+            }
+
+            h3 {
+                text-indent: 34px ;
+                font-size: 13px ;
+                font-weight: bold;
+            }
+
+            .sidenav a {
+                color: black ;
+                padding: 16px ;
+                display: block ;
+            }
+
+            a {
+                text-decoration: none ;
+            }
+
+            ul {
+                list-style-type: none ;
+            }
+
+            #logo {
+                height: 150px ;
+                width: 200px ;
+            }
+
+            #addgroup {
+                color: #FF922D ;
+                font-weight: bold ;
+            }
+
+            #sidebar {
+                width: 30% ;
+            }
+
+            #content {
+                width: 80% ;
+                margin-left: 20% ;
+            }
+
+            #form {
+                padding-top: 43px ;
+            }
+
+            input[type=text] {
+                width: 257px ;
+            }
+
+            input[type=button] {
+                background: #FF922D ;
+                color: white ; 
+                border: none ;
+                border-radius: 3px ; 
+                padding: 5px ;
+                width: 100px ;
+            }
+
+        </style>
+
+        <!-- start of page icon -->
+        <title>All Trainers</title>
+        <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
+        <!-- end of page icon -->
+
+    </head>
+
+    <body>
+        <!-- start of sidebar -->
+        <div class="container" id="sidebar">
+            <div class="sidenav">
+                <div>
+                    <img id="logo" src="static/imgs/All-In-One 1.png" width="270px" height="125px">
+                </div>
+                <h3>Courses</h3>
+                <ul>
+                    <li>
+                        <a id="viewcourse" href="admin_home.html">View All Courses</a>
+                    </li>
+                    <li>
+                        <a id="createcourse" href="createcourse.html"> Create New Course</a>
+                    </li>
+                    <li>
+                        <a id="addgroup" href="add_group.html"> Create New Group </a>
+                    </li>
+                </ul>
+                <h3>Learners</h3>
+                <ul>
+                    <li>
+                        <a href="view_all_learners.html">View All Learners</a>
+                    </li>
+                </ul>
+                <h3>Trainers</h3>
+                <ul>
+                    <li>
+                        <a href="view_all_trainers.html">View All Trainers</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- end of sidebar -->
+    
+        <div class="container" id="content">
+            <div class="row">
+                <div class="col">
+                    <h2>All Trainers</h2>
+                </div>
+                <div class="col-2" style="padding-top: 65px ;">
+                    <input type="button" value="Log Out" id="logout">
+                </div>
+                 
+            </div>
+        
+
+    </body>
+
+    <script>
+
+        const api_endpoint = "http://52.55.242.44:8000/"
+
+        // Learner API
+        $(async () => {
+            // API Endpoint
+            var learner_api = api_endpoint + "all_trainer"
+
+            try {
+                const response =
+                    await fetch(
+                        learner_api, {
+                        method: 'GET'
+                    }
+                );
+
+                const result = await response.json();
+                if (response.status === 200) {
+                    let data = result.data
+                    console.log(data)
+                    if (data.length) {
+                        for (let trainer of data) {
+                            
+                        }
+                    } else {
+                        $('#').append()
+                    }
+                }
+            } catch(err) {
+                alert(err)
+                console.log(err)
+            }
+        });
+    </script>
+
+
+</html>

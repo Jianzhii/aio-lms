@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
 
-        <title>View All Courses</title>
+        <title class="coursename"></title>
         <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
 
         <meta charset="utf-8">
@@ -154,31 +154,29 @@
         <div class="container" id="content">
             <div class="row" id="header">
                 <div class="col">
-                    <h2>All Courses</h2>
+                    <h2 class="coursename">Groups Under </h2>
                 </div>
                 <div class="col-2" style="padding-top: 65px ;">
                     <input type="button" value="Log Out" id="logout">
                 </div>
             </div>
-            
-            <!-- start of search bar -->
-            <div class="row" id="searchbar">
-                <input id="search" class="form-control" type="text" placeholder="Search Course" aria-label="Search">
-            </div>
                  
-            <!-- start of table showing list of courses -->
+            <!-- start of table showing list of groups -->
             <div class="row" id="table">
                 <table class="table">
                     <tbody id="tableheader"> 
                       <tr>
                           <th scope="col">S/N</th>
-                          <th scope="col">Course Name</th>
-                          <th scope="col">Course Description</th>
+                          <th scope="col">Group Size</th>
+                          <th scope="col">Trainer</th>
+                          <th scope="col">Enrollment End Date/Time</th>
+                          <th scope="col">Group Start Date/Time</th>
+                          <th scope="col">Group End Date/Time</th>
                           <th scope="col">Actions</th>  
                       </tr>
                     </tbody>
                     <tbody id="tablecontent">
-                        <!-- populate rows of courses -->
+                        <!-- populate rows of groups -->
                     </tbody>
                 </table>
             </div>
@@ -186,118 +184,80 @@
 
         <script>
 
-            /* const api_endpoint = "http://52.55.242.44/" */
-            const api_endpoint = "http://localhost:8000/"
-
-            // retrieve all courses
-            $(async () => {
-
-            // API Endpoint
-            var user_api = api_endpoint + "all_course"
-
-            try {
-                const response =
-                    await fetch(
-                        user_api, {
-                        method: 'GET'
-                    }
-                );
-
-                const result = await response.json();
-                if (response.status === 200) {
-                    let data = result.data
-                    for (let i = 0; i < data.length; i++) {
-                        row = `
-                        <tr>
-                            <td>${i+1}</td>
-                            <td>${data[i].name}</td>
-                            <td>${data[i].description}</td>
-                            <td>
-                                <!-- view -->
-                                <a href="./coursegroup.html?id=${data[i].id}&courseName=${data[i].name}" class="icon" title="View Groups"><i data-feather="eye"></i></a>
-
-                                <!-- edit -->
-                                <a href="#" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
-
-
-                                <!-- delete/retire -->
-                                <a href="#" class="icon" title="Retire Course"><i data-feather="trash-2"></i></a>
-                            </td>
-                        </tr>`
-
-                        $('#tablecontent').append(row)                    
-                    } /* what if there are no courses */
-                }
-            } catch(err) {
-                alert(err)
-                console.log(err)
-            }
-
             feather.replace()
-        });
-
-            // function for search bar
-            var search = document.getElementById("search");
-
-            search.addEventListener("keyup", function (event) {
-                // Number 13 is the "Enter" key on the keyboard
-                if (event.keyCode === 13) {
-                    // Cancel the default action, if needed
-                    event.preventDefault();
-                    $('#courseBody').empty();
-                    $('#loading').show();
-                    var input = document.getElementById("search").value;
-
-                    $(async () => {
-                        // API Endpoint
-                        var user_api = api_endpoint + "search_course" 
-
-                        try {
-                            const response =
-                                await fetch(
-                                    user_api, {
-                                    method: 'POST',
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({"search": input})
-                                }
-                            );
-
-                            const result = await response.json();
-                            if (response.status === 200) {
-                                let data = result.data
-                                if (data.length) {
-                                    for (let i = 0; i < data.length; i++) {
-                                        row = `
-                                        <tr>
-                                            <td>${i+1}</td>
-                                            <td>${data[i].name}</td>
-                                            <td>${data[i].description}</td>
-                                            <td> 
-                                                <a href="#" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
-                                                <a href="./coursegroup.html?id=${data[i].id}&courseName=${data[i].name}" class="icon" title="View Groups"><i data-feather="eye"></i></a>
-                                            </td>
-                                        </tr>`
-
-                                        $('#tablecontent').append(row)                    
-                                    }
-                                } else {
-                                    $('#tablecontent').append(`
-                                        <tr>
-                                            <td> No Results </td>
-                                        </tr>
-                                        `)
-                                }
-                            }
-                            $('#loading').hide();
-                        } catch(err) {
-                            alert(err)
-                            console.log(err)
-                            $('#loading').hide();
-                        }
-                    });
+    
+            const api_endpoint = "http://localhost:8000/" 
+    
+            // Load Course table contents
+            $(async () => {
+                let query = window.location.search.substring(1);
+                params = query.split('&');
+                data = {};
+                for (var i = 0, l = params.length; i < l; i++) {
+                    tmp = params[i].split('=');
+                    data[tmp[0]] = tmp[1];
                 }
-            });
+                $('.coursename').append(data['courseName'].replace("%20", " "))
+                // API Endpoint
+                var user_api = api_endpoint + "all_group/" + data.id // localhost
+    
+                try {
+                    const response =
+                        await fetch(
+                            user_api, {
+                            method: 'GET'
+                        }
+                    );
+    
+                    const result = await response.json();
+                    if (response.status === 200) {
+                        let data = result.data
+                        console.log(data)
+                        if (data.length) {
+                            for (let i = 0; i < data.length; i++) {
+                                row = `
+                                <tr>
+                                    <td>${i+1}</td>
+                                    <td>${data[i].size}</td>
+                                    <td>${data[i].trainer_name}</td>
+                                    <td>Enrollment End Date</td>
+                                    <td>${data[i].start_date}</td>
+                                    <td>${data[i].end_date}</td>
+                                    <td>
+                                        <!-- view -->
+                                        <a href="./coursegroup.html?id=${data[i].id}&courseName=${data[i].name}" class="icon" title="View Details"><i data-feather="eye"></i></a>
 
-        </script>   
+                                        <!-- edit -->
+                                        <a href="#" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+
+
+                                        <!-- delete/retire -->
+                                        <a href="#" class="icon" title="Retire Course"><i data-feather="trash-2"></i></a>
+                                    </td>
+                                </tr>`
+
+                                $('#tablecontent').append(row)
+                            }
+
+                            feather.replace()
+
+                        } else {
+                            $('#tablecontent').append(`
+                                <tr>
+                                    <td> No Results </td>
+                                </tr>
+                            `)
+                        }
+                        }
+                } catch(err) {
+                    alert(err)
+                    console.log(err)
+                }
+    
+                $('#loading').hide();
+            });
+    
+    
+        </script>
     </body>
 </html>

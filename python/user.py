@@ -48,8 +48,6 @@ def getAllUser():
 def getAllUserWithRole():
     users = db.session.query(User, UserRole)\
             .join(UserRole, UserRole.id == User.user_role_id).all()
-    # join query above returns query from each table as separate
-    # so need to loop through to put them together and return
     data = []
     for user, user_role in users:
         user_info = user.json()
@@ -62,10 +60,25 @@ def getAllUserWithRole():
         }
     ), 200
 
-    
 @app.route("/all_trainer", methods=['GET'])
 def getAllTrainers():
     users = db.session.query(User, UserRole).filter(User.user_role_id == 2)\
+            .join(UserRole, UserRole.id == User.user_role_id).all()
+    data = []
+    for user, user_role in users:
+        user_info = user.json()
+        user_info["role_name"] = user_role.role_name
+        data.append(user_info)
+    return jsonify(
+        {
+            "code": 200,
+            "data": data
+        }
+    ), 200
+
+@app.route("/all_learner", methods=['GET'])
+def getAllLearners():
+    users = db.session.query(User, UserRole).filter(User.user_role_id == 3)\
             .join(UserRole, UserRole.id == User.user_role_id).all()
     # join query above returns query from each table as separate
     # so need to loop through to put them together and return

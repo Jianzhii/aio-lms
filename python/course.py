@@ -1,3 +1,4 @@
+from types import prepare_class
 from app import app, db
 from flask import jsonify, request
 from user import User
@@ -8,22 +9,49 @@ class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
+    prerequisite = db.Column(db.JSON, nullable=True)
 
     def json(self):
         return {
             'id': self.id,
             'name': self.name,
-            'description': self.description
+            'description': self.description,
+            'prerequisite': self.prerequisite
+        }
+class Badge(db.Model):
+
+    __tablename__ = 'badges'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    course_id = db.Column(db.Integer, nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+
+    def json(self):
+        return {
+            'id': self.id,
+            'course_id': self.course_id,
+            'name': self.name
         }
 
 # Get all Courses
 @app.route("/all_course", methods=['GET'])
 def getAllCourse():
     courses = Course.query.all()
+    data = []
+    for course in courses: 
+        course = course.json()
+        if course['prerequisite']:
+            prequisites = []
+            for prerequisite in course['prerequisite']:
+                prerequisite_course = Course.query.filter_by(id=prerequisite).first()
+                prequisites.append(prerequisite_course.name)
+            course['prerequisite'] = ",<br>".join(prequisites)
+        else:
+            course['prerequisite'] = "-"
+        data.append(course)
     return jsonify(
         {
             "code": 200,
-            "data": [course.json() for course in courses]
+            "data": data
         }
     ), 200
 
@@ -35,11 +63,23 @@ def searchCourse():
                     Course.name.like(f"%{data['search']}%"),
                     Course.name.like(f"%{data['search']}%")
                 ).all()
+        data = []
+        for course in courses: 
+            course = course.json()
+            if course['prerequisite']:
+                prequisites = []
+                for prerequisite in course['prerequisite']:
+                    prerequisite_course = Course.query.filter_by(id=prerequisite).first()
+                    prequisites.append(prerequisite_course.name)
+                course['prerequisite'] = ",<br>".join(prequisites)
+            else:
+                course['prerequisite'] = "-"
+            data.append(course)
         if courses: 
             return jsonify(
                 {
                     "code": 200,
-                    "data": [course.json() for course in courses]
+                    "data": data
                 }
             ), 200
         else:
@@ -62,10 +102,19 @@ def searchCourse():
 def getoneCourse(id):
     course = Course.query.filter_by(id=id).first()
     if course:
+        course = course.json()
+        if course['prerequisite']:
+            prequisites = []
+            for prerequisite in course['prerequisite']:
+                prerequisite_course = Course.query.filter_by(id=prerequisite).first()
+                prequisites.append(prerequisite_course.name)
+            course['prerequisite'] = ",<br>".join(prequisites)
+        else:
+            course['prerequisite'] = "-"
         return jsonify(
             {
                 "code": 200,
-                "data": course.json()
+                "data": course
             }
         ), 200
     else:
@@ -84,16 +133,30 @@ def getoneCourse(id):
 sample request
 {
     "name": "Engineering",
-    "description": "asdfasdsahdoashdioasdhoiashdoisahdoiashdosahdioh"
+    "description": "asdfasdsahdoashdioasdhoiashdoisahdoiashdosahdioh",
+    "prerequisite": [1, 2]
 }
 '''
 @app.route("/course", methods=['POST'])
 def addCourse():
     data = request.get_json()
-    course = Course(**data)
     try:
+        course = Course(**data)
         db.session.add(course)
         db.session.commit()
+        badge = Badge(
+            course_id = course.id,
+            name = course.name
+        )
+        db.session.add(badge)
+        db.session.commit()
+
+        return jsonify(
+            {
+                "code": 200,
+                "data": course.json()
+            }
+        ), 200
     except Exception as e:
         return jsonify(
             {
@@ -101,13 +164,6 @@ def addCourse():
                 "message": f"An error occurred while creating course: {e}"
             }
         )
-    
-    return jsonify(
-        {
-            "code": 200,
-            "data": course.json()
-        }
-    ), 200
 
 #  Update Course
 '''
@@ -115,7 +171,8 @@ sample request
 {
     "id": 1,
     "name": "Engineering",
-    "description": "asdfasdsahdoashdioasdhoiashdoisahdoiashdosahdioh"
+    "description": "asdfasdsahdoashdioasdhoiashdoisahdoiashdosahdioh",
+    "prerequisite": [1, 2]
 }
 '''
 @app.route("/course", methods=['PUT'])
@@ -136,6 +193,7 @@ def updateCourse():
             )
         course.name = data['name']
         course.description = data['description']
+        course.prerequisite = data['prerequisite']
         db.session.commit()
         
         return jsonify(
@@ -157,20 +215,29 @@ def updateCourse():
 # Delete course
 @app.route("/course/<int:id>", methods=['DELETE'])
 def deleteCourse(id):
-    course = Course.query.filter_by(id=id).first()
-    if not course:
-        return jsonify(
-            {
-                "code":404,
-                "data": {
-                    "id": id
-                },
-                "message": "Course not found."
-            }
-        )
     try:
+        course = Course.query.filter_by(id=id).first()
+        badge = Badge.query.filter_by(course_id=id).first()
+        if not course:
+            return jsonify(
+                {
+                    "code":404,
+                    "data": {
+                        "id": id
+                    },
+                    "message": "Course not found."
+                }
+            )
+        db.session.delete(badge)
         db.session.delete(course)
         db.session.commit()
+
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Course successfully deleted"
+            }
+        )    
     except Exception as e: 
         return jsonify( 
             {
@@ -178,9 +245,3 @@ def deleteCourse(id):
                 "message": f"An error occurred while deleting course: {e}"
             }
         )
-    return jsonify(
-        {
-            "code": 200,
-            "message": "Course successfully deleted"
-        }
-    )
