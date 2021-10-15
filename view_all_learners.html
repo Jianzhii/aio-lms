@@ -9,6 +9,10 @@
         <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
         <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
 
+
+        <!-- Icons -->
+        <script src="https://unpkg.com/feather-icons"></script>
+
         <!-- Bootstrap -->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 
@@ -41,7 +45,7 @@
             h3 {
                 text-indent: 34px ;
                 font-size: 13px ;
-                font-weight: bold;
+                font-weight: bold ; 
             }
 
             .sidenav a {
@@ -63,7 +67,7 @@
                 width: 200px ;
             }
 
-            #addgroup {
+            #viewlearners {
                 color: #FF922D ;
                 font-weight: bold ;
             }
@@ -77,8 +81,12 @@
                 margin-left: 20% ;
             }
 
-            #form {
-                padding-top: 43px ;
+            #header {
+                padding: 12px ;
+            }
+
+            #table {
+                padding: 30px ; 
             }
 
             input[type=text] {
@@ -94,6 +102,16 @@
                 width: 100px ;
             }
 
+            #tableheader{
+                background-color: #FF922D ;
+                color: white ;
+            }
+
+            .icon {
+                color: #FF922D ;
+                padding: 2px ;
+            }
+
         </style>
 
         <!-- start of page icon -->
@@ -104,90 +122,101 @@
     </head>
 
     <body>
-        <!-- start of sidebar -->
+        <!-- start of side bar -->
         <div class="container" id="sidebar">
-            <div class="sidenav">
-                <div>
-                    <img id="logo" src="static/imgs/All-In-One 1.png" width="270px" height="125px">
-                </div>
-                <h3>Courses</h3>
-                <ul>
-                    <li>
-                        <a id="viewcourse" href="admin_home.html">View All Courses</a>
-                    </li>
-                    <li>
-                        <a id="createcourse" href="createcourse.html"> Create New Course</a>
-                    </li>
-                    <li>
-                        <a id="addgroup" href="add_group.html"> Create New Group </a>
-                    </li>
-                </ul>
-                <h3>Learners</h3>
-                <ul>
-                    <li>
-                        <a href="#">View All Learners</a>
-                    </li>
-                </ul>
-                <h3>Trainers</h3>
-                <ul>
-                    <li>
-                        <a href="view_all_trainers.html">View All Trainers</a>
-                    </li>
-                </ul>
-            </div>
         </div>
-        <!-- end of sidebar -->
-    
+        <!-- end of side bar -->
+
+        <!-- start of content -->
+
         <div class="container" id="content">
-            <div class="row">
+            <div class="row" id="header">
                 <div class="col">
                     <h2>All Learners</h2>
                 </div>
                 <div class="col-2" style="padding-top: 65px ;">
                     <input type="button" value="Log Out" id="logout">
                 </div>
-                 
             </div>
-        
+            
+            <!-- start of table showing list of learners -->
+            <div class="row" id="table">
+                <table class="table">
+                    <tbody id="tableheader"> 
+                      <tr>
+                          <th scope="col">S/N</th>
+                          <th scope="col">Learner Name</th>
+                          <th scope="col">Actions</th>  
+                      </tr>
+                    </tbody>
+                    <tbody id="tablecontent">
+                        <!-- populate rows of learners -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+            
+        <script>
+            
+            // load admin_nav.html
+            $(function(){
+              $("#sidebar").load("admin_nav.html");
+            });
+
+            const api_endpoint = "http://52.55.242.44:8000/"
+
+            // Populate Learner Dropdown
+            $(async () => {
+                // API Endpoint
+                var learner_api = api_endpoint + "all_learner"
+
+                try {
+                    const response =
+                        await fetch(
+                            learner_api, {
+                            method: 'GET'
+                        }
+                    );
+
+                    const result = await response.json();
+                    if (response.status === 200) {
+                        let data = result.data
+                        console.log(data)
+                        if (data.length) {
+                            for (let i = 0 ; i < data.length ; i++ ) {
+                                row = `
+                                <tr>
+                                    <td>${i+1}</td>
+                                    <td>${data[i].name}</td>
+                                    <td>
+                                        <!-- view -->
+                                        <a href="./individual_profile.html?id=${data[i].id}" class="icon" title="View Profile"><i data-feather="eye"></i></a>
+
+                                        <!-- edit -->
+                                        <a href="#" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+
+                                        <!-- delete/retire -->
+                                        <a href="#" class="icon" title="Retire Course"><i data-feather="trash-2"></i></a>
+                                    </td>
+                                </tr>`
+
+                                $('#tablecontent').append(row)
+                            }
+
+                            feather.replace()
+
+                        } else {
+                            $('#tablecontent').append(`No learners available`)
+                        }
+                    }
+                } catch(err) {
+                    alert(err)
+                    console.log(err)
+                }
+            });
+
+</script>
 
     </body>
-
-    <script>
-
-        const api_endpoint = "http://52.55.242.44:8000/"
-
-        // Populate Learner Dropdown
-        $(async () => {
-            // API Endpoint
-            var learner_api = api_endpoint + "all_learner"
-
-            try {
-                const response =
-                    await fetch(
-                        learner_api, {
-                        method: 'GET'
-                    }
-                );
-
-                const result = await response.json();
-                if (response.status === 200) {
-                    let data = result.data
-                    console.log(data)
-                    if (data.length) {
-                        for (let learner of data) {
-                            option = `<option value=${learner.id}> ${learner.name}</option>`
-                            $('#learner').append(option)
-                        }
-                    } else {
-                        $('#learner').append(`<option> No learners available </option`)
-                    }
-                }
-            } catch(err) {
-                alert(err)
-                console.log(err)
-            }
-        });
-    </script>
-
 
 </html>

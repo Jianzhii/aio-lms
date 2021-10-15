@@ -9,6 +9,11 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
         <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
 
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+
         <style>
 
             body {
@@ -32,7 +37,7 @@
                 padding-left: 10px ;
             }
 
-            h4 {
+            h3 {
                 text-indent: 34px ;
                 font-size: 13px ;
             }
@@ -91,38 +96,17 @@
     </head>
 
     <body>
+        <!-- start of side bar -->
         <div class="container" id="sidebar">
-            <div class="sidenav">
-                <div>
-                    <img id="logo" src="static/imgs/All-In-One 1.png">
-                </div>
-                <h4>Courses</h4>
-                <ul>
-    
-                    <li>
-                        <a href="admin_home.html">View All Courses</a>
-                    </li>
-                    <li>
-                        <a id="createcourse" href="createcourse.html"> Create New Course</a>
-                    </li>
-                    <li>
-                        <a id="addgroup" href="add_group.html"> Create New Group</a>
-                    </li>
-                </ul>
-                <h4>Learners</h4>
-                <ul>
-                    <li>
-                        <a href="view_all_learners.html">View All Learners</a>
-                    </li>
-                </ul>
-                <h4>Trainers</h4>
-                <ul>
-                    <li>
-                        <a href="view_all_trainers.html">View All Trainers</a>
-                    </li>
-                </ul>
-            </div>
         </div>
+        <!-- end of side bar -->
+            
+        <!-- load admin_nav.html -->
+        <script>
+            $(function(){
+              $("#sidebar").load("admin_nav.html");
+            });
+        </script>
     
         <div class="container" id="content">
             <div class="row">

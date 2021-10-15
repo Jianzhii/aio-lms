@@ -45,7 +45,7 @@
             h3 {
                 text-indent: 34px ;
                 font-size: 13px ;
-                font-weight: bold ;
+                font-weight: bold ; 
             }
 
             .sidenav a {
@@ -67,11 +67,6 @@
                 width: 200px ;
             }
 
-            #viewtrainers {
-                color: #FF922D ;
-                font-weight: bold ;
-            }
-
             #sidebar {
                 width: 30% ;
             }
@@ -85,7 +80,7 @@
                 padding: 12px ;
             }
 
-            #searchbar, #table {
+            #table {
                 padding: 30px ; 
             }
 
@@ -115,7 +110,7 @@
         </style>
 
         <!-- start of page icon -->
-        <title>All Trainers</title>
+        <title>Update Course</title>
         <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
         <!-- end of page icon -->
 
@@ -132,25 +127,25 @@
         <div class="container" id="content">
             <div class="row" id="header">
                 <div class="col">
-                    <h2>All Trainers</h2>
+                    <h2>All Learners</h2>
                 </div>
                 <div class="col-2" style="padding-top: 65px ;">
                     <input type="button" value="Log Out" id="logout">
                 </div>
             </div>
-                 
-            <!-- start of table showing list of courses -->
+            
+            <!-- start of table showing list of learners -->
             <div class="row" id="table">
                 <table class="table">
                     <tbody id="tableheader"> 
                       <tr>
                           <th scope="col">S/N</th>
-                          <th scope="col">Trainer Name</th>
+                          <th scope="col">Learner Name</th>
                           <th scope="col">Actions</th>  
                       </tr>
                     </tbody>
                     <tbody id="tablecontent">
-                        <!-- populate rows of trainers -->
+                        <!-- populate rows of learners -->
                     </tbody>
                 </table>
             </div>
@@ -168,12 +163,12 @@
             // Populate Learner Dropdown
             $(async () => {
                 // API Endpoint
-                var trainer_api = api_endpoint + "all_trainer"
+                var learner_api = api_endpoint + "all_learner"
 
                 try {
                     const response =
                         await fetch(
-                            trainer_api, {
+                            learner_api, {
                             method: 'GET'
                         }
                     );
