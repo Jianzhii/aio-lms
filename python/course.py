@@ -289,6 +289,7 @@ def deleteCourse(id):
                 "message": f"An error occurred while deleting course: {e}"
             }
         )
+        
 # View completed courses and Bages by user
 @app.route("/course/completed/<int:id>", methods=["GET"])
 def viewCompletedCourses(id):
