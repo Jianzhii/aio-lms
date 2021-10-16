@@ -17,7 +17,6 @@
         <!-- Bootstrap/ CSS -->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 
-
         <!-- jQuery -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -386,7 +385,7 @@
                                                 <a href="./update_course.html?id=${data[i].id}&courseName=${data[i].id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
 
                                                 <!-- delete/retire -->
-                                                <a href="#deletemodal" class="trigger-btn icon" data-toggle="modal" title="Retire Course"><i data-feather="trash-2"></i></a>
+                                                <a href="#deletemodal" class="trigger-btn icon" data-id="${data[i].id}" data-toggle="modal" title="Retire Course"><i data-feather="trash-2"></i></a>
                                             </td>
                                         </tr>`
 
@@ -420,11 +419,11 @@
                 
                 $('#deletemodal').modal('hide');
                 $("#loadingModal").modal('show');
-                var user_api = api_endpoint + `course/${id}`
+                var delete_api = api_endpoint + `course/${id}`
                 try {
                     const response =
                         await fetch(
-                            user_api, {
+                            delete_api, {
                             method: 'DELETE'
                         }
                     );
