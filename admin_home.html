@@ -72,7 +72,7 @@
                 width: 200px ;
             }
 
-            #viewallcourse {
+            #viewcourse {
                 color: #FF922D ;
                 font-weight: bold ;
             }
@@ -132,6 +132,18 @@
             #loading-image {
                 margin-top: 50px;
                 z-index: 100;
+            .modal-icon {
+            color: #f15e5e;
+            font-size: 46px;
+            display: inline-block;
+            margin-top: 13px;
+            }
+
+            .modal-icon i {
+                color: #f15e5e;
+                font-size: 46px;
+                display: inline-block;
+                margin-top: 13px;
             }
 
         </style>
@@ -184,7 +196,7 @@
                 <div class="modal-dialog modal-confirm">
                     <div class="modal-content">
                         <div class="modal-header flex-column">
-                            <div class="icon">
+                            <div class="modal-icon">
                                 <i data-feather="x-circle"></i>
                             </div>						
                             <h4 class="modal-title w-100">Are you sure?</h4>	
@@ -273,13 +285,12 @@
             // retrieve all courses
             $(async () => {
 
-                // API Endpoint
-                var user_api = api_endpoint + "all_course"
+            var all_course_api = api_endpoint + "all_course"
 
                 try {
                     const response =
                         await fetch(
-                            user_api, {
+                            all_course_api, {
                             method: 'GET'
                         }
                     );
@@ -331,7 +342,7 @@
 
                     $(async () => {
                         // API Endpoint
-                        var user_api = api_endpoint + "search_course" 
+                        var user_api = api_endpoint + "search_course"
 
                         try {
                             const response =
@@ -381,6 +392,7 @@
                         } catch(err) {
                             alert(err)
                             console.log(err)
+                            $('#loading').hide();
                         }
                     });
                 }

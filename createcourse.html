@@ -137,14 +137,60 @@
                             <textarea id="cdesc" name="coursedescription" cols="35" rows="4"></textarea>
                         </div>
                     </div>
+                    <div class="row" style="padding-top: 43px ;">
+                        <div class="col">
+                            <label for="cpre">Pre-Requisite Course(s)</label>
+                        </div>
+                        <div class="col">
+                            <select id="cpre" name="cpre" multiple>
+                                <option value="" disabled selected>Please select course</option><!-- need to hold down ctrl button to multi-select??? wtf man -->
+                            </select>
+                        </div>
+                    </div>
                     <div class="row" style="padding-top: 43px ; padding-left: 15px" >
                         <input type="button" value="Submit" onclick="window.location=''"> <!-- direct back to individual course page -->
                     </div>
                 </form>
             </div>
         </div>
-
         </div>
+
+        <script>
+
+            // populate list of courses
+
+            const api_endpoint = "http://52.55.242.44:8000/"
+
+            $(async() => {
+                var course_api = api_endpoint + "all_course"
+
+                try {
+
+                    const response = 
+                        await fetch (
+                            course_api, {
+                                method:'GET'
+                            }
+                        );
+                    const result = await response.json() ;
+                    console.log(result)
+                    if (response.status === 200) {
+                        let data = result.data
+                        if (data.length) {
+                        for (let course of data) {option = `<option value=${course.id}> ${course.name}</option>`
+                            $('#cpre').append(option)
+                        }
+                        }
+                    } else {
+                        $('#cpre').append(`<option> No courses available </option`)
+                    }
+                } catch(err){
+                    alert(err)
+                    console.log(err)
+                }
+            })
+
+        </script>
         
 
     </body>
