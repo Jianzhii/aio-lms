@@ -243,11 +243,8 @@
                                 <!-- edit -->
                                 <a href="./update_course.html?id=${data[i].id}&courseName=${data[i].id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
 
-
                                 <!-- delete/retire -->
                                 <a href="#deletemodal" class="trigger-btn icon" data-toggle="modal" title="Retire Course"><i data-feather="trash-2"></i></a>
-
-                                
                             </td>
                         </tr>`
 
@@ -301,8 +298,14 @@
                                             <td>${data[i].description}</td>
                                             <td>${data[i].prerequisite}</td>
                                             <td> 
-                                                <a href="#" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+                                                <!-- view -->
                                                 <a href="./coursegroup.html?id=${data[i].id}&courseName=${data[i].name}" class="icon" title="View Groups"><i data-feather="eye"></i></a>
+
+                                                <!-- edit -->
+                                                <a href="./update_course.html?id=${data[i].id}&courseName=${data[i].id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+
+                                                <!-- delete/retire -->
+                                                <a href="#deletemodal" class="trigger-btn icon" data-toggle="modal" title="Retire Course"><i data-feather="trash-2"></i></a>
                                             </td>
                                         </tr>`
 
