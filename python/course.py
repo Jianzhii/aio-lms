@@ -158,6 +158,7 @@ def addCourse():
         return jsonify(
             {
                 "code": 200,
+                "message": "Course successfully created!",
                 "data": course.json()
             }
         ), 200

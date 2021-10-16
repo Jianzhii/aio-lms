@@ -408,10 +408,10 @@
                 trainer_id: $("#trainer").val()
             }
 
-            const create_course_api = api_endpoint + "group"
+            const create_group_api = api_endpoint + "group"
             try {
                 const response = await fetch(
-                    create_course_api, {
+                    create_group_api, {
                         method: 'POST',
                         headers: { "Content-Type":"application/json"},
                         body: JSON.stringify(data)
