@@ -297,8 +297,8 @@
 
     <script>
 
-        const api_endpoint = "http://52.55.242.44:8000/"
-        // const api_endpoint = "http://localhost:8000/"
+        // const api_endpoint = "http://52.55.242.44:8000/"
+        const api_endpoint = "http://localhost:8000/"
 
         // Populate Course Dropdown
 
@@ -317,7 +317,6 @@
                 const result = await response.json();
                 if (response.status === 200) {
                     let data = result.data
-                    console.log(data)
                     if (data.length) {
                         for (let course of data) {option = `<option value=${course.id}> ${course.name}</option>`
                             $('#course').append(option)
@@ -348,7 +347,6 @@
                 const result = await response.json();
                 if (response.status === 200) {
                     let data = result.data
-                    console.log(data)
                     if (data.length) {
                         for (let trainer of data) {
                             option = `<option value=${trainer.id}> ${trainer.name}</option>`
@@ -380,11 +378,10 @@
                 const result = await response.json();
                 if (response.status === 200) {
                     let data = result.data
-                    console.log(data)
                     if (data.length) {
                         for (let learner of data) {
                             option = `<option value=${learner.id}> ${learner.name}</option>`
-                            $('#learner').append(option)
+                            $('#learners').append(option)
                         }
                     } else {
                         $('#learner').append(`<option> No learners available </option`)
@@ -407,6 +404,7 @@
                 enrol_end_date: $("#enrollmentend").val(),
                 trainer_id: $("#trainer").val()
             }
+            let learners = $("#learners").val();
 
             const create_group_api = api_endpoint + "group"
             try {
@@ -419,10 +417,20 @@
                 );
 
                 const result = await response.json();
-                $("#loadingModal").modal("hide");
                 if (response.status === 200) {
-                    $("#successMessage").text(result.message)
-                    $("#successModal").modal("show");
+                    enrolment_body = {
+                        user_id: learners,
+                        group_id: result.data.id
+                    }
+                    let enrolment_result = await enrolLearners(enrolment_body);
+                    $("#loadingModal").modal("hide");
+                    if (enrolment_result.code === 200) {
+                        $("#successMessage").text(result.message)
+                        $("#successModal").modal("show");
+                    } else { 
+                        $("#failureMessage").text(enrolment_result.message)
+                        $("#failureModal").modal("show");
+                    }
                 } else { 
                     $("#failureMessage").text(result.message)
                     $("#failureModal").modal("show");
@@ -431,6 +439,24 @@
                 $("#failureMessage").text(result.message)
                 $("#failureModal").modal("show");
                 console.log(err)
+            }
+        }
+
+        async function enrolLearners(body) {
+            const enrol_learners = api_endpoint + "enrolment"
+            try {
+                const response = await fetch(
+                        enrol_learners, {
+                        method: 'POST',
+                        headers: { "Content-Type":"application/json"},
+                        body: JSON.stringify(body)
+                    }
+                );
+
+                return await response.json();                
+            } catch (err) {
+                console.log(err);
+                return err;
             }
         }
     </script>

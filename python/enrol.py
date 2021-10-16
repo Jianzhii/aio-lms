@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 
 from flask import jsonify, request
 
@@ -82,61 +83,26 @@ sample request
 def addEnrolment(data=None):
     if not data:
         data = request.get_json()
-    try:
-        existing_enrolment = Enrolment.query.filter_by(user_id = data['user_id'], group_id = data['group_id']).all()
-        user = User.query.filter_by(id=data['user_id']).first()
-        if existing_enrolment: 
-            return jsonify(
-                {
-                    "code":406,
-                    "data": data,
-                    "message": f"{user.name} has already been enrolled in this course"
-                }
-            ), 406
-        
-        group = Group.query.filter_by(id=data['group_id']).first()
-        current_group_size = Enrolment.query.filter_by(group_id = data['group_id']).count()
-        if current_group_size == group.size:
-            return jsonify(
-                {
-                    "code":406,
-                    "data": data,
-                    "message": "Group enrollment is already full."
-                }
-            ),406
-        
-        course_info = Course.query.filter_by(id=group.course_id).first()
-        if course_info.prerequisite:
-            completed_course = [ course.id for enrolment, group, course in db.session.query(Enrolment, Group, Course).filter_by(user_id=data['user_id'], completed=True)\
-                                                                                    .outerjoin(Group, Group.id == Enrolment.group_id)\
-                                                                                    .outerjoin(Course, Group.course_id == Course.id).all()]
-            incomplete = []
-            for each in course_info.prerequisite:
-                if each not in completed_course:
-                    prerequisite_course_info = Course.query.filter_by(id=each).first()
-                    incomplete.append(prerequisite_course_info.name)
-            if len(incomplete):
-                return jsonify(
-                    {
-                        "code":406,
-                        "data": data,
-                        "message": f"{user.name} has yet to complete the following prerequisite course(s): {', '.join(incomplete)}"
-                    }
-                ),406
 
-        enrol = Enrolment(
-            group_id = data['group_id'],
-            user_id = data['user_id'],
-            enrolled_dt = datetime.now(),
-            completed = False
-        )
-        db.session.add(enrol)
+    try:
+        if type(data['user_id']) == list:
+            for user in data['user_id']:
+                result = processEnrolment({
+                                    "user_id": user,
+                                    "group_id": data['group_id']})
+                if result[1] != 200: 
+                    return result
+        else: 
+            result = processEnrolment(data)
+            if result[1] != 200: 
+                return result
+
         db.session.commit()
 
         return jsonify(
             {
                 "code": 200,
-                "message": "Successfully enrolled learner"
+                "message": "Successfully enrolled learner(s)"
             }
         ), 200
     except Exception as e:
@@ -146,6 +112,64 @@ def addEnrolment(data=None):
                 "message": f"An error occurred while enrolling learner: {e}"
             }
         ), 500
+
+def processEnrolment(data): 
+        try:
+            existing_enrolment = Enrolment.query.filter_by(user_id = data['user_id'], group_id = data['group_id']).all()
+            user = User.query.filter_by(id=data['user_id']).first()
+            if existing_enrolment: 
+                return jsonify(
+                    {
+                        "code":406,
+                        "data": data,
+                        "message": f"{user.name} has already been enrolled in this group"
+                    }
+                ), 406
+
+            # check for same courrse
+            group = Group.query.filter_by(id=data['group_id']).first()
+            current_group_size = Enrolment.query.filter_by(group_id = data['group_id']).count()
+            if current_group_size == group.size:
+                return jsonify(
+                    {
+                        "code":406,
+                        "data": data,
+                        "message": "Group enrollment is already full."
+                    }
+                ),406
+            course_info = Course.query.filter_by(id=group.course_id).first()
+            if course_info.prerequisite:
+                completed_course = [ course.id for enrolment, group, course in db.session.query(Enrolment, Group, Course).filter_by(user_id=data['user_id'], completed=True)\
+                                                                                        .outerjoin(Group, Group.id == Enrolment.group_id)\
+                                                                                        .outerjoin(Course, Group.course_id == Course.id).all()]
+                incomplete = []
+                for each in course_info.prerequisite:
+                    if each not in completed_course:
+                        prerequisite_course_info = Course.query.filter_by(id=each).first()
+                        incomplete.append(prerequisite_course_info.name)
+                if len(incomplete):
+                    return jsonify(
+                        {
+                            "code":406,
+                            "data": data,
+                            "message": f"{user.name} has yet to complete the following prerequisite course(s): {', '.join(incomplete)}"
+                        }
+                    ),406
+            enrol = Enrolment(
+                group_id = data['group_id'],
+                user_id = data['user_id'],
+                enrolled_dt = datetime.now(),
+                completed = False
+            )
+            db.session.add(enrol)
+            return jsonify(
+                {
+                    "code": 200,
+                    "message": f"Successfully enrolled {user.name}"
+                }
+            ), 200
+        except Exception as e: 
+            raise e
 
 # Delete enrolment
 @app.route("/enrolment/<int:id>", methods=['DELETE'])
