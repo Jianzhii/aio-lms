@@ -72,7 +72,7 @@
                 width: 200px ;
             }
 
-            #viewallcourse {
+            #viewcourse {
                 color: #FF922D ;
                 font-weight: bold ;
             }
@@ -115,6 +115,20 @@
             .icon {
                 color: #FF922D ;
                 padding: 2px ;
+            }
+
+            .modal-icon {
+            color: #f15e5e;
+            font-size: 46px;
+            display: inline-block;
+            margin-top: 13px;
+            }
+
+            .modal-icon i {
+                color: #f15e5e;
+                font-size: 46px;
+                display: inline-block;
+                margin-top: 13px;
             }
 
         </style>
@@ -163,7 +177,7 @@
                 <div class="modal-dialog modal-confirm">
                     <div class="modal-content">
                         <div class="modal-header flex-column">
-                            <div class="icon">
+                            <div class="modal-icon">
                                 <i data-feather="x-circle"></i>
                             </div>						
                             <h4 class="modal-title w-100">Are you sure?</h4>	
@@ -188,54 +202,51 @@
                         $("#sidebar").load("admin_nav.html");
                         });
 
-            /* const api_endpoint = "http://52.55.242.44/" */
-            const api_endpoint = "http://localhost:8000/"
+            const api_endpoint = "http://52.55.242.44:8000/"
 
             // retrieve all courses
             $(async () => {
 
             // API Endpoint
-            var user_api = api_endpoint + "all_course"
+            var all_course_api = api_endpoint + "all_course"
 
-            try {
-                const response =
-                    await fetch(
-                        user_api, {
-                        method: 'GET'
+                try {
+                    const response =
+                        await fetch(
+                            all_course_api, {
+                            method: 'GET'
+                        }
+                    );
+
+                    const result = await response.json();
+                    if (response.status === 200) {
+                        let data = result.data
+                        for (let i = 0; i < data.length; i++) {
+                            row = `
+                            <tr>
+                                <td>${i+1}</td>
+                                <td>${data[i].name}</td>
+                                <td>${data[i].description}</td>
+                                <td>
+                                    <!-- view -->
+                                    <a href="./coursegroup.html?id=${data[i].id}&courseName=${data[i].name}" class="icon" title="View Groups"><i data-feather="eye"></i></a>
+
+                                    <!-- edit -->
+                                    <a href="./update_course.html?id=${data[i].id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+
+
+                                    <!-- delete/retire -->
+                                    <a href="#deletemodal" class="trigger-btn icon" data-toggle="modal" title="Retire Course"><i data-feather="trash-2"></i></a>
+                                </td>
+                            </tr>`
+
+                            $('#tablecontent').append(row)                    
+                        } /* what if there are no courses */
                     }
-                );
-
-                const result = await response.json();
-                if (response.status === 200) {
-                    let data = result.data
-                    for (let i = 0; i < data.length; i++) {
-                        row = `
-                        <tr>
-                            <td>${i+1}</td>
-                            <td>${data[i].name}</td>
-                            <td>${data[i].description}</td>
-                            <td>
-                                <!-- view -->
-                                <a href="./coursegroup.html?id=${data[i].id}&courseName=${data[i].name}" class="icon" title="View Groups"><i data-feather="eye"></i></a>
-
-                                <!-- edit -->
-                                <a href="./update_course.html?id=${data[i].id}&courseName=${data[i].id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
-
-
-                                <!-- delete/retire -->
-                                <a href="#deletemodal" class="trigger-btn icon" data-toggle="modal" title="Retire Course"><i data-feather="trash-2"></i></a>
-
-                                
-                            </td>
-                        </tr>`
-
-                        $('#tablecontent').append(row)                    
-                    } /* what if there are no courses */
+                } catch(err) {
+                    alert(err)
+                    console.log(err)
                 }
-            } catch(err) {
-                alert(err)
-                console.log(err)
-            }
 
             feather.replace()
         });
@@ -248,13 +259,13 @@
                 if (event.keyCode === 13) {
                     // Cancel the default action, if needed
                     event.preventDefault();
-                    $('#courseBody').empty();
+                    $('#tablecontent').empty();
                     $('#loading').show();
                     var input = document.getElementById("search").value;
 
                     $(async () => {
                         // API Endpoint
-                        var user_api = api_endpoint + "search_course" 
+                        var user_api = api_endpoint + "search_course"
 
                         try {
                             const response =
@@ -269,32 +280,33 @@
                             const result = await response.json();
                             if (response.status === 200) {
                                 let data = result.data
-                                if (data.length) {
-                                    for (let i = 0; i < data.length; i++) {
-                                        row = `
-                                        <tr>
-                                            <td>${i+1}</td>
-                                            <td>${data[i].name}</td>
-                                            <td>${data[i].description}</td>
-                                            <td> 
-                                                <a href="#" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
-                                                <a href="./coursegroup.html?id=${data[i].id}&courseName=${data[i].name}" class="icon" title="View Groups"><i data-feather="eye"></i></a>
-                                            </td>
-                                        </tr>`
+                                for ( let i = 0 ; i < data.length ; i++ ) {
+                                    row = `
+                                    <tr>
+                                        <td>${i+1}</td>
+                                        <td>${data[i].name}</td>
+                                        <td>${data[i].description}</td>
+                                        <td>
+                                            <!-- view -->
+                                            <a href="./coursegroup.html?id=${data[i].id}&courseName=${data[i].name}" class="icon" title="View Groups"><i data-feather="eye"></i></a>
 
-                                        $('#tablecontent').append(row)                    
-                                    }
-                                } else {
-                                    $('#tablecontent').append(`
-                                        <tr>
-                                            <td> No Results </td>
-                                        </tr>
-                                        `)
+                                            <!-- edit -->
+                                            <a href="./update_course.html?id=${data[i].id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+
+
+                                            <!-- delete/retire -->
+                                            <a href="#deletemodal" class="trigger-btn icon" data-toggle="modal" title="Retire Course"><i data-feather="trash-2"></i></a>
+                                        </td>
+                                    </tr>`
+                                    
+                                    $('#tablecontent').append(row)
                                 }
                             }
+                            $('#loading').hide();
                         } catch(err) {
                             alert(err)
                             console.log(err)
+                            $('#loading').hide();
                         }
                     });
                 }

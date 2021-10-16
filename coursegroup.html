@@ -49,6 +49,10 @@
                 font-weight: bold ;
             }
 
+            h6 {
+                font-style: italic;
+            }
+
             .sidenav a {
                 color: black ;
                 padding: 16px ;
@@ -79,9 +83,15 @@
 
             #header {
                 padding: 12px ;
+                color: #FF922D ;
+                font-weight: bold ;
             }
 
-            #searchbar, #table {
+            #detailsheader, #details {
+                padding: 20px ; 
+            }
+
+            #table {
                 padding: 30px ; 
                 text-align: center ;
             }
@@ -122,12 +132,31 @@
         <div class="container" id="content">
             <div class="row" id="header">
                 <div class="col">
-                    <h2 class="coursename">Groups Under </h2>
+                    <h2 class="coursename"></h2>
                 </div>
                 <div class="col-2" style="padding-top: 65px ;">
                     <input type="button" value="Log Out" id="logout">
                 </div>
             </div>
+
+            <div class="row" id="detailsheader">
+                <div class="col">
+                    <h6>Course Description: </h6>
+                </div>
+                <div class="col">
+                    <h6 id="prereq">Pre-Requisite Course(s): </h6>
+                </div>
+            </div>
+
+            <div class="row" id="details">
+                <div class="col">
+                    <p id="desc"></p>
+                </div>
+                <div class="col">
+                    <p id="preq"></p>
+                </div>
+            </div>
+
                  
             <!-- start of table showing list of groups -->
             <div class="row" id="table">
@@ -160,7 +189,46 @@
 
             feather.replace()
     
-            const api_endpoint = "http://localhost:8000/" 
+            const api_endpoint = "http://52.55.242.44:8000/"
+            
+            $(async() => {
+                let query = window.location.search.substring(1)[3] ;
+                var course_api = api_endpoint + "course/" + query
+                
+                try {
+                    const response = 
+                        await fetch(
+                            course_api, {
+                                method: 'GET'
+                            }
+                        );
+
+                    const result = await response.json() ;
+                    if (response.status === 200) {
+                        let data = result.data
+                        console.log(data)
+                        if (data.prerequisite != "-") {
+                            $('#desc').append(data.description)
+                            var prereq = data.prerequisite.split(",<br>")
+                            var prereq_str = prereq[0]
+                            for (i = 1 ; i < prereq.length ; i++) {
+                                prereq_str = prereq_str + ', ' + prereq[i]
+                            }
+                            $('#preq').append(prereq_str)   
+                        } else {
+                            $('#desc').append(data.description)
+                            var prereq = "No pre-requisite course required"
+                            $('#preq').append(prereq)
+                        }
+                    } 
+                }
+
+                catch(err) {
+                    alert(err)
+                    console.log(err)
+                }
+                
+            })
     
             // Load Course table contents
             $(async () => {
@@ -173,7 +241,7 @@
                 }
                 $('.coursename').append(data['courseName'].replace("%20", " "))
                 // API Endpoint
-                var user_api = api_endpoint + "all_group/" + data.id // localhost
+                var user_api = api_endpoint + "all_group/" + data.id
     
                 try {
                     const response =
@@ -186,7 +254,7 @@
                     const result = await response.json();
                     if (response.status === 200) {
                         let data = result.data
-                        console.log(data)
+                        // console.log(data)
                         if (data.length) {
                             for (let i = 0; i < data.length; i++) {
                                 row = `
@@ -200,7 +268,7 @@
                                     <td>${data[i].end_date}</td>
                                     <td>
                                         <!-- view -->
-                                        <a href="./coursegroup.html?id=${data[i].id}&courseName=${data[i].name}" class="icon" title="View Details"><i data-feather="eye"></i></a>
+                                        <a href="#" class="icon" title="View Details"><i data-feather="eye"></i></a>
 
                                         <!-- edit -->
                                         <a href="#" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>

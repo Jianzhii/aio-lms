@@ -213,12 +213,12 @@
 
         $(async () => {
             // API Endpoint
-            var trainer_api = api_endpoint + "all_course"
+            var course_api = api_endpoint + "all_course"
 
             try {
                 const response =
                     await fetch(
-                        trainer_api, {
+                        course_api, {
                         method: 'GET'
                     }
                 );
