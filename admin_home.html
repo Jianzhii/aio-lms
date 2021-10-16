@@ -191,16 +191,74 @@
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                         </div>
                         <div class="modal-body">
-                            <p>Do you really want to delete these records? This process cannot be undone.</p>
+                            <p id='modalMessage'>Do you really want to delete these records? This process cannot be undone.</p>
                         </div>
                         <div class="modal-footer justify-content-center">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-danger">Delete</button>
+                            <button type="button" class="btn btn-danger" id='deleteId' onclick='deleteCourse(this.value)'>Delete</button>
                         </div>
                     </div>
                 </div>
             </div>  
-        </div>
+
+            <!-- Success modal -->
+            <div id="successModal" class="modal fade">
+                <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                        <div class="modal-header flex-column">
+                            <div class="icon">
+                                <i data-feather="check-circle"></i>
+                            </div>						
+                            <h4 class="modal-title w-100">Success!</h4>	
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p id='successMessage'></p>
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Okay</button>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+
+            <!-- failure modal -->
+            <div id="failureModal" class="modal fade">
+                <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                        <div class="modal-header flex-column">
+                            <div class="icon">
+                                <i data-feather="alert-triangle"></i>
+                            </div>						
+                            <h4 class="modal-title w-100">Error!</h4>	
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p id='failureMessage'></p>
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Okay</button>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+
+            <div id="loadingModal" class="modal fade">
+                <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                        <div class="modal-header flex-column">				
+                            <h4 class="modal-title w-100">Loading.....</h4>	
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="loading">
+                                <img id="loading-image" src="static/imgs/loading.gif" alt="Loading..." />
+                            </div>  
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </div> 
 
         <script>
 
@@ -215,49 +273,49 @@
             // retrieve all courses
             $(async () => {
 
-            // API Endpoint
-            var user_api = api_endpoint + "all_course"
+                // API Endpoint
+                var user_api = api_endpoint + "all_course"
 
-            try {
-                const response =
-                    await fetch(
-                        user_api, {
-                        method: 'GET'
+                try {
+                    const response =
+                        await fetch(
+                            user_api, {
+                            method: 'GET'
+                        }
+                    );
+
+                    const result = await response.json();
+                    if (response.status === 200) {
+                        let data = result.data
+                        for (let i = 0; i < data.length; i++) {
+                            row = `
+                            <tr>
+                                <td>${i+1}</td>
+                                <td>${data[i].name}</td>
+                                <td>${data[i].description}</td>
+                                <td>${data[i].prerequisite}</td>
+                                <td>
+                                    <!-- view -->
+                                    <a href="./coursegroup.html?id=${data[i].id}&courseName=${data[i].name}" class="icon" title="View Groups"><i data-feather="eye"></i></a>
+
+                                    <!-- edit -->
+                                    <a href="./update_course.html?id=${data[i].id}&courseName=${data[i].id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+
+                                    <!-- delete/retire -->
+                                    <a href="#deletemodal" class="trigger-btn icon" data-id="${data[i].id}" data-toggle="modal" title="Retire Course"><i data-feather="trash-2"></i></a>
+                                </td>
+                            </tr>`
+
+                            $('#tablecontent').append(row)                    
+                        } /* what if there are no courses */
                     }
-                );
-
-                const result = await response.json();
-                if (response.status === 200) {
-                    let data = result.data
-                    for (let i = 0; i < data.length; i++) {
-                        row = `
-                        <tr>
-                            <td>${i+1}</td>
-                            <td>${data[i].name}</td>
-                            <td>${data[i].description}</td>
-                            <td>${data[i].prerequisite}</td>
-                            <td>
-                                <!-- view -->
-                                <a href="./coursegroup.html?id=${data[i].id}&courseName=${data[i].name}" class="icon" title="View Groups"><i data-feather="eye"></i></a>
-
-                                <!-- edit -->
-                                <a href="./update_course.html?id=${data[i].id}&courseName=${data[i].id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
-
-                                <!-- delete/retire -->
-                                <a href="#deletemodal" class="trigger-btn icon" data-toggle="modal" title="Retire Course"><i data-feather="trash-2"></i></a>
-                            </td>
-                        </tr>`
-
-                        $('#tablecontent').append(row)                    
-                    } /* what if there are no courses */
+                } catch(err) {
+                    alert(err);
+                    console.log(err);
                 }
-            } catch(err) {
-                alert(err);
-                console.log(err);
-            }
-            $('#loading').hide();
-            feather.replace()
-        });
+                $('#loading').hide();
+                feather.replace()
+            });
 
             // function for search bar
             var search = document.getElementById("search");
@@ -327,6 +385,43 @@
                     });
                 }
             });
+
+            $(document).on("click", ".trigger-btn", function () {
+                var course_id = $(this).data('id');
+                $(".modal-footer #deleteId").val( course_id );
+            });
+
+            async function deleteCourse(id) {
+                
+                $('#deletemodal').modal('hide');
+                $("#loadingModal").modal('show');
+                var user_api = api_endpoint + `course/${id}`
+                try {
+                    const response =
+                        await fetch(
+                            user_api, {
+                            method: 'DELETE'
+                        }
+                    );
+
+                    const result = await response.json();
+                    
+                    $("#loadingModal").modal('hide');
+                    if (response.status === 200 && result.code === 200) {
+                        $("#successMessage").text(result.message)
+                    } else { 
+                        alert(result.message)
+                    }
+
+                    $('#successModal').modal('show');
+                } catch(err) {
+                    $("#failureMessage").text(result.message)
+                    $('#failureModal').modal('show');
+                    console.log(err);
+                }
+                
+                feather.replace();
+            }
 
         </script>   
     </body>
