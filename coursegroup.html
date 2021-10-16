@@ -19,6 +19,9 @@
 
         <!-- jQuery -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 
         <style>
 
@@ -47,6 +50,10 @@
                 text-indent: 34px ;
                 font-size: 13px ;
                 font-weight: bold ;
+            }
+
+            h6 {
+                font-style: italic;
             }
 
             .sidenav a {
@@ -79,9 +86,15 @@
 
             #header {
                 padding: 12px ;
+                color: #FF922D ;
+                font-weight: bold ;
             }
 
-            #searchbar, #table {
+            #detailsheader, #details {
+                padding: 20px ; 
+            }
+
+            #table {
                 padding: 30px ; 
                 text-align: center ;
             }
@@ -109,7 +122,7 @@
                 padding: 2px ;
             }
             
-            #loading {
+            #loading, #modalloading {
                 display: block;
                 width: 100%;
                 height: 100%;
@@ -140,16 +153,33 @@
         <div class="container" id="content">
             <div class="row" id="header">
                 <div class="col">
-                    
                     <h2 class="coursename">
                         <a class='icon' href="admin_home.html"><i data-feather="chevron-left"></i></a> 
-                        Groups Under 
                     </h2>
                 </div>
                 <div class="col-2" style="padding-top: 65px ;">
                     <input type="button" value="Log Out" id="logout">
                 </div>
             </div>
+
+            <div class="row" id="detailsheader">
+                <div class="col">
+                    <h6>Course Description: </h6>
+                </div>
+                <div class="col">
+                    <h6 id="prereq">Pre-Requisite Course(s): </h6>
+                </div>
+            </div>
+
+            <div class="row" id="details">
+                <div class="col">
+                    <p id="desc"></p>
+                </div>
+                <div class="col">
+                    <p id="preq"></p>
+                </div>
+            </div>
+
                  
             <!-- start of table showing list of groups -->
             <div class="row" id="table">
@@ -174,6 +204,87 @@
                     <img id="loading-image" src="static/imgs/loading.gif" alt="Loading..." />
                 </div>   
             </div>
+
+                <!-- modal for deleting group -->
+                <div id="deletemodal" class="modal fade">
+                    <div class="modal-dialog modal-confirm">
+                        <div class="modal-content">
+                            <div class="modal-header flex-column">
+                                <div class="modal-icon">
+                                    <i data-feather="x-circle"></i>
+                                </div>						
+                                <h4 class="modal-title w-100">Are you sure?</h4>	
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <p id='modalMessage'>Do you really want to delete these records? This process cannot be undone.</p>
+                            </div>
+                            <div class="modal-footer justify-content-center">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-danger" id='deleteId' onclick='deleteGroup(this.value)'>Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>  
+    
+                <!-- Success modal -->
+                <div id="successModal" class="modal fade">
+                    <div class="modal-dialog modal-confirm">
+                        <div class="modal-content">
+                            <div class="modal-header flex-column">
+                                <div class="icon">
+                                    <i data-feather="check-circle"></i>
+                                </div>						
+                                <h4 class="modal-title w-100">Success!</h4>	
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <p id='successMessage'></p>
+                            </div>
+                            <div class="modal-footer justify-content-center">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="location.reload()">Okay</button>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+    
+                <!-- failure modal -->
+                <div id="failureModal" class="modal fade">
+                    <div class="modal-dialog modal-confirm">
+                        <div class="modal-content">
+                            <div class="modal-header flex-column">
+                                <div class="icon">
+                                    <i data-feather="alert-triangle"></i>
+                                </div>						
+                                <h4 class="modal-title w-100">Error!</h4>	
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <p id='failureMessage'></p>
+                            </div>
+                            <div class="modal-footer justify-content-center">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Okay</button>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+    
+                <div id="loadingModal" class="modal fade">
+                    <div class="modal-dialog modal-confirm">
+                        <div class="modal-content">
+                            <div class="modal-header flex-column">				
+                                <h4 class="modal-title w-100">Loading.....</h4>	
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div id="modalloading">
+                                    <img id="loading-image" src="static/imgs/loading.gif" alt="Loading..." />
+                                </div>  
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+            </div> 
         </div>
 
         <script>
@@ -185,8 +296,46 @@
 
             feather.replace()
     
-            // const api_endpoint = "http://localhost:8000/" 
-            const api_endpoint = "http://52.55.242.44:8000/" 
+            const api_endpoint = "http://52.55.242.44:8000/"
+            
+            $(async() => {
+                let query = window.location.search.substring(1)[3] ;
+                var course_api = api_endpoint + "course/" + query
+                
+                try {
+                    const response = 
+                        await fetch(
+                            course_api, {
+                                method: 'GET'
+                            }
+                        );
+
+                    const result = await response.json() ;
+                    if (response.status === 200) {
+                        let data = result.data
+                        // console.log(data)
+                        if (data.prerequisite != "-") {
+                            $('#desc').append(data.description)
+                            var prereq = data.prerequisite.split(",<br>")
+                            var prereq_str = prereq[0]
+                            for (i = 1 ; i < prereq.length ; i++) {
+                                prereq_str = prereq_str + ', ' + prereq[i]
+                            }
+                            $('#preq').append(prereq_str)   
+                        } else {
+                            $('#desc').append(data.description)
+                            var prereq = "No pre-requisite course required"
+                            $('#preq').append(prereq)
+                        }
+                    } 
+                }
+
+                catch(err) {
+                    alert(err)
+                    console.log(err)
+                }
+                
+            })
     
             // Load Course table contents
             $(async () => {
@@ -199,7 +348,7 @@
                 }
                 $('.coursename').append(data['courseName'].replace("%20", " "))
                 // API Endpoint
-                var user_api = api_endpoint + "all_group/" + data.id // localhost
+                var user_api = api_endpoint + "all_group/" + data.id
     
                 try {
                     const response =
@@ -212,7 +361,7 @@
                     const result = await response.json();
                     if (response.status === 200) {
                         let data = result.data
-                        console.log(data)
+                        // console.log(data)
                         if (data.length) {
                             for (let i = 0; i < data.length; i++) {
                                 row = `
@@ -226,13 +375,13 @@
                                     <td>${data[i].end_date}</td>
                                     <td>
                                         <!-- view -->
-                                        <a href="./coursegroup.html?id=${data[i].id}&courseName=${data[i].name}" class="icon" title="View Details"><i data-feather="eye"></i></a>
+                                        <a href="#" class="icon" title="View Details"><i data-feather="eye"></i></a>
 
                                         <!-- edit -->
                                         <a href="#" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
 
                                         <!-- delete/retire -->
-                                        <a href="#" class="icon" title="Retire Course"><i data-feather="trash-2"></i></a>
+                                        <a href="#deletemodal" class="trigger-btn icon" data-id="${data[i].id}" data-toggle="modal" title="Retire Course"><i data-feather="trash-2"></i></a>
                                     </td>
                                 </tr>`
 
@@ -256,6 +405,44 @@
     
                 $('#loading').hide();
             });
+
+            $(document).on("click", ".trigger-btn", function () {
+                var group_id = $(this).data('id');
+                $(".modal-footer #deleteId").val( group_id );
+            });
+
+            async function deleteGroup(id) {
+                
+                $('#deletemodal').modal('hide');
+                $("#loadingModal").modal('show');
+                var delete_api = api_endpoint + `group/${id}`
+                try {
+                    const response =
+                        await fetch(
+                            delete_api, {
+                            method: 'DELETE'
+                        }
+                    );
+
+                    const result = await response.json();
+                    
+                    $("#loadingModal").modal('hide');
+                    if (response.status === 200 && result.code === 200) {
+                        $("#successMessage").text(result.message)
+                        $('#successModal').modal('show');
+                    } else { 
+                        $("#failureMessage").text(result.message)
+                        $('#failureModal').modal('show');
+                    }
+
+                } catch(err) {
+                    $("#failureMessage").text(result.message)
+                    $('#failureModal').modal('show');
+                    console.log(err);
+                }
+                
+                feather.replace();
+            }
        
         </script>
     </body>

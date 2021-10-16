@@ -22,8 +22,9 @@ import user
 import course
 import group
 import course_section
+import enrol 
+import enrolment_request
 # import upload
-import enrol
 
 @app.route("/test", methods=['GET'])
 def test():

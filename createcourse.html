@@ -11,7 +11,9 @@
 
         <!-- jQuery -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 
 
         <style>
@@ -92,6 +94,36 @@
                 width: 100px ;
             }
 
+            #modalloading {
+                display: block;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                text-align: center;
+                opacity: 0.7;
+                background-color: #fff;
+                z-index: 99;
+            }
+
+            #loading-image {
+                margin-top: 50px;
+                z-index: 100;
+            }
+
+            .modal-icon {
+                color: #f15e5e;
+                font-size: 46px;
+                display: inline-block;
+                margin-top: 13px;
+            }
+
+            .modal-icon i {
+                color: #f15e5e;
+                font-size: 46px;
+                display: inline-block;
+                margin-top: 13px;
+            }
         </style>
     </head>
 
@@ -99,52 +131,189 @@
         <!-- start of side bar -->
         <div class="container" id="sidebar">
         </div>
-        <!-- end of side bar -->
-            
-        <!-- load admin_nav.html -->
-        <script>
-            $(function(){
-              $("#sidebar").load("admin_nav.html");
-            });
-        </script>
-    
-        <div class="container" id="content">
-            <div class="row">
-                <div class="col">
-                    <h2>Create Course</h2>
-                </div>
-                <div class="col-2" style="padding-top: 65px ;">
-                    <input type="button" value="Log Out" id="logout">
-                </div>
-                 
-            </div>
+            <!-- end of side bar -->
                 
-            <div class="container" id="form">
-                <form action="">
-                    <div class="row">
-                        <div class="col">
-                            <label for="cname">Course Name</label>
-                        </div>
-                        <div class="col">
-                            <input type="text" id="cname" name="coursename">
-                        </div>
+            <!-- load admin_nav.html -->
+            <script>
+                $(function(){
+                $("#sidebar").load("admin_nav.html");
+                });
+            </script>
+        
+            <div class="container" id="content">
+                <div class="row">
+                    <div class="col">
+                        <h2>Create Course</h2>
                     </div>
-                    <div class="row" style="padding-top: 43px">
-                        <div class="col-6">
-                            <label for="cdesc">Course Description</label>
-                        </div>
-                        <div class="col-6">
-                            <textarea id="cdesc" name="coursedescription" cols="35" rows="4"></textarea>
-                        </div>
+                    <div class="col-2" style="padding-top: 65px ;">
+                        <input type="button" value="Log Out" id="logout">
                     </div>
-                    <div class="row" style="padding-top: 43px ; padding-left: 15px" >
-                        <input type="button" value="Submit" onclick="window.location=''"> <!-- direct back to individual course page -->
-                    </div>
-                </form>
+                    
+                </div>
+                    
+                <div class="container" id="form">
+                    <form action="">
+                        <div class="row">
+                            <div class="col">
+                                <label for="cname">Course Name</label>
+                            </div>
+                            <div class="col">
+                                <input type="text" id="cname" name="coursename">
+                            </div>
+                        </div>
+                        <div class="row" style="padding-top: 43px">
+                            <div class="col-6">
+                                <label for="cdesc">Course Description</label>
+                            </div>
+                            <div class="col-6">
+                                <textarea id="cdesc" name="coursedescription" cols="35" rows="4"></textarea>
+                            </div>
+                        </div>
+                        <div class="row" style="padding-top: 43px ;">
+                            <div class="col">
+                                <label for="cpre">Pre-Requisite Course(s)</label>
+                            </div>
+                            <div class="col">
+                                <select id="cpre" name="cpre" multiple>
+                                    <option value="" disabled selected>Please select course</option><!-- need to hold down ctrl button to multi-select??? wtf man -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row" style="padding-top: 43px ; padding-left: 15px" >
+                            <input type="button" value="Submit" onclick="createCourse()"> 
+                        </div>
+                    </form>
+                </div>
             </div>
+
+            <!-- Success modal -->
+            <div id="successModal" class="modal fade">
+                <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                        <div class="modal-header flex-column">
+                            <div class="icon">
+                                <i data-feather="check-circle"></i>
+                            </div>						
+                            <h4 class="modal-title w-100">Success!</h4>	
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p id='successMessage'></p>
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="window.location='./admin_home.html'">Okay</button>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+
+            <!-- failure modal -->
+            <div id="failureModal" class="modal fade">
+                <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                        <div class="modal-header flex-column">
+                            <div class="icon">
+                                <i data-feather="alert-triangle"></i>
+                            </div>						
+                            <h4 class="modal-title w-100">Error!</h4>	
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p id='failureMessage'></p>
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Okay</button>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+
+            <!-- loading modal -->
+            <div id="loadingModal" class="modal fade">
+                <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                        <div class="modal-header flex-column">				
+                            <h4 class="modal-title w-100">Loading.....</h4>	
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="modalloading">
+                                <img id="loading-image" src="static/imgs/loading.gif" alt="Loading..." />
+                            </div>  
+                        </div>
+                    </div>
+                </div>
+            </div> 
         </div>
 
-        </div>
+        <script>
+
+            // populate list of courses
+
+            const api_endpoint = "http://52.55.242.44:8000/"
+
+            $(async() => {
+                var course_api = api_endpoint + "all_course"
+
+                try {
+
+                    const response = 
+                        await fetch (
+                            course_api, {
+                                method:'GET'
+                            }
+                        );
+                    const result = await response.json() ;
+                    console.log(result)
+                    if (response.status === 200) {
+                        let data = result.data
+                        if (data.length) {
+                        for (let course of data) {option = `<option value=${course.id}> ${course.name}</option>`
+                            $('#cpre').append(option)
+                        }
+                        }
+                    } else {
+                        $('#cpre').append(`<option> No courses available </option`)
+                    }
+                } catch(err){
+                    alert(err)
+                    console.log(err)
+                }
+            })
+            async function createCourse() {
+                $("#loadingModal").modal("show");
+                data = {
+                    name: $("#cname").val(),
+                    description: $("#cdesc").val(),
+                    prerequisite: $("#cpre").val()
+                }
+
+                const create_course_api = api_endpoint + "course"
+                try {
+                    const response = await fetch(
+                        create_course_api, {
+                            method: 'POST',
+                            headers: { "Content-Type":"application/json"},
+                            body: JSON.stringify(data)
+                        }
+                    );
+
+                    const result = await response.json();
+                    $("#loadingModal").modal("hide");
+                    if (response.status === 200) {
+                        $("#successMessage").text(result.message)
+                        $("#successModal").modal("show");
+                    } else { 
+                        $("#failureMessage").text(result.message)
+                        $("#failureModal").modal("show");
+                    }
+                } catch (err) {
+                    $("#failureMessage").text(result.message)
+                    $("#failureModal").modal("show");
+                    console.log(err)
+                }
+            }
+        </script>
         
 
     </body>

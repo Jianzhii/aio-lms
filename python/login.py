@@ -10,7 +10,6 @@ from user import User, UserRole
 def login():
     try:
         data = request.get_json()
-        print(data)
         _username = data['username']
         _password = data['password']
         row = User.query.filter_by(name=_username).first().json()
@@ -22,6 +21,7 @@ def login():
                 "status": 200,
                 "msg": "Login Success",
                 "data" :{
+                    "id": f"{row['id']}",
                     "username" : f"{row['name']}",
                     "role_name" : f"{role_name}"
                 }

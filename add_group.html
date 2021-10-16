@@ -14,6 +14,9 @@
 
         <!-- jQuery -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 
         <style>
 
@@ -94,6 +97,36 @@
                 width: 100px ;
             }
 
+            #modalloading {
+                display: block;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                text-align: center;
+                opacity: 0.7;
+                background-color: #fff;
+                z-index: 99;
+            }
+
+            #loading-image {
+                margin-top: 50px;
+                z-index: 100;
+            }
+
+            .modal-icon {
+                color: #f15e5e;
+                font-size: 46px;
+                display: inline-block;
+                margin-top: 13px;
+            }
+
+            .modal-icon i {
+                color: #f15e5e;
+                font-size: 46px;
+                display: inline-block;
+                margin-top: 13px;
+            }
         </style>
 
         <!-- start of page icon -->
@@ -195,30 +228,88 @@
                             </div>
                         </div>
                         <div class="row" style="padding-top: 43px ; padding-left: 15px">
-                            <input type="button" value="Submit" id="submit" onclick="window.location='./group.html'">
+                            <input type="button" value="Submit" id="submit" onclick="createGroup()">
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-        
+
+        <!-- Success modal -->
+        <div id="successModal" class="modal fade">
+            <div class="modal-dialog modal-confirm">
+                <div class="modal-content">
+                    <div class="modal-header flex-column">
+                        <div class="icon">
+                            <i data-feather="check-circle"></i>
+                        </div>						
+                        <h4 class="modal-title w-100">Success!</h4>	
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p id='successMessage'></p>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="window.location='./admin_home.html'">Okay</button>
+                    </div>
+                </div>
+            </div>
+        </div> 
+
+        <!-- failure modal -->
+        <div id="failureModal" class="modal fade">
+            <div class="modal-dialog modal-confirm">
+                <div class="modal-content">
+                    <div class="modal-header flex-column">
+                        <div class="icon">
+                            <i data-feather="alert-triangle"></i>
+                        </div>						
+                        <h4 class="modal-title w-100">Error!</h4>	
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p id='failureMessage'></p>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Okay</button>
+                    </div>
+                </div>
+            </div>
+        </div> 
+
+        <div id="loadingModal" class="modal fade">
+            <div class="modal-dialog modal-confirm">
+                <div class="modal-content">
+                    <div class="modal-header flex-column">				
+                        <h4 class="modal-title w-100">Loading.....</h4>	
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="modalloading">
+                            <img id="loading-image" src="static/imgs/loading.gif" alt="Loading..." />
+                        </div>  
+                    </div>
+                </div>
+            </div>
+        </div> 
 
     </body>
 
     <script>
 
         const api_endpoint = "http://52.55.242.44:8000/"
+        // const api_endpoint = "http://localhost:8000/"
 
         // Populate Course Dropdown
 
         $(async () => {
             // API Endpoint
-            var trainer_api = api_endpoint + "all_course"
+            var course_api = api_endpoint + "all_course"
 
             try {
                 const response =
                     await fetch(
-                        trainer_api, {
+                        course_api, {
                         method: 'GET'
                     }
                 );
@@ -304,6 +395,44 @@
                 console.log(err)
             }
         });
+    
+        async function createGroup() {
+            $("#loadingModal").modal("show");
+            data = {
+                course_id: $("#course").val(),
+                size: $("#ssize").val(),
+                start_date: $("#startdate").val(),
+                end_date: $("#enddate").val(),
+                enrol_start_date: $("#enrollmentstart").val(),
+                enrol_end_date: $("#enrollmentend").val(),
+                trainer_id: $("#trainer").val()
+            }
+
+            const create_group_api = api_endpoint + "group"
+            try {
+                const response = await fetch(
+                    create_group_api, {
+                        method: 'POST',
+                        headers: { "Content-Type":"application/json"},
+                        body: JSON.stringify(data)
+                    }
+                );
+
+                const result = await response.json();
+                $("#loadingModal").modal("hide");
+                if (response.status === 200) {
+                    $("#successMessage").text(result.message)
+                    $("#successModal").modal("show");
+                } else { 
+                    $("#failureMessage").text(result.message)
+                    $("#failureModal").modal("show");
+                }
+            } catch (err) {
+                $("#failureMessage").text(result.message)
+                $("#failureModal").modal("show");
+                console.log(err)
+            }
+        }
     </script>
 
 
