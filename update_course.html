@@ -97,7 +97,7 @@
         <div class="container" id="content">
             <div class="row">
                 <div class="col">
-                    <h2>Create Course</h2>
+                    <h2>Update Course</h2>
                 </div>
                 <div class="col-2" style="padding-top: 65px ;">
                     <input type="button" value="Log Out" id="logout">
@@ -155,7 +155,7 @@
             // load existing course name & description
             $(async() => {
                 
-                const course_api = "http://52.55.242.44:8000/" + query
+                const course_api = "http://52.55.242.44:8000/course/" + query
 
                 try {
                     const response = 
