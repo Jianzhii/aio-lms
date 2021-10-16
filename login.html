@@ -67,9 +67,10 @@
               }
           );
       let userObj = await response.json();
-      console.log(userObj);
       if(userObj.status == 200){
+        user_id = userObj.data.id
         role_name = userObj.data.role_name.toLowerCase();
+        sessionStorage.setItem('user_id', userObj.data.id)
         if(role_name == "admin"){
           window.location.href = 'admin_home.html';
         }else if(role_name == "trainer"){

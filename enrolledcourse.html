@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
 
-        <title>View All Courses</title>
+        <title>Enrolled Courses</title>
         <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
 
         <meta charset="utf-8">
@@ -144,7 +144,7 @@
         <div class="container" id="content">
             <div class="row" id="header">
                 <div class="col">
-                    <h2>All Courses</h2>
+                    <h2>Enrolled Courses</h2>
                 </div>
                 <div class="col-2" style="padding-top: 65px ;">
                     <input type="button" value="Log Out" id="logout">
@@ -163,8 +163,6 @@
                       <tr>
                           <th scope="col">S/N</th>
                           <th scope="col">Course Name</th>
-                          <th scope="col">Course Description</th>
-                          <th scope="col">Prerequisite Course(s)</th>
                           <th scope="col"></th>  
                       </tr>
                     </tbody>
@@ -188,41 +186,44 @@
             const api_endpoint = "http://52.55.242.44:8000/" 
             // const api_endpoint = "http://localhost:8000/"
 
-            // retrieve all courses
+            var user_id = sessionStorage.getItem("user_id")
+
+            // retrieve enrolled courses
+
             $(async () => {
 
-            // API Endpoint
-            var all_course_api = api_endpoint + "all_course"
+                // API endpoint
+                var enrolled_courses_api = api_endpoint + "enrolment/user/" + user_id
+
+                console.log(enrolled_courses_api)
 
                 try {
-                    const response =
+                    const response = 
                         await fetch(
-                            all_course_api, {
+                            enrolled_courses_api, {
                             method: 'GET'
                         }
-                    );
+                    ); 
 
-                    const result = await response.json();
+                    const result = await response.json(); 
                     if (response.status === 200) {
-                        $('#loading').hide();
+                        console.log(result.data)
+                        $('#loading').hide() ;
                         let data = result.data
                         if (data.length) {
-                            for (let i = 0; i < data.length; i++) {
-                            row = `
-                            <tr>
-                                <td>${i+1}</td>
-                                <td>${data[i].name}</td>
-                                <td>${data[i].description}</td>
-                                <td>${data[i].prerequisite}</td>
-                                <td><input type="button" value="View Details" id="viewdetails"></td>
-                            </tr>`
-
-                            $('#tablecontent').append(row)                    
+                            for (let i=0 ; i < data.length ; i++) {
+                                row = `
+                                <tr>
+                                    <td>${i+1}</td>
+                                    <td>${data[i].course_name}</td>
+                                    <td><input type="button" value="View Details" id="viewdetails" onclick="coursegroupdetails(${data[i].id},${data[i].group_id})"></td>   
+                                </tr>`
+                                $('#tablecontent').append(row)
                             }
-                        }  else {
+                        } else {
                             row = `
                             <tr>
-                                <td>There are no courses</td>
+                                <td>You have not enrolled in any courses</td>
                             </tr>`
                             $('#tablecontent').append(row)
                         }
@@ -231,9 +232,12 @@
                     alert(err)
                     console.log(err)
                 }
+            });
 
-            feather.replace()
-        });
+            // function to direct to individual group pages
+            function coursegroupdetails(courseid, groupid) {
+                location.href = "./group_details.html?id=" + courseid + "&groupId=" + groupid
+            }
 
             // function for search bar
             var search = document.getElementById("search");
