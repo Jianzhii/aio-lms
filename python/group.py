@@ -233,6 +233,7 @@ def updateGroup():
 @app.route("/group/<int:id>", methods=['DELETE'])
 def deleteGroup(id):
     try:
+        from enrol import Enrolment
         group = Group.query.filter_by(id=id).first()
         if not group:
             return jsonify(
@@ -248,7 +249,12 @@ def deleteGroup(id):
         if trainer_assignment:
             for assignment in trainer_assignment:
                 db.session.delete(assignment)
-            db.session.commit()
+
+        all_enrolment = Enrolment.query.filter_by(group_id=id).all()
+        if all_enrolment:
+            for enrolment in all_enrolment:
+                db.session.delete(enrolment)
+                
         db.session.delete(group)
         db.session.commit()
         return jsonify(
