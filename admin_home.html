@@ -72,7 +72,7 @@
                 width: 200px ;
             }
 
-            #viewallcourse {
+            #viewcourse {
                 color: #FF922D ;
                 font-weight: bold ;
             }
@@ -132,6 +132,18 @@
             #loading-image {
                 margin-top: 50px;
                 z-index: 100;
+            .modal-icon {
+            color: #f15e5e;
+            font-size: 46px;
+            display: inline-block;
+            margin-top: 13px;
+            }
+
+            .modal-icon i {
+                color: #f15e5e;
+                font-size: 46px;
+                display: inline-block;
+                margin-top: 13px;
             }
 
         </style>
@@ -184,7 +196,7 @@
                 <div class="modal-dialog modal-confirm">
                     <div class="modal-content">
                         <div class="modal-header flex-column">
-                            <div class="icon">
+                            <div class="modal-icon">
                                 <i data-feather="x-circle"></i>
                             </div>						
                             <h4 class="modal-title w-100">Are you sure?</h4>	
@@ -216,46 +228,46 @@
             $(async () => {
 
             // API Endpoint
-            var user_api = api_endpoint + "all_course"
+            var all_course_api = api_endpoint + "all_course"
 
-            try {
-                const response =
-                    await fetch(
-                        user_api, {
-                        method: 'GET'
+                try {
+                    const response =
+                        await fetch(
+                            all_course_api, {
+                            method: 'GET'
+                        }
+                    );
+
+                    const result = await response.json();
+                    if (response.status === 200) {
+                        let data = result.data
+                        for (let i = 0; i < data.length; i++) {
+                            row = `
+                            <tr>
+                                <td>${i+1}</td>
+                                <td>${data[i].name}</td>
+                                <td>${data[i].description}</td>
+                                <td>
+                                    <!-- view -->
+                                    <a href="./coursegroup.html?id=${data[i].id}&courseName=${data[i].name}" class="icon" title="View Groups"><i data-feather="eye"></i></a>
+
+                                    <!-- edit -->
+                                    <a href="./update_course.html?id=${data[i].id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+
+
+                                    <!-- delete/retire -->
+                                    <a href="#deletemodal" class="trigger-btn icon" data-toggle="modal" title="Retire Course"><i data-feather="trash-2"></i></a>
+                                </td>
+                            </tr>`
+
+                            $('#tablecontent').append(row)                    
+                        } /* what if there are no courses */
                     }
-                );
-
-                const result = await response.json();
-                if (response.status === 200) {
-                    let data = result.data
-                    for (let i = 0; i < data.length; i++) {
-                        row = `
-                        <tr>
-                            <td>${i+1}</td>
-                            <td>${data[i].name}</td>
-                            <td>${data[i].description}</td>
-                            <td>${data[i].prerequisite}</td>
-                            <td>
-                                <!-- view -->
-                                <a href="./coursegroup.html?id=${data[i].id}&courseName=${data[i].name}" class="icon" title="View Groups"><i data-feather="eye"></i></a>
-
-                                <!-- edit -->
-                                <a href="./update_course.html?id=${data[i].id}&courseName=${data[i].id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
-
-                                <!-- delete/retire -->
-                                <a href="#deletemodal" class="trigger-btn icon" data-toggle="modal" title="Retire Course"><i data-feather="trash-2"></i></a>
-                            </td>
-                        </tr>`
-
-                        $('#tablecontent').append(row)                    
-                    } /* what if there are no courses */
+                } catch(err) {
+                    alert(err)
+                    console.log(err)
                 }
-            } catch(err) {
-                alert(err);
-                console.log(err);
-            }
-            $('#loading').hide();
+
             feather.replace()
         });
 
@@ -273,7 +285,7 @@
 
                     $(async () => {
                         // API Endpoint
-                        var user_api = api_endpoint + "search_course" 
+                        var user_api = api_endpoint + "search_course"
 
                         try {
                             const response =
@@ -323,6 +335,7 @@
                         } catch(err) {
                             alert(err)
                             console.log(err)
+                            $('#loading').hide();
                         }
                     });
                 }
