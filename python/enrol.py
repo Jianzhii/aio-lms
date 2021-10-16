@@ -87,15 +87,19 @@ def addEnrolment(data=None):
     try:
         if type(data['user_id']) == list:
             for user in data['user_id']:
-                result = processEnrolment({
+                result = processEnrolmentEligibility({
                                     "user_id": user,
                                     "group_id": data['group_id']})
                 if result[1] != 200: 
                     return result
+                else: 
+                    db.session.add(result[0])
         else: 
-            result = processEnrolment(data)
+            result = processEnrolmentEligibility(data)
             if result[1] != 200: 
                 return result
+            else: 
+                db.session.add(result[0])
 
         db.session.commit()
 
@@ -113,7 +117,7 @@ def addEnrolment(data=None):
             }
         ), 500
 
-def processEnrolment(data): 
+def processEnrolmentEligibility(data): 
         try:
             existing_enrolment = Enrolment.query.filter_by(user_id = data['user_id'], group_id = data['group_id']).all()
             user = User.query.filter_by(id=data['user_id']).first()
@@ -126,8 +130,20 @@ def processEnrolment(data):
                     }
                 ), 406
 
-            # check for same courrse
+            # check for same course
             group = Group.query.filter_by(id=data['group_id']).first()
+            course_info = Course.query.filter_by(id=group.course_id).first()
+            all_groups_under_course = [each.id for each in Group.query.filter_by(course_id=course_info.id).all()]
+            user_enrolment = [each.group_id for each in Enrolment.query.filter_by(user_id = data['user_id']).all()]
+            if len(list(set(all_groups_under_course) & set(user_enrolment))): 
+                return jsonify(
+                    {
+                        "code":406,
+                        "data": data,
+                        "message": f"{user.name} has already been enrolled in this course"
+                    }
+                ), 406
+
             current_group_size = Enrolment.query.filter_by(group_id = data['group_id']).count()
             if current_group_size == group.size:
                 return jsonify(
@@ -137,7 +153,6 @@ def processEnrolment(data):
                         "message": "Group enrollment is already full."
                     }
                 ),406
-            course_info = Course.query.filter_by(id=group.course_id).first()
             if course_info.prerequisite:
                 completed_course = [ course.id for enrolment, group, course in db.session.query(Enrolment, Group, Course).filter_by(user_id=data['user_id'], completed=True)\
                                                                                         .outerjoin(Group, Group.id == Enrolment.group_id)\
@@ -161,13 +176,7 @@ def processEnrolment(data):
                 enrolled_dt = datetime.now(),
                 completed = False
             )
-            db.session.add(enrol)
-            return jsonify(
-                {
-                    "code": 200,
-                    "message": f"Successfully enrolled {user.name}"
-                }
-            ), 200
+            return (enrol, 200)
         except Exception as e: 
             raise e
 
