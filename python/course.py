@@ -2,6 +2,8 @@ from types import prepare_class
 from app import app, db
 from flask import json, jsonify, request
 from user import User
+import datetime
+
 
 class Course(db.Model):
 
@@ -18,6 +20,7 @@ class Course(db.Model):
             'description': self.description,
             'prerequisite': self.prerequisite
         }
+
 class Badge(db.Model):
     __tablename__ = 'badges'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -109,7 +112,7 @@ def searchCourse():
                 "code":404,
                 "message": f"Error while searching: {e}."
             }
-        )
+        ), 404
 
 # Get one course
 @app.route("/course/<int:id>", methods=['GET'])
@@ -140,7 +143,7 @@ def getoneCourse(id):
                 },
                 "message": "Course not found."
             }
-        )
+        ), 404
 
 # Add one course
 '''
@@ -177,7 +180,7 @@ def addCourse():
                 "code":500,
                 "message": f"An error occurred while creating course: {e}"
             }
-        )
+        ), 500
 
 #  Update Course
 '''
@@ -204,7 +207,7 @@ def updateCourse():
                     },
                     "message": "Course not found."
                 }
-            )
+            ), 404
         course.name = data['name']
         course.description = data['description']
         course.prerequisite = data['prerequisite']
@@ -216,7 +219,7 @@ def updateCourse():
                 "data": data,
                 "message": "Course successfully updated"
             }
-        )
+        ), 200
 
     except Exception as e:
         return jsonify(
@@ -224,14 +227,30 @@ def updateCourse():
                 "code":500,
                 "message": f"An error occurred while updating course: {e}"
             }
-        )
+        ), 500
 
 # Delete course
 @app.route("/course/<int:id>", methods=['DELETE'])
 def deleteCourse(id):
     try:
+        from group import Group, TrainerAssignment
+        from enrol import Enrolment
+
         course = Course.query.filter_by(id=id).first()
         badge = Badge.query.filter_by(course_id=id).first()
+        ongoing_group = Group.query.filter(Group.course_id == course.id, Group.end_date >= datetime.now()).first()
+        
+        if ongoing_group:
+            return jsonify(
+                {
+                    "code":500,
+                    "data": {
+                        "id": id
+                    },
+                    "message": f"{course.name} still have ongoing classes!"
+                } 
+            ), 500
+
         if not course:
             return jsonify(
                 {
@@ -241,7 +260,18 @@ def deleteCourse(id):
                     },
                     "message": "Course not found."
                 }
-            )
+            ), 404
+        all_groups = Group.query.filter(Group.course_id == course.id).all()
+        if all_groups:
+            for group in all_groups:
+                assignment = TrainerAssignment.query.filter_by(group_id = group.id).all()
+                if assignment:
+                    db.session.execute(TrainerAssignment.__table__.delete().where(TrainerAssignment.group_id == group.id))
+
+                enrolment = Enrolment.query.filter_by(group_id = group.id).all()
+                if enrolment:
+                    db.session.execute(Enrolment.__table__.delete().where(Enrolment.group_id == group.id))
+                db.session.delete(group)
         db.session.delete(badge)
         db.session.delete(course)
         db.session.commit()

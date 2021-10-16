@@ -79,8 +79,9 @@ sample request
 }
 # '''
 @app.route("/enrolment", methods=['POST'])
-def addEnrolment():
-    data = request.get_json()
+def addEnrolment(data):
+    if not data:
+        data = request.get_json()
     try:
         existing_enrolment = Enrolment.query.filter_by(user_id = data['user_id'], group_id = data['group_id']).all()
         user = User.query.filter_by(id=data['user_id']).first()
@@ -176,3 +177,7 @@ def deleteEnrolment(id):
                 "message": f"An error occurred while deleting enrolment: {e}"
             }
         )
+
+
+
+

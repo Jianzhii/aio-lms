@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Create Course</title>
+        <title>Update Course</title>
 
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,8 +11,6 @@
 
         <!-- jQuery -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-
-
 
         <style>
 
@@ -61,11 +59,6 @@
                 width: 200px ;
             }
 
-            #createcourse {
-                color: #FF922D ;
-                font-weight: bold ;
-            }
-
             #sidebar {
                 width: 30% ;
             }
@@ -100,18 +93,11 @@
         <div class="container" id="sidebar">
         </div>
         <!-- end of side bar -->
-            
-        <!-- load admin_nav.html -->
-        <script>
-            $(function(){
-              $("#sidebar").load("admin_nav.html");
-            });
-        </script>
     
         <div class="container" id="content">
             <div class="row">
                 <div class="col">
-                    <h2>Create Course</h2>
+                    <h2>Update Course</h2>
                 </div>
                 <div class="col-2" style="padding-top: 65px ;">
                     <input type="button" value="Log Out" id="logout">
@@ -148,19 +134,54 @@
                         </div>
                     </div>
                     <div class="row" style="padding-top: 43px ; padding-left: 15px" >
-                        <input type="button" value="Submit" onclick="window.location=''"> <!-- direct back to individual course page -->
+                        <input type="button" value="Update" onclick="window.location=''"> <!-- direct back to individual course page -->
                     </div>
                 </form>
             </div>
         </div>
+
         </div>
 
         <script>
+            
+            // load admin_nav.html
+            $(function(){
+                $("#sidebar").load("admin_nav.html");
+            });
 
-            // populate list of courses
+            let query = window.location.search.substring(1)[3];
+            console.log(query)
 
-            const api_endpoint = "http://52.55.242.44:8000/"
+            // load existing course name & description
+            $(async() => {
+                
+                const course_api = "http://52.55.242.44:8000/course/" + query
 
+                try {
+                    const response = 
+                        await fetch(
+                            course_api, {
+                                method:'GET'
+                            }
+                    );
+
+                    const result = await response.json() ;
+                    if (response.status === 200) {
+                        let data = result.data
+                        console.log(data)
+
+                        $('#cname').val(data.name)
+                        $('#cdesc').val(data.description)
+
+                    }
+
+                } catch(err) {
+                    alert(err)
+                    console.log(err)
+                }
+            })
+
+            // load pre-requisites dropdown
             $(async() => {
                 var course_api = api_endpoint + "all_course"
 
@@ -173,7 +194,6 @@
                             }
                         );
                     const result = await response.json() ;
-                    console.log(result)
                     if (response.status === 200) {
                         let data = result.data
                         if (data.length) {
@@ -191,7 +211,5 @@
             })
 
         </script>
-        
-
     </body>
 </html>

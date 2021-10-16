@@ -132,7 +132,6 @@
 
         feather.replace()
 
-        // const api_endpoint = "http://localhost:8000/" 
         const api_endpoint = "http://52.55.242.44:8000/" 
         
         // Load Course table contents
@@ -146,7 +145,7 @@
             }
             $('#courseName').append(data['courseName'].replace("%20", " "))
             // API Endpoint
-            var user_api = api_endpoint + "all_group/" + data.id // localhost
+            var user_api = api_endpoint + "all_group/" + data.id
 
             try {
                 const response =

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <title class="coursename"></title>
+        <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+        <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+
+        <!-- Icons -->
+        <script src="https://unpkg.com/feather-icons"></script>
+
+        <!-- Bootstrap/ CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+        <style>
+
+            body {
+                font-family: 'Montserrat' ;
+                font-size: 12px ;
+            }
+
+            .sidenav {
+                height: 100% ;
+                width: 20% ;
+                position: fixed ;
+                top: 0 ;
+                left: 0 ;
+                z-index: 1 ;
+                overflow-x: hidden ;
+                border-right: solid lightgrey 2px ; 
+            }
+
+            h2 {
+                padding-top: 58px ;
+                padding-left: 10px ;
+            }
+
+            h3 {
+                text-indent: 34px ;
+                font-size: 13px ;
+                font-weight: bold ;
+            }
+
+            h6 {
+                font-style: italic;
+            }
+
+            .sidenav a {
+                color: black ;
+                padding: 16px ;
+                display: block ;
+            }
+
+            a {
+                text-decoration: none ;
+            }
+
+            ul {
+                list-style-type: none ;
+            }
+
+            #logo {
+                height: 150px ;
+                width: 200px ;
+            }
+
+            #sidebar {
+                width: 30% ;
+            }
+
+            #content {
+                width: 80% ;
+                margin-left: 20% ;
+            }
+
+            #header {
+                padding: 12px ;
+                color: #FF922D ;
+                font-weight: bold ;
+            }
+
+            #detailsheader, #details {
+                padding: 20px ; 
+            }
+
+            #table {
+                padding: 30px ; 
+                text-align: center ;
+            }
+
+            input[type=text] {
+                width: 257px ;
+            }
+
+            input[type=button] {
+                background: #FF922D ;
+                color: white ; 
+                border: none ;
+                border-radius: 3px ; 
+                padding: 5px ;
+                width: 100px ;
+            }
+
+            #tableheader{
+                background-color: #FF922D ;
+                color: white ;
+            }
+
+            .icon {
+                color: #FF922D ;
+                padding: 2px ;
+            }
+            
+            #loading {
+                display: block;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                text-align: center;
+                opacity: 0.7;
+                background-color: #fff;
+                z-index: 99;
+            }
+
+            #loading-image {
+                margin-top: 50px;
+                z-index: 100;
+            }
+
+
+        </style>
+    </head>
+
+    <body>
+        <!-- start of side bar -->
+        <div class="container" id="sidebar">
+            <div class="container" id="sidebar"></div>
+        </div>
+        <!-- end of side bar -->
+            
+        <div class="container" id="content">
+            <div class="row" id="header">
+                <div class="col">
+                    <h2 class="coursename">
+                        <a class='icon' href="admin_home.html"><i data-feather="chevron-left"></i></a> 
+                    </h2>
+                </div>
+                <div class="col-2" style="padding-top: 65px ;">
+                    <input type="button" value="Log Out" id="logout">
+                </div>
+            </div>
+
+            <div class="row" id="detailsheader">
+                <div class="col">
+                    <h6>Course Description: </h6>
+                </div>
+                <div class="col">
+                    <h6 id="prereq">Pre-Requisite Course(s): </h6>
+                </div>
+            </div>
+
+            <div class="row" id="details">
+                <div class="col">
+                    <p id="desc"></p>
+                </div>
+                <div class="col">
+                    <p id="preq"></p>
+                </div>
+            </div>
+
+                 
+            <!-- start of table showing list of groups -->
+            <div class="row" id="table">
+                <table class="table">
+                    <tbody id="tableheader"> 
+                      <tr>
+                          <th scope="col">S/N</th>
+                          <th scope="col">Group Size</th>
+                          <th scope="col">Trainer</th>
+                          <th scope="col">Enrollment Start Date/Time</th>
+                          <th scope="col">Enrollment End Date/Time</th>
+                          <th scope="col">Group Start Date/Time</th>
+                          <th scope="col">Group End Date/Time</th>
+                          <th scope="col">Actions</th>  
+                      </tr>
+                    </tbody>
+                    <tbody id="tablecontent">
+                        <!-- populate rows of groups -->
+                    </tbody>
+                </table>
+                <div id="loading">
+                    <img id="loading-image" src="static/imgs/loading.gif" alt="Loading..." />
+                </div>   
+            </div>
+        </div>
+
+        <script>
+
+            // load admin_nav.html
+            $(function(){
+                $("#sidebar").load("admin_nav.html");
+            });
+
+            feather.replace()
+    
+            const api_endpoint = "http://52.55.242.44:8000/"
+            
+            $(async() => {
+                let query = window.location.search.substring(1)[3] ;
+                var course_api = api_endpoint + "course/" + query
+                
+                try {
+                    const response = 
+                        await fetch(
+                            course_api, {
+                                method: 'GET'
+                            }
+                        );
+
+                    const result = await response.json() ;
+                    if (response.status === 200) {
+                        let data = result.data
+                        console.log(data)
+                        if (data.prerequisite != "-") {
+                            $('#desc').append(data.description)
+                            var prereq = data.prerequisite.split(",<br>")
+                            var prereq_str = prereq[0]
+                            for (i = 1 ; i < prereq.length ; i++) {
+                                prereq_str = prereq_str + ', ' + prereq[i]
+                            }
+                            $('#preq').append(prereq_str)   
+                        } else {
+                            $('#desc').append(data.description)
+                            var prereq = "No pre-requisite course required"
+                            $('#preq').append(prereq)
+                        }
+                    } 
+                }
+
+                catch(err) {
+                    alert(err)
+                    console.log(err)
+                }
+                
+            })
+    
+            // Load Course table contents
+            $(async () => {
+                let query = window.location.search.substring(1);
+                params = query.split('&');
+                data = {};
+                for (var i = 0, l = params.length; i < l; i++) {
+                    tmp = params[i].split('=');
+                    data[tmp[0]] = tmp[1];
+                }
+                $('.coursename').append(data['courseName'].replace("%20", " "))
+                // API Endpoint
+                var user_api = api_endpoint + "all_group/" + data.id
+    
+                try {
+                    const response =
+                        await fetch(
+                            user_api, {
+                            method: 'GET'
+                        }
+                    );
+    
+                    const result = await response.json();
+                    if (response.status === 200) {
+                        let data = result.data
+                        // console.log(data)
+                        if (data.length) {
+                            for (let i = 0; i < data.length; i++) {
+                                row = `
+                                <tr>
+                                    <td>${i+1}</td>
+                                    <td>${data[i].size}</td>
+                                    <td>${data[i].trainer_name}</td>
+                                    <td>${data[i].enrol_start_date}</td>
+                                    <td>${data[i].enrol_end_date}</td>
+                                    <td>${data[i].start_date}</td>
+                                    <td>${data[i].end_date}</td>
+                                    <td>
+                                        <!-- view -->
+                                        <a href="#" class="icon" title="View Details"><i data-feather="eye"></i></a>
+
+                                        <!-- edit -->
+                                        <a href="#" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+
+                                        <!-- delete/retire -->
+                                        <a href="#" class="icon" title="Retire Course"><i data-feather="trash-2"></i></a>
+                                    </td>
+                                </tr>`
+
+                                $('#tablecontent').append(row)
+                            }
+
+                            feather.replace()
+
+                        } else {
+                            $('#tablecontent').append(`
+                                <tr>
+                                    <td> No Results </td>
+                                </tr>
+                            `)
+                        }
+                        }
+                } catch(err) {
+                    alert(err)
+                    console.log(err)
+                }
+    
+                $('#loading').hide();
+            });
+       
+        </script>
+    </body>
+</html>

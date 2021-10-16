@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Fonts  -->
+        <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+        <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+
+
+        <!-- Icons -->
+        <script src="https://unpkg.com/feather-icons"></script>
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+        <style>
+
+            body {
+                font-family: 'Montserrat' ;
+                font-size: 12px ;
+            }
+
+            .sidenav {
+                height: 100% ;
+                width: 20% ;
+                position: fixed ;
+                top: 0 ;
+                left: 0 ;
+                z-index: 1 ;
+                overflow-x: hidden ;
+                border-right: solid lightgrey 2px ; 
+            }
+
+            h2 {
+                padding-top: 58px ;
+                padding-left: 10px ;
+            }
+
+            h3 {
+                text-indent: 34px ;
+                font-size: 13px ;
+                font-weight: bold ; 
+            }
+
+            .sidenav a {
+                color: black ;
+                padding: 16px ;
+                display: block ;
+            }
+
+            a {
+                text-decoration: none ;
+            }
+
+            ul {
+                list-style-type: none ;
+            }
+
+            #logo {
+                height: 150px ;
+                width: 200px ;
+            }
+
+            #viewlearners {
+                color: #FF922D ;
+                font-weight: bold ;
+            }
+
+            #sidebar {
+                width: 30% ;
+            }
+
+            #content {
+                width: 80% ;
+                margin-left: 20% ;
+            }
+
+            #header {
+                padding: 12px ;
+            }
+
+            #table {
+                padding: 30px ; 
+            }
+
+            input[type=text] {
+                width: 257px ;
+            }
+
+            input[type=button] {
+                background: #FF922D ;
+                color: white ; 
+                border: none ;
+                border-radius: 3px ; 
+                padding: 5px ;
+                width: 100px ;
+            }
+
+            #tableheader{
+                background-color: #FF922D ;
+                color: white ;
+            }
+
+            .icon {
+                color: #FF922D ;
+                padding: 2px ;
+            }
+
+        </style>
+
+        <!-- start of page icon -->
+        <title>All Learners</title>
+        <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
+        <!-- end of page icon -->
+
+    </head>
+
+    <body>
+        <!-- start of side bar -->
+        <div class="container" id="sidebar">
+        </div>
+        <!-- end of side bar -->
+
+        <!-- start of content -->
+
+        <div class="container" id="content">
+            <div class="row" id="header">
+                <div class="col">
+                    <h2>All Learners</h2>
+                </div>
+                <div class="col-2" style="padding-top: 65px ;">
+                    <input type="button" value="Log Out" id="logout">
+                </div>
+            </div>
+            
+            <!-- start of table showing list of learners -->
+            <div class="row" id="table">
+                <table class="table">
+                    <tbody id="tableheader"> 
+                      <tr>
+                          <th scope="col">S/N</th>
+                          <th scope="col">Learner Name</th>
+                          <th scope="col">Actions</th>  
+                      </tr>
+                    </tbody>
+                    <tbody id="tablecontent">
+                        <!-- populate rows of learners -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+            
+        <script>
+            
+            // load admin_nav.html
+            $(function(){
+              $("#sidebar").load("admin_nav.html");
+            });
+
+            const api_endpoint = "http://52.55.242.44:8000/"
+
+            // Populate Learner Dropdown
+            $(async () => {
+                // API Endpoint
+                var learner_api = api_endpoint + "all_learner"
+
+                try {
+                    const response =
+                        await fetch(
+                            learner_api, {
+                            method: 'GET'
+                        }
+                    );
+
+                    const result = await response.json();
+                    if (response.status === 200) {
+                        let data = result.data
+                        console.log(data)
+                        if (data.length) {
+                            for (let i = 0 ; i < data.length ; i++ ) {
+                                row = `
+                                <tr>
+                                    <td>${i+1}</td>
+                                    <td>${data[i].name}</td>
+                                    <td>
+                                        <!-- view -->
+                                        <a href="./individual_profile.html?id=${data[i].id}" class="icon" title="View Profile"><i data-feather="eye"></i></a>
+
+                                        <!-- edit -->
+                                        <a href="#" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+
+                                        <!-- delete/retire -->
+                                        <a href="#" class="icon" title="Retire Course"><i data-feather="trash-2"></i></a>
+                                    </td>
+                                </tr>`
+
+                                $('#tablecontent').append(row)
+                            }
+
+                            feather.replace()
+
+                        } else {
+                            $('#tablecontent').append(`No learners available`)
+                        }
+                    }
+                } catch(err) {
+                    alert(err)
+                    console.log(err)
+                }
+            });
+
+</script>
+
+    </body>
+
+</html>
