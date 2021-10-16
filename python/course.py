@@ -1,9 +1,8 @@
-from datetime import datetime
-
-from flask import jsonify, request
-
+from types import prepare_class
 from app import app, db
+from flask import json, jsonify, request
 from user import User
+import datetime
 
 
 class Course(db.Model):
@@ -23,7 +22,6 @@ class Course(db.Model):
         }
 
 class Badge(db.Model):
-
     __tablename__ = 'badges'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     course_id = db.Column(db.Integer, nullable=False)
@@ -34,6 +32,21 @@ class Badge(db.Model):
             'id': self.id,
             'course_id': self.course_id,
             'name': self.name
+        }
+
+class UserBadge(db.Model):
+    __tablename__ = 'user_badges'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id =  db.Column(db.Integer, nullable=False)
+    badges_id =  db.Column(db.Integer, nullable=False)
+    assigned_dt= db.Column(db.DateTime, nullable=False)
+
+    def json(self):
+        return {
+            'id':self.id,
+            'user_id': self.user_id,
+            'badges_id': self.badges_id,
+            'assigned_dt': self.assigned_dt
         }
 
 # Get all Courses
@@ -263,7 +276,6 @@ def deleteCourse(id):
         db.session.delete(badge)
         db.session.delete(course)
         db.session.commit()
-
         return jsonify(
             {
                 "code": 200,
@@ -276,4 +288,22 @@ def deleteCourse(id):
                 "code":500,
                 "message": f"An error occurred while deleting course: {e}"
             }
-        ), 500
+        )
+# View completed courses and Bages by user
+@app.route("/course/completed/<int:id>", methods=["GET"])
+def viewCompletedCourses(id):
+    courses = db.session.query(UserBadge,Badge).filter(UserBadge.user_id==id)\
+              .join(Badge, Badge.id == UserBadge.badges_id ).all()
+    data = []
+    for course,badge in courses:
+        course = course.json()
+        course['course_name'] =badge.name
+        print(badge)
+        data.append(course)
+    return jsonify(
+        {
+            "code":200,
+            "data" : data
+        }
+    ),200
+
