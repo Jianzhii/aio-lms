@@ -72,11 +72,11 @@
         role_name = userObj.data.role_name.toLowerCase();
         sessionStorage.setItem('user_id', userObj.data.id)
         if(role_name == "admin"){
-          window.location.href = 'admin_home.html';
+          window.location.href = './ui/admin/admin_home.html';
         }else if(role_name == "trainer"){
-          window.location.href = 'trainer_home.html';
+          window.location.href = './ui/trainer/trainer_home.html';
         }else{
-          window.location.href = 'learner_home.html';
+          window.location.href = './ui/learner/learner_home.html';
         }
       }
     }catch(err){
