@@ -15,7 +15,7 @@ class EnrolmentRequest(db.Model):
     group_id = db.Column(db.Integer, primary_key=True)
     is_approved = db.Column(db.String(100), nullable=True)
     approved_by = db.Column(db.String(100), nullable=True)
-    course_enrolment_id = db.Column(db.Integer, nullable=False)
+    course_enrolment_id = db.Column(db.Integer, nullable=True)
 
     def json(self):
         return {
@@ -41,9 +41,8 @@ def getAllRequests():
 
 #Add Request
 @app.route("/enrolment_request",methods=["POST"])
-def addRequest(data):
-    if not data:
-        data = request.get_json()
+def addRequest():
+    data= request.get_json()
     try:
         # if add enrolment success then add to DB
         existing_enrolment = Enrolment.query.filter_by(user_id = data['user_id'], group_id = data['group_id']).all()
@@ -89,7 +88,6 @@ def addRequest(data):
         enrolment_request = EnrolmentRequest(
             user_id = data['user_id'],
             group_id = data['group_id'],
-            course_enrolment_id = data['course_enrolment_id']
         )
         db.session.add(enrolment_request)
         db.session.commit()
@@ -113,19 +111,21 @@ def addRequest(data):
 Sample Request Body
 {
     "approved_by":1,
+    "course_enrolment_id":1
 
 }
 '''
 # Approve requests 
-@app.route("/enrolment_request/approve/<int:id>", methods=["PUT"])
-def approveRequest(id):
+@app.route("/enrolment_request/approve/<int:request_id>", methods=["PUT"])
+def approveRequest(request_id):
     data = request.get_json()
-    enrolment_request = EnrolmentRequest.query.filter_by(request_id=id).first()
+    enrolment_request = EnrolmentRequest.query.filter_by(id=request_id).first()
     if enrolment_request:
         try:
             user = User.query.filter_by(id=data['approved_by']).first()
             if user:
                 enrolment_request.is_approved=1
+                enrolment_request.course_enrolment_id = data['course_enrolment_id']
                 enrolment_request.approved_by=user.id
                 db.session.commit()
                 user_id = enrolment_request.user_id
@@ -145,13 +145,13 @@ def approveRequest(id):
                     "code":500,
                     "message": f"An error occurred while approving request: {e}"
                 }
-            )
+            ), 500
     else:
         return jsonify(
             {
                 "code":404,
                 "message": f"Invalid Enrolment Request ${id}"
             }
-        )
+        ),404
 
 
