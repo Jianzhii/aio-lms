@@ -44,8 +44,8 @@
             }
 
             h2 {
-                padding-top: 58px ;
-                padding-left: 10px ;
+                padding-top: 45px ;
+                padding-left: 5px ;
                 color: #FF922D ;
             }
 
@@ -74,11 +74,6 @@
                 width: 200px ;
             }
 
-            #acourse {
-                color: #FF922D ;
-                font-weight: bold ;
-            }
-
             #sidebar {
                 width: 30% ;
             }
@@ -90,10 +85,6 @@
 
             #header {
                 padding: 12px ;
-            }
-
-            #table {
-                padding: 30px ; 
             }
 
             input[type=button] {
@@ -108,6 +99,11 @@
             #tableheader{
                 background-color: #FF922D ;
                 color: white ;
+                padding-left: 35px 
+            }
+
+            #tablecontent {
+                padding-left: 35px ; 
             }
 
             .icon {
@@ -149,7 +145,7 @@
         <div class="container" id="content">
             <div class="row" id="header">
                 <div class="col">
-                    <h2>Group Details</h2>
+                    <h2 id="cname"></h2>
                 </div>
                 <div class="col-2" style="padding-top: 65px ;">
                     <input type="button" value="Log Out" id="logout">
@@ -158,16 +154,10 @@
 
             <!-- details about group -->
             <div class="row">
-                <div class="col" style="font-weight: bold">Course Name</div>
-                <div class="col" id="cname"></div>
-                <div class="col" style="font-weight: bold">Pre-Requisite Course(s)</div>
-                <div class="col" id="preq"></div>
-            </div>
-            <div class="row">
                 <div class="col" style="font-weight: bold">Course Description</div>
                 <div class="col" id="cdes"></div>
-                <div class="col"></div>
-                <div class="col"></div>
+                <div class="col" style="font-weight: bold">Pre-Requisite Course(s)</div>
+                <div class="col" id="preq"></div>
             </div>
             <div class="row">
                 <div class="col" style="font-weight: bold">Group Size</div>
@@ -220,7 +210,8 @@
                     if (response.status === 200) {
                         let data = result.data
                         console.log(data)
-                        $('#cname').append(data.course_name)
+                        var cname = data.course_name + " - Group " + groupid
+                        $('#cname').append(cname)
                         $('#gsize').append(data.size)
                         $('#trainer').append(data.trainer_name)
                         $('#sdate').append(data.start_date)

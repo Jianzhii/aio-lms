@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
 
-        <title>View All Courses</title>
+        <title>Courses</title>
         <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
 
         <meta charset="utf-8">
@@ -46,6 +46,7 @@
             h2 {
                 padding-top: 58px ;
                 padding-left: 10px ;
+                color: #FF922D ;
             }
 
             h3 {
@@ -214,7 +215,7 @@
                                 <td>${data[i].name}</td>
                                 <td>${data[i].description}</td>
                                 <td>${data[i].prerequisite}</td>
-                                <td><input type="button" value="View Details" id="viewdetails"></td>
+                                <td><input type="button" value="View Details" id="viewdetails" onclick=coursegroupdetails(${data[i].id})></td>
                             </tr>`
 
                             $('#tablecontent').append(row)                    
@@ -237,7 +238,6 @@
 
             // function for search bar
             var search = document.getElementById("search");
-
             search.addEventListener("keyup", function (event) {
                 // Number 13 is the "Enter" key on the keyboard
                 if (event.keyCode === 13) {
@@ -296,6 +296,10 @@
                 }
             });
 
+            // function for view details button
+            function coursegroupdetails(courseid) {
+                location.href = "./learner_course.html?id=" + courseid
+            }
         </script>   
     </body>
 </html>
