@@ -76,7 +76,7 @@ def getAllGroups(id):
                 "code":500,
                 "message": f"An error occurred while retrieving group: {e}"
             }
-        )
+        ), 500
 
 # Get one group
 @app.route("/group/<int:id>", methods=['GET'])
@@ -108,14 +108,14 @@ def getOneGroup(id):
                     },
                     "message": "Group not found."
                 }
-            )
+            ), 404
     except Exception as e: 
         return jsonify( 
             {
                 "code":500,
                 "message": f"An error occurred while retrieving group: {e}"
             }
-        )
+        ), 500
 
 # Add one group
 '''
@@ -125,6 +125,8 @@ sample request
     "size": 60,
     "start_date": "2021-10-15 12:00:00",
     "end_date": "2021-12-15 23:59:59",
+    "enrol_start_date": "2021-09-15 12:00:00",
+    "enrol_end_date": "2021-10-15 23:59:59",
     "trainer_id": 1
 }
 '''
@@ -136,6 +138,8 @@ def addGroup():
             course_id = data['course_id'],
             start_date = data['start_date'],
             end_date = data['end_date'],
+            enrol_start_date = data['enrol_start_date'],
+            enrol_end_date = data['enrol_end_date'],
             size = data['size']
         )
         db.session.add(group)
@@ -150,6 +154,7 @@ def addGroup():
         return jsonify(
             {
                 "code": 200,
+                "message": "Group successfully created! ",
                 "data": group.json()
             }
         ), 200
@@ -159,7 +164,7 @@ def addGroup():
                 "code":500,
                 "message": f"An error occurred while adding groups: {e}"
             }
-        )
+        ), 500
 
 #  Update Group
 '''
@@ -170,6 +175,8 @@ sample request
     "size": 60,
     "start_date": "2021-10-15 12:00:00",
     "end_date": "2021-12-15 23:59:59",
+    "enrol_start_date": "2021-09-15 12:00:00",
+    "enrol_end_date": "2021-10-15 23:59:59",
     "trainer_id": 1
 }
 '''
@@ -188,11 +195,13 @@ def updateGroup():
                     },
                     "message": "Group not found."
                 }
-            )
+            ), 404
         group.course_id = data['course_id']
         group.start_date = data['start_date']
         group.end_date = data['end_date']
         group.size = data['size']
+        group.enrol_start_date = data['enrol_start_date'],
+        group.enrol_end_date = data['enrol_end_date'],
 
         assignment = TrainerAssignment.query.filter(TrainerAssignment.group_id == id, TrainerAssignment.assigned_end_dt == None).first()
         if data['trainer_id'] != assignment.json()['trainer_id']:
@@ -210,7 +219,7 @@ def updateGroup():
                 "data": data,
                 "message": "Group successfully updated"
             }
-        )
+        ), 200
 
     except Exception as e:
         return jsonify(
@@ -218,7 +227,7 @@ def updateGroup():
                 "code":500,
                 "message": f"An error occurred while updating group: {e}"
             }
-        )
+        ), 500
 
 # Delete group
 @app.route("/group/<int:id>", methods=['DELETE'])
@@ -234,7 +243,7 @@ def deleteGroup(id):
                     },
                     "message": "Group not found."
                 }
-            )
+            ), 404
         trainer_assignment = TrainerAssignment.query.filter(TrainerAssignment.group_id==id).all()
         if trainer_assignment:
             for assignment in trainer_assignment:
@@ -247,11 +256,11 @@ def deleteGroup(id):
                 "code": 200,
                 "message": "Group successfully deleted"
             }
-        )
+        ), 200
     except Exception as e: 
         return jsonify( 
             {
                 "code":500,
                 "message": f"An error occurred while deleting group: {e}"
             }
-        )
+        ), 500
