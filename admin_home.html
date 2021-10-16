@@ -132,6 +132,9 @@
             #loading-image {
                 margin-top: 50px;
                 z-index: 100;
+
+            }
+            
             .modal-icon {
             color: #f15e5e;
             font-size: 46px;
@@ -297,8 +300,10 @@
 
                     const result = await response.json();
                     if (response.status === 200) {
+                        $('#loading').hide();
                         let data = result.data
-                        for (let i = 0; i < data.length; i++) {
+                        if (data.length) {
+                            for (let i = 0; i < data.length; i++) {
                             row = `
                             <tr>
                                 <td>${i+1}</td>
@@ -318,7 +323,14 @@
                             </tr>`
 
                             $('#tablecontent').append(row)                    
-                        } /* what if there are no courses */
+                            }
+                        }  else {
+                            row = `
+                            <tr>
+                                <td>There are no courses</td>
+                            </tr>`
+                            $('#tablecontent').append(row)
+                        }
                     }
                 } catch(err) {
                     alert(err);
