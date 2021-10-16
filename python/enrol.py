@@ -79,7 +79,7 @@ sample request
 }
 # '''
 @app.route("/enrolment", methods=['POST'])
-def addEnrolment(data):
+def addEnrolment(data=None):
     if not data:
         data = request.get_json()
     try:
