@@ -299,8 +299,9 @@
                     );
 
                     const result = await response.json();
+                    
+                    $('#loading').hide();
                     if (response.status === 200) {
-                        $('#loading').hide();
                         let data = result.data
                         if (data.length) {
                             for (let i = 0; i < data.length; i++) {
