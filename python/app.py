@@ -22,6 +22,8 @@ import user
 import course
 import group
 import course_section
+import enrol 
+import enrolment_request
 # import upload
 
 @app.route("/test", methods=['GET'])

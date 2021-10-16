@@ -2,7 +2,7 @@ from types import prepare_class
 from app import app, db
 from flask import json, jsonify, request
 from user import User
-import datetime
+from datetime import datetime
 
 
 class Course(db.Model):
@@ -236,11 +236,10 @@ def deleteCourse(id):
     try:
         from group import Group, TrainerAssignment
         from enrol import Enrolment
-
         course = Course.query.filter_by(id=id).first()
         badge = Badge.query.filter_by(course_id=id).first()
         ongoing_group = Group.query.filter(Group.course_id == course.id, Group.end_date >= datetime.now()).first()
-        
+
         if ongoing_group:
             return jsonify(
                 {
@@ -263,6 +262,7 @@ def deleteCourse(id):
                 }
             ), 404
         all_groups = Group.query.filter(Group.course_id == course.id).all()
+
         if all_groups:
             for group in all_groups:
                 assignment = TrainerAssignment.query.filter_by(group_id = group.id).all()
@@ -276,6 +276,7 @@ def deleteCourse(id):
         db.session.delete(badge)
         db.session.delete(course)
         db.session.commit()
+
         return jsonify(
             {
                 "code": 200,
@@ -289,7 +290,7 @@ def deleteCourse(id):
                 "message": f"An error occurred while deleting course: {e}"
             }
         )
-        
+
 # View completed courses and Bages by user
 @app.route("/course/completed/<int:id>", methods=["GET"])
 def viewCompletedCourses(id):
