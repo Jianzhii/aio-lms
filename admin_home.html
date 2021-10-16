@@ -192,7 +192,7 @@
                         $("#sidebar").load("admin_nav.html");
                         });
 
-            const api_endpoint = "http://52.55.242.44/" 
+            const api_endpoint = "http://52.55.242.44:8000/" 
             // const api_endpoint = "http://localhost:8000/"
 
             // retrieve all courses
@@ -238,8 +238,8 @@
                     } /* what if there are no courses */
                 }
             } catch(err) {
-                alert(err)
-                console.log(err)
+                alert(err);
+                console.log(err);
             }
             $('#loading').hide();
             feather.replace()
