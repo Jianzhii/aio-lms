@@ -434,11 +434,12 @@
                     $("#loadingModal").modal('hide');
                     if (response.status === 200 && result.code === 200) {
                         $("#successMessage").text(result.message)
+                        $('#successModal').modal('show');
                     } else { 
-                        alert(result.message)
+                        $("#failureMessage").text(result.message)
+                        $('#failureModal').modal('show');
                     }
 
-                    $('#successModal').modal('show');
                 } catch(err) {
                     $("#failureMessage").text(result.message)
                     $('#failureModal').modal('show');
