@@ -2,8 +2,8 @@
 <html lang="en">
     <head>
 
-        <title>View All Courses</title>
-        <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
+        <title class="cname"></title>
+        <link rel="icon" href="/static/imgs/All-In-One 1.png" type="image/icon type">
 
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -144,7 +144,7 @@
         <div class="container" id="content">
             <div class="row" id="header">
                 <div class="col">
-                    <h2 id="cname"></h2>
+                    <h2 class="cname"></h2>
                 </div>
                 <div class="col-2" style="padding-top: 65px ;">
                     <input type="button" value="Log Out" id="logout">
@@ -267,7 +267,7 @@
                     const result = await response.json() ;
                     if (response.status === 200) {
                         let data = result.data
-                        $('#cname').append(data.name)
+                        $('.cname').append(data.name)
                         $('#cdes').append(data.description)
                         $('#preq').append(data.prerequisite)
                         $('#loading').hide()

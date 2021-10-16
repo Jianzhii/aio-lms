@@ -2,8 +2,8 @@
 <html lang="en">
     <head>
 
-        <title class="coursename"></title>
-        <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
+        <title class="cname"></title>
+        <link rel="icon" href="/static/imgs/All-In-One 1.png" type="image/icon type">
 
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,10 +15,15 @@
         <script src="https://unpkg.com/feather-icons"></script>
 
         <!-- Bootstrap/ CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
 
         <!-- jQuery -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
 
         <style>
 
@@ -39,18 +44,15 @@
             }
 
             h2 {
-                padding-top: 58px ;
-                padding-left: 10px ;
+                padding-top: 45px ;
+                padding-left: 5px ;
+                color: #FF922D ;
             }
 
             h3 {
                 text-indent: 34px ;
                 font-size: 13px ;
                 font-weight: bold ;
-            }
-
-            h6 {
-                font-style: italic;
             }
 
             .sidenav a {
@@ -83,21 +85,10 @@
 
             #header {
                 padding: 12px ;
-                color: #FF922D ;
-                font-weight: bold ;
-            }
-
-            #detailsheader, #details {
-                padding: 20px ; 
             }
 
             #table {
                 padding: 30px ; 
-                text-align: center ;
-            }
-
-            input[type=text] {
-                width: 257px ;
             }
 
             input[type=button] {
@@ -118,7 +109,7 @@
                 color: #FF922D ;
                 padding: 2px ;
             }
-            
+
             #loading {
                 display: block;
                 width: 100%;
@@ -134,8 +125,12 @@
             #loading-image {
                 margin-top: 50px;
                 z-index: 100;
+
             }
 
+            .row {
+                padding: 20px ; 
+            }
 
         </style>
     </head>
@@ -143,40 +138,28 @@
     <body>
         <!-- start of side bar -->
         <div class="container" id="sidebar">
-            <div class="container" id="sidebar"></div>
         </div>
         <!-- end of side bar -->
-            
+    
         <div class="container" id="content">
             <div class="row" id="header">
                 <div class="col">
-                    <h2 class="coursename"></h2>
+                    <h2 class="cname"></h2>
                 </div>
                 <div class="col-2" style="padding-top: 65px ;">
                     <input type="button" value="Log Out" id="logout">
                 </div>
             </div>
 
-            <div class="row" id="detailsheader">
-                <div class="col">
-                    <h6>Course Description: </h6>
-                </div>
-                <div class="col">
-                    <h6 id="prereq">Pre-Requisite Course(s): </h6>
-                </div>
+            <!-- details about course -->
+            <div class="row">
+                <div class="col" style="font-weight: bold">Course Description</div>
+                <div class="col" id="cdes"></div>
+                <div class="col" style="font-weight: bold">Pre-Requisite Course(s)</div>
+                <div class="col" id="preq"></div>
             </div>
 
-            <div class="row" id="details">
-                <div class="col">
-                    <p id="desc"></p>
-                </div>
-                <div class="col">
-                    <p id="preq"></p>
-                </div>
-            </div>
-
-                 
-            <!-- start of table showing list of groups -->
+            <!-- groups available in each course -->
             <div class="row" id="table">
                 <table class="table">
                     <tbody id="tableheader"> 
@@ -188,96 +171,55 @@
                           <th scope="col">Enrollment End Date/Time</th>
                           <th scope="col">Group Start Date/Time</th>
                           <th scope="col">Group End Date/Time</th>
-                          <th scope="col">Actions</th>  
+                          <th scope="col"></th>
                       </tr>
                     </tbody>
                     <tbody id="tablecontent">
                         <!-- populate rows of groups -->
                     </tbody>
                 </table>
-                <div id="loading">
-                    <img id="loading-image" src="static/imgs/loading.gif" alt="Loading..." />
-                </div>   
+            
+
+
+            <!-- loading -->
+            <div id="loading">
+                <img id="loading-image" src="static/imgs/loading.gif" alt="Loading..." />
             </div>
         </div>
 
         <script>
 
-            // load admin_nav.html
+            /* load learner_nav.html */
             $(function(){
                 $("#sidebar").load("admin_nav.html");
             });
 
-            feather.replace()
-    
-            const api_endpoint = "http://52.55.242.44:8000/"
-            
-            // retrieve course description and pre-requisite courses
+            const api_endpoint = "http://52.55.242.44:8000/" 
+
+            let query = window.location.search.substring(1) ;
+            var courseid = query[3]
+            var groupid = query[13]
+
+            /* load groups in course */
             $(async() => {
-                let query = window.location.search.substring(1)[3] ;
-                var course_api = api_endpoint + "course/" + query
                 
+
+                var coursegroup_api = api_endpoint + "all_group/" + courseid
+
                 try {
-                    const response = 
+                    const response =
                         await fetch(
-                            course_api, {
+                            coursegroup_api, {
                                 method: 'GET'
                             }
                         );
-
+                    
                     const result = await response.json() ;
                     if (response.status === 200) {
                         let data = result.data
                         console.log(data)
-                        if (data.prerequisite != "-") {
-                            $('#desc').append(data.description)
-                            var prereq = data.prerequisite.split(",<br>")
-                            var prereq_str = prereq[0]
-                            for (i = 1 ; i < prereq.length ; i++) {
-                                prereq_str = prereq_str + ', ' + prereq[i]
-                            }
-                            $('#preq').append(prereq_str)   
-                        } else {
-                            $('#desc').append(data.description)
-                            var prereq = "No pre-requisite course required"
-                            $('#preq').append(prereq)
-                        }
-                    } 
-                }
-
-                catch(err) {
-                    alert(err)
-                    console.log(err)
-                }
-                
-            })
-    
-            // load course table contents
-            $(async () => {
-                let query = window.location.search.substring(1);
-                params = query.split('&');
-                data = {};
-                for (var i = 0, l = params.length; i < l; i++) {
-                    tmp = params[i].split('=');
-                    data[tmp[0]] = tmp[1];
-                }
-                $('.coursename').append(data['courseName'].replace("%20", " "))
-                // API Endpoint
-                var user_api = api_endpoint + "all_group/" + data.id
-    
-                try {
-                    const response =
-                        await fetch(
-                            user_api, {
-                            method: 'GET'
-                        }
-                    );
-    
-                    const result = await response.json();
-                    if (response.status === 200) {
-                        let data = result.data
                         if (data.length) {
-                            for (let i = 0; i < data.length; i++) {
+                            for (i=0 ; i < data.length ; i++) {
                                 row = `
                                 <tr>
                                     <td>${i+1}</td>
@@ -287,39 +229,56 @@
                                     <td>${data[i].enrol_end_date}</td>
                                     <td>${data[i].start_date}</td>
                                     <td>${data[i].end_date}</td>
-                                    <td>
-                                        <!-- view -->
-                                        <a href="#" class="icon" title="View Details"><i data-feather="eye"></i></a>
-
-                                        <!-- edit -->
-                                        <a href="#" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
-
-                                        <!-- delete/retire -->
-                                        <a href="#" class="icon" title="Retire Course"><i data-feather="trash-2"></i></a>
-                                    </td>
+                                    <td><input type="button" value="Enrol" id="selfenrol" onclick=""></td>
                                 </tr>`
-
                                 $('#tablecontent').append(row)
                             }
-
-                            feather.replace()
-
                         } else {
                             row = `
                             <tr>
-                                <td>No Group</td>
+                                <td>There are no groups for you to enrol in currently :<</td>
                             </tr>`
-                            $('#tablecontent').append(row)
+                            $('tablecontent').append(row)
                         }
+
                     }
                 } catch(err) {
                     alert(err)
                     console.log(err)
                 }
-    
-                $('#loading').hide();
-            });
-       
-        </script>
+
+            })
+
+            /* load course details */
+
+            $(async() => {
+                
+
+                var course_api = api_endpoint + "course/" + courseid
+
+                try {
+                    const response =
+                        await fetch(
+                            course_api, {
+                                method: 'GET'
+                            }
+                        );
+                    
+                    const result = await response.json() ;
+                    if (response.status === 200) {
+                        let data = result.data
+                        $('.cname').append(data.name)
+                        $('#cdes').append(data.description)
+                        $('#preq').append(data.prerequisite)
+                        $('#loading').hide()
+                    }
+                } catch(err) {
+                    alert(err)
+                    console.log(err)
+                }
+
+            })
+
+        </script>   
     </body>
 </html>
