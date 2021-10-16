@@ -149,6 +149,7 @@
                           <th scope="col">S/N</th>
                           <th scope="col">Course Name</th>
                           <th scope="col">Course Description</th>
+                          <th scope="col"> Prerequisite Course(s) </th>
                           <th scope="col">Actions</th>  
                       </tr>
                     </tbody>
@@ -156,6 +157,9 @@
                         <!-- populate rows of courses -->
                     </tbody>
                 </table>
+                <div id="loading">
+                    <img id="loading-image" src="static/imgs/loading.gif" alt="Loading..." />
+                </div>    
             </div>
 
             <!-- modal for deleting course -->
@@ -188,8 +192,8 @@
                         $("#sidebar").load("admin_nav.html");
                         });
 
-            /* const api_endpoint = "http://52.55.242.44/" */
-            const api_endpoint = "http://localhost:8000/"
+            const api_endpoint = "http://52.55.242.44/" 
+            // const api_endpoint = "http://localhost:8000/"
 
             // retrieve all courses
             $(async () => {
@@ -214,6 +218,7 @@
                             <td>${i+1}</td>
                             <td>${data[i].name}</td>
                             <td>${data[i].description}</td>
+                            <td>${data[i].prerequisite}</td>
                             <td>
                                 <!-- view -->
                                 <a href="./coursegroup.html?id=${data[i].id}&courseName=${data[i].name}" class="icon" title="View Groups"><i data-feather="eye"></i></a>
@@ -236,7 +241,7 @@
                 alert(err)
                 console.log(err)
             }
-
+            $('#loading').hide();
             feather.replace()
         });
 
@@ -276,6 +281,7 @@
                                             <td>${i+1}</td>
                                             <td>${data[i].name}</td>
                                             <td>${data[i].description}</td>
+                                            <td>${data[i].prerequisite}</td>
                                             <td> 
                                                 <a href="#" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
                                                 <a href="./coursegroup.html?id=${data[i].id}&courseName=${data[i].name}" class="icon" title="View Groups"><i data-feather="eye"></i></a>
@@ -292,6 +298,8 @@
                                         `)
                                 }
                             }
+                            $('#loading').hide();
+                            feather.replace();
                         } catch(err) {
                             alert(err)
                             console.log(err)
