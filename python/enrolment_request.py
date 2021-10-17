@@ -40,19 +40,20 @@ def getAllRequests():
     ), 200
 
 #for Learner to view his pending enrolment request
-@app.route("/enrolment_request/learner/<int:user_id>",methods=["GET"])
-def getOneRequest(user_id):
+@app.route("/enrolment_request/learner/<int:userid>",methods=["GET"])
+def getOneRequest(userid):
     #Query DB
-    user = User.query.filter_by(id=user_id).first()
+    user = User.query.filter_by(id=userid).first()
     if user:
-        enrolment_request = EnrolmentRequest.query.filter_by(user_id=user_id).first()
+        enrolment_request = EnrolmentRequest.query.filter_by(user_id=userid).first()
         group_id = enrolment_request.group_id
         group = Group.query.filter_by(id=group_id).first()
         # response
         data = {
             "user_id" : enrolment_request.user_id,
             "group_id" : enrolment_request.group_id,
-            "course_id":group.course_id
+            "course_id":group.course_id,
+            "is_approved" : enrolment_request.is_approved
         }
         return jsonify(
             {
