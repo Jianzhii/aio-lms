@@ -178,9 +178,6 @@
                         <!-- populate rows of groups -->
                     </tbody>
                 </table>
-            
-
-
             <!-- loading -->
             <div id="loading">
                 <img id="loading-image" src="static/imgs/loading.gif" alt="Loading..." />
@@ -196,14 +193,12 @@
 
             const api_endpoint = "http://52.55.242.44:8000/" 
 
-            let query = window.location.search.substring(1) ;
-            var courseid = query[3]
-            var groupid = query[13]
+            let query = window.location.search.substring(1).split("&") ;
+            var courseid = query[0].slice(3,)
 
             /* load groups in course */
             $(async() => {
                 
-
                 var coursegroup_api = api_endpoint + "all_group/" + courseid
 
                 try {
@@ -234,11 +229,9 @@
                                 $('#tablecontent').append(row)
                             }
                         } else {
-                            row = `
-                            <tr>
-                                <td>There are no groups for you to enrol in currently :<</td>
-                            </tr>`
-                            $('tablecontent').append(row)
+
+                            $('#table').append("No groups available")
+                            
                         }
 
                     }
