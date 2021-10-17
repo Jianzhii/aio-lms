@@ -39,6 +39,38 @@ def getAllRequests():
         }
     ), 200
 
+#for Learner to view his pending enrolment request
+@app.route("/enrolment_request/learner/<int:user_id>",methods=["GET"])
+def getOneRequest(user_id):
+    #Query DB
+    user = User.query.filter_by(id=user_id).first()
+    if user:
+        enrolment_request = EnrolmentRequest.query.filter_by(user_id=user_id).first()
+        group_id = enrolment_request.group_id
+        group = Group.query.filter_by(id=group_id).first()
+        # response
+        data = {
+            "user_id" : enrolment_request.user_id,
+            "group_id" : enrolment_request.group_id,
+            "course_id":group.course_id
+        }
+        return jsonify(
+            {
+                "code" : 200,
+                "data": data
+            }
+        ), 200
+    else:
+        return jsonify(
+            {
+                "code":404,
+                "message": f"Invalid Enrolment Request ${id}"
+            }
+        ),404
+
+
+
+
 #Add Request
 @app.route("/enrolment_request",methods=["POST"])
 def addRequest():
