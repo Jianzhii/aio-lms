@@ -4,7 +4,6 @@ from flask import json, jsonify, request
 from user import User
 from datetime import datetime
 
-
 class Course(db.Model):
 
     __tablename__ = 'course'
@@ -294,13 +293,15 @@ def deleteCourse(id):
 # View completed courses and Bages by user
 @app.route("/course/completed/<int:id>", methods=["GET"])
 def viewCompletedCourses(id):
-    courses = db.session.query(UserBadge,Badge).filter(UserBadge.user_id==id)\
-              .join(Badge, Badge.id == UserBadge.badges_id ).all()
+    from enrol import Enrolment
+    courses = db.session.query(UserBadge,Badge,Enrolment).filter(UserBadge.user_id==id)\
+              .join(Badge, Badge.id == UserBadge.badges_id )\
+              .join(Enrolment,Enrolment.user_id == UserBadge.user_id ).all()
     data = []
-    for course,badge in courses:
+    for course,badge,enrolment in courses:
         course = course.json()
         course['course_name'] =badge.name
-        print(badge)
+        course['group_id'] = enrolment.group_id
         data.append(course)
     return jsonify(
         {
