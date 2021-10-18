@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
 
-        <title>Enrolled Courses</title>
+        <title>Completed Courses</title>
         <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
 
         <meta charset="utf-8">
@@ -74,7 +74,7 @@
                 width: 200px ;
             }
 
-            #enrolled {
+            #completed {
                 color: #FF922D ;
                 font-weight: bold ;
             }
@@ -92,7 +92,7 @@
                 padding: 12px ;
             }
 
-            #searchbar, #table {
+            #searchbar, #badges {
                 padding: 30px ; 
             }
 
@@ -145,7 +145,7 @@
         <div class="container" id="content">
             <div class="row" id="header">
                 <div class="col">
-                    <h2>Enrolled Courses</h2>
+                    <h2>Completed Courses</h2>
                 </div>
                 <div class="col-2" style="padding-top: 65px ;">
                     <input type="button" value="Log Out" id="logout">
@@ -157,26 +157,10 @@
                 <input id="search" class="form-control" type="text" placeholder="Search Course" aria-label="Search">
             </div>
                  
-            <!-- start of table showing list of courses -->
-            <div class="row" id="table">
-                <table class="table">
-                    <tbody id="tableheader"> 
-                      <tr>
-                          <th scope="col">S/N</th>
-                          <th scope="col">Course Name</th>
-                          <th scope="col">Group Number</th>
-                          <th scope="col">Enrolled Date</th>
-                          <th scope="col"></th>  
-                      </tr>
-                    </tbody>
-                    <tbody id="tablecontent">
-                        <!-- populate rows of courses -->
-                    </tbody>
-                </table>
-                <div id="loading">
-                    <img id="loading-image" src="static/imgs/loading.gif" alt="Loading..." />
-                </div>    
+            <!-- show badges showing list of courses -->
+            <div class="row" id="badges">
             </div>
+            
         </div>
 
         <script>
@@ -189,21 +173,21 @@
             const api_endpoint = "http://52.55.242.44:8000/" 
             // const api_endpoint = "http://localhost:8000/"
 
-            var user_id = sessionStorage.getItem("user_id")
+            var user_id = 1
 
-            // retrieve enrolled courses
+            // retrieve completed courses
 
             $(async () => {
 
                 // API endpoint
-                var enrolled_courses_api = api_endpoint + "enrolment/user/" + user_id
+                var completed_courses_api = api_endpoint + "course/completed/" + user_id
 
-                console.log(enrolled_courses_api)
+                console.log(completed_courses_api)
 
                 try {
                     const response = 
                         await fetch(
-                            enrolled_courses_api, {
+                            completed_courses_api, {
                             method: 'GET'
                         }
                     ); 
@@ -215,22 +199,23 @@
                         let data = result.data
                         if (data.length) {
                             for (let i=0 ; i < data.length ; i++) {
-                                row = `
-                                <tr>
-                                    <td>${i+1}</td>
-                                    <td>${data[i].course_name}</td>
-                                    <td>Group ${data[i].group_id}</td>
-                                    <td>${data[i].enrolled_dt}</td>
-                                    <td><input type="button" value="View Details" id="viewdetails" onclick="coursegroupdetails(${data[i].id},${data[i].group_id})"></td>   
-                                </tr>`
-                                $('#tablecontent').append(row)
+                                badge = `
+                                <div class="card bg-light mb-3" style="max-width: 18rem;">
+                                <img class="card-img-top" src="\static\imgs\badges.png" alt="Card image cap">
+                                <div class="card-header">Group ${data[i].group_id}</div>
+                                <div class="card-body">
+                                    <h5 class="card-title">${data[i].course_name}</h5>
+                                    <p class="card-text">Completed on ${data[i].assigned_dt}</p>
+                                </div>
+                                </div>` 
+                                $('#badges').append(badge)
                             }
                         } else {
-                            row = `
+                            badge = `
                             <tr>
-                                <td>You have not enrolled in any courses</td>
+                                <td>You have not attained any badges</td>
                             </tr>`
-                            $('#tablecontent').append(row)
+                            $('##badges').append(badge)
                         }
                     }
                 } catch(err) {
