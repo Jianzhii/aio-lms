@@ -31,13 +31,21 @@ class EnrolmentRequest(db.Model):
 @app.route("/enrolment_request",methods=["GET"])
 def getAllRequests():
     #Query DB
-    enrolment_requests = EnrolmentRequest.query.all()
+    enrolment_requests = db.session.query(EnrolmentRequest,Group)\
+                        .join(Group,Group.id == EnrolmentRequest.group_id).all()
+    data=[]
+    for enrol_request,group in enrolment_requests:
+        enrol_request = enrol_request.json()
+        enrol_request['course_id'] = group.course_id
+        data.append(enrol_request)
     return jsonify(
         {
             "code" : 200,
-            "data": [enrolment_request.json() for enrolment_request in enrolment_requests]
+            "data": data
         }
     ), 200
+
+
 
 #for Learner to view his pending enrolment request
 @app.route("/enrolment_request/learner/<int:userid>",methods=["GET"])
