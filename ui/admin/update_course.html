@@ -136,7 +136,7 @@
                         </div>
                     </div>
                     <div class="row" style="padding-top: 43px ; padding-left: 15px" >
-                        <input type="button" value="Update" onclick="window.location=''"> <!-- direct back to individual course page -->
+                        <input type="button" value="Update" onclick="updateCourse()"> <!-- direct back to individual course page -->
                     </div>
                 </form>
             </div>
@@ -154,10 +154,14 @@
             let query = window.location.search.substring(1).split("&") ;
             var courseid = query[0].slice(3,)
 
+            var prereq = []
+
+            var api_endpoint = "http://52.55.242.44:8000/"
+
             // load existing course name & description
             $(async() => {
                 
-                const course_api = "http://52.55.242.44:8000/course/" + courseid
+                const course_api = api_endpoint + "course/" + courseid
 
                 try {
                     const response = 
@@ -170,10 +174,12 @@
                     const result = await response.json() ;
                     if (response.status === 200) {
                         let data = result.data
-                        console.log(data)
 
                         $('#cname').val(data.name)
                         $('#cdesc').val(data.description)
+
+                        // retrieve prereq courses for later
+                        prereq = data.prerequisite.split(',<br>')
 
                     }
 
@@ -183,30 +189,34 @@
                 }
             })
 
-            // load pre-requisites dropdown
             $(async() => {
-                var course_api = api_endpoint + "all_course"
+                const prereq_api = api_endpoint + "all_course"
 
                 try {
-
-                    const response = 
-                        await fetch (
-                            course_api, {
-                                method:'GET'
+                    const response =
+                        await fetch(
+                            prereq_api, {
+                                method: 'GET'
                             }
                         );
+
                     const result = await response.json() ;
                     if (response.status === 200) {
-                        let data = result.data
-                        if (data.length) {
-                        for (let course of data) {option = `<option value=${course.id}> ${course.name}</option>`
-                            $('#cpre').append(option)
+                        let courses = result.data
+
+                        for (course of courses) {
+                            if (course.id != courseid) {
+                                option = `<option value=${course.id} id=${course.id}>${course.name}</option>`
+                                $('#cpre').append(option)
+
+                                if (prereq.includes(course.name)) {
+                                    document.getElementById(course.id).selected = true
+                                }
+                            }
+                            
                         }
-                        }
-                    } else {
-                        $('#cpre').append(`<option> No courses available </option`)
                     }
-                } catch(err){
+                } catch(err) {
                     alert(err)
                     console.log(err)
                 }
