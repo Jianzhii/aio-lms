@@ -134,14 +134,7 @@
         <div class="container" id="sidebar">
         </div>
             <!-- end of side bar -->
-                
-            <!-- load admin_nav.html -->
-            <script>
-                $(function(){
-                $("#sidebar").load("admin_nav.html");
-                });
-            </script>
-        
+
             <div class="container" id="content">
                 <div class="row">
                     <div class="col">
@@ -250,8 +243,11 @@
 
         <script>
 
-            // populate list of courses
+            $(function(){
+                $("#sidebar").load("admin_nav.html");
+            }); 
 
+            // populate list of courses
             const api_endpoint = "http://52.55.242.44:8000/"
 
             $(async() => {

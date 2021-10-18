@@ -189,16 +189,20 @@
             const api_endpoint = "http://52.55.242.44:8000/" 
             // const api_endpoint = "http://localhost:8000/"
 
+            var user_id = sessionStorage.getItem('user_id')
+
             // retrieve all courses
             $(async () => {
 
             // API Endpoint
-            var all_course_api = api_endpoint + "all_course"
+            var userpendingrequest_api = api_endpoint + "enrolment_request/learner/" + user_id
+            
+            console.log(userpendingrequest_api)
 
                 try {
                     const response =
                         await fetch(
-                            all_course_api, {
+                            userpendingrequest_api, {
                             method: 'GET'
                         }
                     );
