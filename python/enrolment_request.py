@@ -60,6 +60,7 @@ def getRequests(userid):
         # response
         for enrol_request,group,course  in enrolment_requests:
             enrol_request =enrol_request.json()
+            enrol_request['course_id'] =course.id
             enrol_request['course_name'] = course.name
             enrol_request['course_description'] = course.description
             data.append(enrol_request)
