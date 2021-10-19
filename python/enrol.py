@@ -12,7 +12,6 @@ from sqlalchemy import and_
 
 
 class Enrolment(db.Model):
-
     __tablename__ = 'course_enrolment'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     group_id = db.Column(db.Integer, primary_key=True, nullable=False)
