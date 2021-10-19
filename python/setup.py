@@ -14,6 +14,7 @@ setup(
         'SQLAlchemy',
         'mysql-connector-python',
         'requests',
-        'werkzeug'
+        'werkzeug',
+        'boto3'
     ],
 )
