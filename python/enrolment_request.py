@@ -60,6 +60,7 @@ def getRequests(userid):
         # response
         for enrol_request,group,course  in enrolment_requests:
             enrol_request =enrol_request.json()
+            enrol_request['course_id'] =course.id
             enrol_request['course_name'] = course.name
             enrol_request['course_description'] = course.description
             data.append(enrol_request)
@@ -111,6 +112,9 @@ def addRequest():
 
 
 
+
+
+
 '''
 Sample Request Body
 {
@@ -156,5 +160,41 @@ def approveRequest(request_id):
                 "message": f"Invalid Enrolment Request ${id}"
             }
         ),404
+
+
+# Delete enrolment
+@app.route("/enrolment_request/<int:id>", methods=['DELETE'])
+def deleteEnrolmentRequest(id):
+    try:
+        enrolment_request= EnrolmentRequest.query.filter_by(id=id).first()
+        if not enrolment_request:
+            return jsonify(
+                {
+                    "code":404,
+                    "data": {
+                        "id": id
+                    },
+                    "message": "Enrolment Request not found."
+                }
+            ),404
+        db.session.delete(enrolment_request)
+        db.session.commit()
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Enrolment Request successfully deleted"
+            }
+        ),200
+    except Exception as e: 
+        return jsonify( 
+            {
+                "code":500,
+                "message": f"An error occurred while deleting enrolment  request: {e}"
+            }
+        )
+
+
+
+
 
 
