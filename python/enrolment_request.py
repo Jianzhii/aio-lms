@@ -47,22 +47,22 @@ def getAllRequests():
 
 
 
-#for Learner to view his pending enrolment request
+#for Learner to view his pending enrolment requests
 @app.route("/enrolment_request/learner/<int:userid>",methods=["GET"])
-def getOneRequest(userid):
+def getRequests(userid):
     #Query DB
     user = User.query.filter_by(id=userid).first()
     if user:
-        enrolment_request = EnrolmentRequest.query.filter_by(user_id=userid).first()
-        group_id = enrolment_request.group_id
-        group = Group.query.filter_by(id=group_id).first()
+        enrolment_requests = db.session.query( EnrolmentRequest,Group,Course).filter(EnrolmentRequest.user_id==userid)\
+            .join(Group, Group.id == EnrolmentRequest.group_id)\
+            .join(Course, Course.id == Group.course_id).all()
+        data = []
         # response
-        data = {
-            "user_id" : enrolment_request.user_id,
-            "group_id" : enrolment_request.group_id,
-            "course_id":group.course_id,
-            "is_approved" : enrolment_request.is_approved
-        }
+        for enrol_request,group,course  in enrolment_requests:
+            enrol_request =enrol_request.json()
+            enrol_request['course_name'] = course.name
+            enrol_request['course_description'] = course.description
+            data.append(enrol_request)
         return jsonify(
             {
                 "code" : 200,
@@ -73,7 +73,7 @@ def getOneRequest(userid):
         return jsonify(
             {
                 "code":404,
-                "message": f"Invalid Enrolment Request ${id}"
+                "message": f"Invalid User ${id}"
             }
         ),404
 
