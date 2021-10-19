@@ -100,6 +100,16 @@
                 width: 100px ;
             }
 
+            input[type=button]:disabled {
+                background: lightgrey ;
+                color: black ; 
+                border: none ;
+                border-radius: 3px ; 
+                padding: 5px ;
+                width: 100px ;
+                
+            }
+
             #tableheader{
                 background-color: #FF922D ;
                 color: white ;
@@ -183,7 +193,7 @@
 
             <!-- loading -->
             <div id="loading">
-                <img id="loading-image" src="static/imgs/loading.gif" alt="Loading..." />
+                <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
             </div>
         </div>
 
@@ -200,59 +210,11 @@
             var courseid = query[3]
             var groupid = query[13]
 
-            /* load groups in course */
-            $(async() => {
-                
-
-                var coursegroup_api = api_endpoint + "all_group/" + courseid
-
-                try {
-                    const response =
-                        await fetch(
-                            coursegroup_api, {
-                                method: 'GET'
-                            }
-                        );
-                    
-                    const result = await response.json() ;
-                    if (response.status === 200) {
-                        let data = result.data
-                        console.log(data)
-                        if (data.length) {
-                            for (i=0 ; i < data.length ; i++) {
-                                row = `
-                                <tr>
-                                    <td>${i+1}</td>
-                                    <td>${data[i].size}</td>
-                                    <td>${data[i].trainer_name}</td>
-                                    <td>${data[i].enrol_start_date}</td>
-                                    <td>${data[i].enrol_end_date}</td>
-                                    <td>${data[i].start_date}</td>
-                                    <td>${data[i].end_date}</td>
-                                    <td><input type="button" value="Enrol" id="selfenrol" onclick=""></td>
-                                </tr>`
-                                $('#tablecontent').append(row)
-                            }
-                        } else {
-                            row = `
-                            <tr>
-                                <td>There are no groups for you to enrol in currently :<</td>
-                            </tr>`
-                            $('tablecontent').append(row)
-                        }
-
-                    }
-                } catch(err) {
-                    alert(err)
-                    console.log(err)
-                }
-
-            })
+            var user_id = sessionStorage.getItem("user_id")
+            var all_requests = [] 
 
             /* load course details */
-
             $(async() => {
-                
 
                 var course_api = api_endpoint + "course/" + courseid
 
@@ -278,6 +240,124 @@
                 }
 
             })
+
+            /* retrieve all enrolment of user */
+            $(async() => {
+                const user_requests = api_endpoint + "enrolment_request/learner/" + user_id
+
+                try {
+                    const response =
+                        await fetch(
+                            user_requests, {
+                                method: 'GET'
+                            }
+                        );
+
+                    const result = await response.json() ;
+                    if (response.status === 200) {
+                        let request_list = []
+                        let requests = result.data
+                        for (request of requests) {
+                            request_list.push(request.group_id)
+                            console.log(request_list)
+                        }
+                        var all_requests = request_list
+                    }
+                } catch(err) {
+                    alert(err)
+                    console.log(err)
+                }
+            })
+
+            console.log(all_requests)
+
+            /* load groups in course */
+            $(async() => {
+
+                var coursegroup_api = api_endpoint + "all_group/" + courseid
+
+                try {
+                    const response =
+                        await fetch(
+                            coursegroup_api, {
+                                method: 'GET'
+                            }
+                        );
+                        
+                    const result = await response.json() ;
+                    if (response.status === 200) {
+                        let data = result.data
+                        // console.log(data)
+                        if (data.length) {
+                            for (i=0 ; i < data.length ; i++) {
+                                row = `
+                                <tr>
+                                    <td>Group ${data[i].id}</td>
+                                    <td>${data[i].size}</td>
+                                    <td>${data[i].trainer_name}</td>
+                                    <td>${data[i].enrol_start_date}</td>
+                                    <td>${data[i].enrol_end_date}</td>
+                                    <td>${data[i].start_date}</td>
+                                    <td>${data[i].end_date}</td><td><input type="button" value="Enrol" id="${data[i].id}" onclick="selfEnrol(${data[i].id})"></td>
+                                </tr>`
+                                $('#tablecontent').append(row)
+
+                                if (all_requests.includes(data[i].id)){
+                                    console.log('hello')
+                                    document.getElementById(data[i].id).disabled = true ;
+                                    document.getElementById(data[i].id).value = "Pending"
+                                }
+
+                                else {
+                                    console.log('bye')
+                                }
+                                
+                            }
+                        } else {
+                            row = `
+                            <tr>
+                                <td>There are no groups for you to enrol in currently :<</td>
+                            </tr>`
+                            $('tablecontent').append(row)
+                        }
+
+                    }
+                } catch(err) {
+                    alert(err)
+                    console.log(err)
+                }
+            })
+
+            async function selfEnrol(group_id) {
+                data = {
+                    user_id: user_id,
+                    group_id: group_id
+                }
+                
+                const self_enrol_api = api_endpoint + "enrolment_request"
+                console.log(self_enrol_api)
+                console.log(data)
+                try {
+                    const response = await fetch(
+                        self_enrol_api, {
+                            method: 'POST',
+                            headers: {"Content-Type":"application/json"},
+                            body: JSON.stringify(data)
+                        }
+                    );
+
+                    const result = await response.json(); 
+                    console.log(result)
+                    if (response.status === 200) {
+                        console.log(document.getElementById(group_id))
+                        document.getElementById(group_id).disabled = true
+                        document.getElementById(group_id).value = "Pending"
+                    }
+                } catch(err) {
+                    alert(err)
+                    console.log(err)
+                }
+            }
 
         </script>   
     </body>
