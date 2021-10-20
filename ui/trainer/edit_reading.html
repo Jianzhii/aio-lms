@@ -67,7 +67,7 @@
                 </div>
                 <!-- End of NavBar -->
                 <br>
-                <h4 id="MaterialName">Add Video</h4>
+                <h4 id="MaterialName">Edit Reading</h4>
             </div>
         </div>
 
@@ -86,13 +86,13 @@
                     <!-- Start of Select File Field -->
                     <div class="mb-3">
                         <label for="formFile" class="form-label">File Upload</label>
-                        <input class="form-control" type="file" name="video" id="video">
+                        <input class="form-control" type="file" name="inpFile" id="inpFile">
                     </div>
                     <!-- End of Select File Field -->    
                 </div> 
-            <div class="col-5">         WW              
+            <div class="col-5">                       
                 <!-- Start of Add Button  -->
-                <input type="submit" class="addbutton" value="Add"/>
+                <input type="submit" class="addbutton" value="Add";/>
                 <!-- End of Add Button  -->
                 </form>
                 <!-- End of Form  -->
@@ -101,40 +101,5 @@
 
 
     </body>
-
-    <script>
-                    
-            // const api_endpoint = "http://52.55.242.44:8000/"
-            const api_endpoint = "http://localhost:8000/"
-
-            myForm.addEventListener("submit", async e => {
-                e.preventDefault();
-    
-                const myForm= document.getElementById("myForm");
-                const inpFile = document.getElementById("video");
-                const formData = new FormData();
-    
-                formData.append("file", inpFile.files[0]);
-                formData.append("id", 1);
-                formData.append("title", document.getElementById("video_title").value);
-
-                const upload_file = api_endpoint + "upload_video"
-                try {
-                    const response = await fetch(
-                        upload_file, {
-                            method: 'POST',
-                            body: formData
-                        }
-                    );
-
-                    const result = await response.json();
-                    if (response.status === 200) {
-                        console.log(result)
-                    } 
-                } catch (err) {
-                    console.log(err)
-                }
-            });
-    </script>
 </head>
 </html>
