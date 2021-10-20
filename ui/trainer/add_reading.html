@@ -33,14 +33,6 @@
         }
     </style>
 </head>
-    <script>
-        function passvaluereading()
-        {
-            var readingtitle=document.getElementById("reading_title").value;
-            localStorage.setItem("reading_title", readingtitle);
-            return false; 
-        }
-    </script>
     <body>
         <div class="row">
             <div class="col-4">
@@ -80,8 +72,6 @@
                     <div class="mb-3">
                         <label for="formFile" class="form-label">File Upload</label>
                         <input class="form-control" type="file" name="inpFile" id="inpFile">
-                        <br>
-                        <button type="submit">Upload File</button>
                     </div>
                     <!-- End of Select File Field -->    
                 </div> 
@@ -94,7 +84,7 @@
                 <!-- End of Date Uploaded Field -->                           
 
                 <!-- Start of Add Button  -->
-                <input type="submit" class="addbutton" value="Add" onclick="passvaluereading()";/>
+                <input type="submit" class="addbutton" value="Add" />
                 <!-- End of Add Button  -->
                 </form>
                 <!-- End of Form  -->
@@ -102,23 +92,37 @@
         </div>
 
         <script>
-            const myForm= document.getElementById("myForm");
-            const inpFile = document.getElementById("inpFile");
-    
-            myForm.addEventListener("submit", e => {
+            
+            // const api_endpoint = "http://52.55.242.44:8000/"
+            const api_endpoint = "http://localhost:8000/"
+
+            myForm.addEventListener("submit", async e => {
                 e.preventDefault();
     
-                const endpoint = "upload.php";
+                const myForm= document.getElementById("myForm");
+                const inpFile = document.getElementById("inpFile");
                 const formData = new FormData();
     
-                // console.log(inpFile.files);
-    
-                formData.append("inpFile", inpFile.files[0]);
-    
-                fetch(endpoint, {
-                    method: "post",
-                    body: formData
-                }) .catch(console.error);
+                formData.append("file", inpFile.files[0]);
+                formData.append("id", 1);
+                formData.append("title", document.getElementById("reading_title").value);
+
+                const upload_file = api_endpoint + "upload_file"
+                try {
+                    const response = await fetch(
+                        upload_file, {
+                            method: 'POST',
+                            body: formData
+                        }
+                    );
+
+                    const result = await response.json();
+                    if (response.status === 200) {
+                        console.log(result)
+                    } 
+                } catch (err) {
+                    console.log(err)
+                }
             });
         </script>
 

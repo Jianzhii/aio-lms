@@ -1,26 +1,80 @@
 import os
+import re
 
 import boto3
 import botocore
 from flask import jsonify, request
 from werkzeug.utils import secure_filename
+from course_section import CourseSection
 
 from app import app, db
 
 
-@app.route('/upload', methods=["POST"])
-def upload():
+@app.route('/upload_file', methods=["POST"])
+def uploadFiles():
     try:
         if 'file' not in request.files:
-            print('no files?')
+            raise Exception('Error while uploading the file')
         else: 
             file = request.files['file']
             filename = upload_file_to_s3(file)
+
         if filename[0]:
+            course = CourseSection.query.filter(CourseSection.id==request.form['id']).first()
+            course.material_url = {
+                "title": request.form['title'],
+                "url": f"{os.getenv('AWS_DOMAIN')}{filename[1]}"
+            }
+            db.session.commit()
             return jsonify(
                 {
                     "code" : 200,
                     "message" : "File uploaded successfully",
+                    "data": {
+                                "title": request.form['title'],
+                                "url": f"{os.getenv('AWS_DOMAIN')}{filename[1]}"
+                            }
+                }
+            ), 200
+
+        return jsonify(
+            {
+                "code" : 500,
+                "message" : f"Error while uploading file: {filename[1]}",
+                "data": ""
+            }
+        ), 500
+	
+    except Exception as e: 
+        return jsonify(
+            {
+                "code" : 500,
+                "message" : f"Error while uploading file: {e}",
+                "data": ""
+            }
+        ), 500
+
+
+@app.route('/upload_video', methods=["POST"])
+def uploadVideo():
+    try:
+        if 'file' not in request.files:
+            raise Exception('Error while uploading the video')
+        else: 
+            file = request.files['file']
+            filename = upload_file_to_s3(file)
+
+        if filename[0]:
+            course = CourseSection.query.filter(CourseSection.id==request.form['id']).first()
+            course.video_url = {
+                "title": request.form['title'],
+                "url": f"{os.getenv('AWS_DOMAIN')}{filename[1]}"
+            }
+            db.session.commit()
+            return jsonify(
+                {
+                    "code" : 200,
+                    "message" : "Video uploaded successfully",
                     "data": {
                         "url_link": f"{os.getenv('AWS_DOMAIN')}{filename[1]}"
                     }
@@ -43,6 +97,7 @@ def upload():
                 "data": ""
             }
         ), 500
+
 
 
 def upload_file_to_s3(file, acl="public-read"):
