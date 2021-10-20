@@ -188,18 +188,16 @@
                     );
 
                     const result = await response.json();
-                    $("#loadingModal").modal('hide');
                     if (response.status === 200) {
                         let data = result.data
-                        console.log(data)
                         if (data.length) {
                             for (let course of data) {
                             row = `
-                            <li>
-                                <a href='uploadCM.html?id=${course.course_id}'>${course.course_name}</a>
-                            </li>`
+                                <li>
+                                    <a href='uploadCM.html?id=${course.course_id}'>${course.course_name}</a>
+                                </li>`
 
-                            $('#assignedCourses').append(row)                    
+                                $('#assignedCourses').append(row)                    
                             }
                         } 
                     }
@@ -207,6 +205,8 @@
                     alert(err);
                     console.log(err);
                 }
+                
+                $("#loadingModal").modal('hide');
             });
 
     </script>

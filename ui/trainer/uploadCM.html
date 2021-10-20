@@ -113,6 +113,24 @@
             .buttons{
                 margin-left: 10px;
             }
+
+            #loadingModal {
+                display: block;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                text-align: center;
+                opacity: 0.7;
+                background-color: #fff;
+                z-index: 99;
+            }
+
+            #loading-image {
+                margin-top: 50px;
+                z-index: 100;
+
+            }
         </style>
     </head>
 
@@ -126,8 +144,8 @@
         <div class="container" id="content">
             <div class="row" id="header">
                 <div class="col">
-                    <h4><b>Introduction to tools</b></h5>
-                    <h5><b>Section 1</b></h6>
+                    <h4 id='sectionTitle'><b>Introduction to tools</b></h5>
+                    <h5 id='sectionNo'><b>Section 1</b></h6>
                 </div>
                 <div class="col-2" style="padding-top: 65px ;">
                     <input type="button" value="Log Out" id="logout">
@@ -158,13 +176,120 @@
                 <!-- End of Course Materials table -->
             </div>
 
+            <div id="loadingModal" class="modal fade">
+                <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                        <div class="modal-header flex-column">				
+                            <h4 class="modal-title w-100">Loading.....</h4>	
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="modalloading">
+                                <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
+                            </div>  
+                        </div>
+                    </div>
+                </div>
+            </div> 
+
         <!-- End of Main Content  -->
 
         <script>
-                /* load trainer_nav.html */
-                $(function(){
-                    $("#sidebar").load("trainer_nav.html");
+            /* load trainer_nav.html */
+            $(function(){
+                $("#sidebar").load("trainer_nav.html");
             });
+
+            // const api_endpoint = "http://52.55.242.44:8000/" 
+            const api_endpoint = "http://localhost:8000/"
+            var user_id = sessionStorage.getItem("user_id")
+            let query = window.location.search.substring(1).split("&") ;
+            let course_id = query[0].slice(3,)
+
+            $(async () => {
+                $("#loadingModal").modal('show');
+                const courseAssignment = api_endpoint + `/group/trainer/${user_id}/${course_id}`
+
+                try {
+                    const response =
+                        await fetch(
+                            courseAssignment, {
+                            method: 'GET'
+                        }
+                    );
+
+                    const result = await response.json();
+                    if (response.status === 200) {
+                        let data = result.data
+                        if (data.length) {
+                            console.log(data)
+                            for (let group of data) {
+                                row =  `<h3> Group ${group.group_id}</h3>
+                                            <ul>`
+
+                                const sections = await getSections(group.id);
+                                
+                                if (sections.length) {
+                                    for (let i = 0; i < sections.length ; i++) {
+                                        row += `
+                                            <li>
+                                                <a id="" href="uploadCM.html"> Section ${i+1} </a>
+                                            </li>
+                                        `
+                                    }
+                                    row += `
+                                        <li>
+                                            <a id="#" href="#">Forum Discussions</a>
+                                        </li>
+                                        <li>
+                                            <a id="#" href="course_progression.html">Course Progression</a>
+                                        </li>
+                                    </ul>`
+                                } else {
+                                    row += `
+                                            <li>
+                                                <a id="#" href="uploadCM.html"> <i>No Sections Yet</i> </a>
+                                            </li>
+                                        `
+                                }
+                                row += `<li>
+                                            <a>Add a new section</a>
+                                        </li>`;
+
+                                $('.sidenav').append(row)                    
+                            }
+                        } 
+                    }
+                } catch(err) {
+                    alert(err);
+                    console.log(err);
+                }
+                
+                $("#loadingModal").modal('hide');
+            });
+
+            async function getSections(group_id) {
+                const courseAssignment = api_endpoint + `/all_section/${group_id}`
+
+                try {
+                    const response =
+                        await fetch(
+                            courseAssignment, {
+                            method: 'GET'
+                        }
+                    );
+
+                    const result = await response.json();
+                    if (response.status === 200) {
+                        let data = result.data
+                        return data;
+                    }
+                    return []
+                } catch(err) {
+                    alert(err);
+                    console.log(err);
+                }
+            }
         </script>
     </body>
 
