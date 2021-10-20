@@ -1,6 +1,7 @@
 from types import prepare_class
 from app import app, db
 from flask import json, jsonify, request
+from sqlalchemy.sql.expression import outerjoin
 from user import User
 from datetime import datetime
 
@@ -71,6 +72,7 @@ def getAllCourse():
         }
     ), 200
 
+# get course by search
 @app.route("/search_course", methods=["POST"])
 def searchCourse():
     data = request.get_json()
@@ -310,3 +312,45 @@ def viewCompletedCourses(id):
         }
     ),200
 
+# Get distinct courses assigned to trainer
+@app.route("/course/trainer/<int:trainer_id>", methods=["GET"])
+def courseAssignedToTrainer(trainer_id):
+    try:
+        from group import Group, TrainerAssignment
+        courses = db.session.query(TrainerAssignment, Group, Course).filter(TrainerAssignment.trainer_id==trainer_id)\
+                .outerjoin(Group, Group.id == TrainerAssignment.group_id)\
+                .outerjoin(Course, Course.id == Group.course_id).all()
+
+        assignments = []
+        for assignment, group, course in courses: 
+            assignment = assignment.json()
+            assignment['course_name'] =  course.name
+            assignments.append(assignment)
+
+        if assignments: 
+            data = []
+            for assignment in assignments:
+                if assignment['course_name'] not in data:
+                    data.append(assignment['course_name'])
+            return jsonify(
+                {
+                    "code": 200,
+                    "message": "Successfully retrieved courses",
+                    "data": data
+                }
+            ), 200
+        else:
+            return jsonify(
+                {
+                    "code": 200,
+                    "message": "Successfully retrieved courses",
+                    "data": []
+                }
+            ), 200
+    except Exception as e:
+        return jsonify(
+            {
+                "code":404,
+                "message": f"Error while retrieving courses: {e}."
+            }
+        ), 404
