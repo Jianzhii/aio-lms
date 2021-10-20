@@ -165,7 +165,7 @@
                           <th scope="col">S/N</th>
                           <th scope="col">Course Name</th>
                           <th scope="col">Course Description</th>
-                          <th scope="col">Prerequisite Course(s)</th>
+                          <th scope="col">Group Number</th>
                           <th scope="col"></th>  
                       </tr>
                     </tbody>
@@ -174,7 +174,7 @@
                     </tbody>
                 </table>
                 <div id="loading">
-                    <img id="loading-image" src="static/imgs/loading.gif" alt="Loading..." />
+                    <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
                 </div>    
             </div>
         </div>
@@ -216,10 +216,10 @@
                             row = `
                             <tr>
                                 <td>${i+1}</td>
-                                <td>${data[i].name}</td>
-                                <td>${data[i].description}</td>
-                                <td>${data[i].prerequisite}</td>
-                                <td><input type="button" value="View Details" id="viewdetails"></td>
+                                <td>${data[i].course_name}</td>
+                                <td>${data[i].course_description}</td>
+                                <td>Group ${data[i].group_id}</td>
+                                <td><input type="button" value="View Details" id="viewdetails" onclick=groupdetails(${data[i].group_id})></td>
                             </tr>`
 
                             $('#tablecontent').append(row)                    
@@ -277,7 +277,7 @@
                                             <td>${data[i].name}</td>
                                             <td>${data[i].description}</td>
                                             <td>${data[i].prerequisite}</td>
-                                            <td><input type="button" value="View Details" id="viewdetails"></td>
+                                            <td><input type="button" value="View Details" id="viewdetails" onclick=groupdetails(${data[i].group_id})></td>
                                         </tr>`
 
                                         $('#tablecontent').append(row)                    
@@ -300,6 +300,11 @@
                     });
                 }
             });
+
+            // function for view details button
+            function groupdetails(groupid) {
+                location.href = "./group_details.html?id=" + groupid
+            }
 
         </script>   
     </body>

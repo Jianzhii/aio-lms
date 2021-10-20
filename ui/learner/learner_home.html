@@ -174,7 +174,7 @@
                     </tbody>
                 </table>
                 <div id="loading">
-                    <img id="loading-image" src="static/imgs/loading.gif" alt="Loading..." />
+                    <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..."/>
                 </div>    
             </div>
         </div>
@@ -272,7 +272,7 @@
                                             <td>${data[i].name}</td>
                                             <td>${data[i].description}</td>
                                             <td>${data[i].prerequisite}</td>
-                                            <td><input type="button" value="View Details" id="viewdetails"></td>
+                                            <td><input type="button" value="View Details" id="viewdetails" onclick=coursegroupdetails(${data[i].id})></td>
                                         </tr>`
 
                                         $('#tablecontent').append(row)                    
