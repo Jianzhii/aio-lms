@@ -176,6 +176,27 @@
                 <!-- End of Course Materials table -->
             </div>
 
+            <!-- modal for deleting course -->
+            <div id="addSection" class="modal fade">
+                <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                        <div class="modal-header flex-column">					
+                            <h4 class="modal-title">Add a new section</h4>	
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p id='modalMessage'>Do you really want to delete these records? This process cannot be undone.</p>
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-danger" id='deleteId' onclick='deleteCourse(this.value)'>Add Section</button>
+                        </div>
+                    </div>
+                </div>
+            </div>  
+
+
+            <!-- Modal for loading -->
             <div id="loadingModal" class="modal fade">
                 <div class="modal-dialog modal-confirm">
                     <div class="modal-content">
@@ -222,7 +243,6 @@
                     if (response.status === 200) {
                         let data = result.data
                         if (data.length) {
-                            console.log(data)
                             for (let group of data) {
                                 row =  `<h3> Group ${group.group_id}</h3>
                                             <ul>`
@@ -238,24 +258,28 @@
                                         `
                                     }
                                     row += `
-                                        <li>
-                                            <a id="#" href="#">Forum Discussions</a>
-                                        </li>
-                                        <li>
-                                            <a id="#" href="course_progression.html">Course Progression</a>
-                                        </li>
-                                    </ul>`
+                                            <li>
+                                                <a id="#" href="#">Forum Discussions</a>
+                                            </li>
+                                            <li>
+                                                <a id="#" href="course_progression.html">Course Progression</a>
+                                            </li>`
+                                    
+                                    if (!$.trim($('#tablecontent').html())) {
+                                        console.log('tes')
+                                    } 
                                 } else {
                                     row += `
                                             <li>
-                                                <a id="#" href="uploadCM.html"> <i>No Sections Yet</i> </a>
+                                                <a> <i>No Sections Yet</i> </a>
                                             </li>
                                         `
                                 }
-                                row += `<li>
-                                            <a>Add a new section</a>
-                                        </li>`;
 
+                                row += `<li>
+                                            <a href="#addSection" class="trigger-btn icon" data-id="${group.group_id}" data-toggle="modal" title="Add a new section">+ Add a new section</a>
+                                        </li>
+                                    </ul>`;
                                 $('.sidenav').append(row)                    
                             }
                         } 
