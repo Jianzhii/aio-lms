@@ -4,7 +4,7 @@ from flask import jsonify, request
 from sqlalchemy import and_
 
 from app import app, db
-from course import Course
+from course import Course, getTrainerAssignment
 from user import User
 from datetime import datetime
 
@@ -268,5 +268,38 @@ def deleteGroup(id):
             {
                 "code":500,
                 "message": f"An error occurred while deleting group: {e}"
+            }
+        ), 500
+
+# Get groups assigned to trainer in a course
+@app.route("/group/trainer/<int:trainer_id>/<int:course_id>", methods=['GET'])
+def groupsAssignedToTrainer(trainer_id, course_id):
+    try:
+        assignments = getTrainerAssignment(trainer_id)
+        if assignments:
+            data = []
+            for assignment in assignments:
+                if assignment['course_id'] == course_id: 
+                    data.append(assignment)
+            return jsonify(
+                {
+                    "code": 200,
+                    "message": "Successfully retrieved courses",
+                    "data": data
+                }
+            ), 200
+        else: 
+            return jsonify(
+                {
+                    "code": 200,
+                    "message": "Successfully retrieved courses",
+                    "data": []
+                }
+            ), 200
+    except Exception as e:
+        return jsonify( 
+            {
+                "code":500,
+                "message": f"An error occurred while retrieving groups: {e}"
             }
         ), 500

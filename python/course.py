@@ -316,22 +316,12 @@ def viewCompletedCourses(id):
 @app.route("/course/trainer/<int:trainer_id>", methods=["GET"])
 def courseAssignedToTrainer(trainer_id):
     try:
-        from group import Group, TrainerAssignment
-        courses = db.session.query(TrainerAssignment, Group, Course).filter(TrainerAssignment.trainer_id==trainer_id)\
-                .outerjoin(Group, Group.id == TrainerAssignment.group_id)\
-                .outerjoin(Course, Course.id == Group.course_id).all()
-
-        assignments = []
-        for assignment, group, course in courses: 
-            assignment = assignment.json()
-            assignment['course_name'] =  course.name
-            assignments.append(assignment)
-
-        if assignments: 
+        assignment = getTrainerAssignment(trainer_id)
+        if assignment: 
             data = []
-            for assignment in assignments:
-                if assignment['course_name'] not in data:
-                    data.append(assignment['course_name'])
+            for each in assignment:
+                if each['course_name'] not in data:
+                    data.append(each['course_name'])
             return jsonify(
                 {
                     "code": 200,
@@ -354,3 +344,20 @@ def courseAssignedToTrainer(trainer_id):
                 "message": f"Error while retrieving courses: {e}."
             }
         ), 404
+
+def getTrainerAssignment(trainer_id):
+    try:
+        from group import Group, TrainerAssignment
+        courses = db.session.query(TrainerAssignment, Group, Course).filter(TrainerAssignment.trainer_id==trainer_id)\
+                .outerjoin(Group, Group.id == TrainerAssignment.group_id)\
+                .outerjoin(Course, Course.id == Group.course_id).all()
+
+        data = []
+        for assignment, group, course in courses: 
+            assignment = assignment.json()
+            assignment['course_name'] =  course.name
+            assignment['course_id'] = course.id
+            data.append(assignment)
+        return data
+    except Exception as e:
+        raise e
