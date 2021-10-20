@@ -150,7 +150,7 @@
 
         
         <div class='container'>
-            <div id="loadingModal" class="modal fade">
+            <div id="loadingModal" class="modal fade" aria-hidden="true" style="display: none;">
                 <div class="modal-dialog modal-confirm">
                     <div class="modal-content">
                         <div class="modal-header flex-column">				
@@ -204,7 +204,6 @@
                     alert(err);
                     console.log(err);
                 }
-                
                 $("#loadingModal").modal('hide');
             });
 
