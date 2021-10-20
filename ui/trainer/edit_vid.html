@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <title>Courses</title>
+        <link rel="icon" href="../../static/imgs/All-In-One 1.png" type="image/icon type">
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+        <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+        <link rel="stylesheet" href="../../static/uploadCM.css">
+
+        <!-- Icons -->
+        <script src="https://unpkg.com/feather-icons"></script>
+
+        <!-- Bootstrap/ CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
+
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <style>
+        .addbutton{
+            background-color: #566E92;
+            border: none;
+            color: white;
+            padding: 3px 5px;
+            text-align: center;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 120px 130px;
+        }
+
+        input[type=button] {
+                background: #FF922D ;
+                color: white ; 
+                border: none ;
+                border-radius: 3px ; 
+                padding-left: 5px ;
+                margin-left: 500px;
+                width: 100px ;
+            }
+    </style>
+</head>
+    <body>
+        <div class="row">
+            <div class="col-4">
+                <!-- Start of Main Page Icon  -->
+                <div class="col-xs-12 col-s-12 col-md-1 mx-0  ">
+                    <img src="../../static/imgs/All-In-One 1.png" width="270px" height="125px"/>
+                </div>
+                <!-- End of Main Page Icon  -->
+                <h5 id="ContentName"><u>Engineering Basics 101</u></h5>
+                <h6 id="ContentName">Group 3</h6>
+                <br>
+            </div>
+
+            <div class="col-8">
+                <!-- Start of NavBar -->
+                <div class="col-2" style="padding-top: 65px ;">
+                    <input type="button" value="Log Out" id="logout">
+                </div>
+                <!-- End of NavBar -->
+                <br>
+                <h4 id="MaterialName">Edit Video</h4>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <!-- Start of Form  -->
+                <form action="uploadCM.html" class="form" id="myForm">
+                    <!-- Start of Title Field -->
+                    <div class="mb-3">
+                        <label for="formGroupExampleInput" class="form-label">Title</label>
+                        <br>
+                        <input type="text" id="reading_title"/>
+                    </div>
+                    <!-- End of Title Field -->
+
+                    <!-- Start of Select File Field -->
+                    <div class="mb-3">
+                        <label for="formFile" class="form-label">File Upload</label>
+                        <input class="form-control" type="file" name="inpFile" id="inpFile">
+                    </div>
+                    <!-- End of Select File Field -->    
+                </div> 
+            <div class="col-5">                       
+                <!-- Start of Add Button  -->
+                <input type="submit" class="addbutton" value="Add";/>
+                <!-- End of Add Button  -->
+                </form>
+                <!-- End of Form  -->
+            </div>
+        </div>
+
+
+    </body>
+</head>
+</html>
