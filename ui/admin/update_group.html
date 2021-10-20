@@ -42,10 +42,10 @@
                 color: #FF922D ;
             }
 
+
             h3 {
                 text-indent: 34px ;
                 font-size: 13px ;
-                font-weight: bold;
             }
 
             .sidenav a {
@@ -65,11 +65,6 @@
             #logo {
                 height: 150px ;
                 width: 200px ;
-            }
-
-            #addgroup {
-                color: #FF922D ;
-                font-weight: bold ;
             }
 
             #sidebar {
@@ -98,34 +93,10 @@
                 width: 100px ;
             }
 
-            #modalloading {
-                display: block;
-                width: 100%;
-                height: 100%;
-                top: 0;
-                left: 0;
-                text-align: center;
-                opacity: 0.7;
-                background-color: #fff;
-                z-index: 99;
-            }
-
-            #loading-image {
-                margin-top: 50px;
-                z-index: 100;
-            }
-
-            .modal-icon {
-                color: #f15e5e;
-                font-size: 46px;
-                display: inline-block;
-                margin-top: 13px;
-                align: center;
-            }
         </style>
 
         <!-- start of page icon -->
-        <title>Add Group</title>
+        <title>Update Group</title>
         <link rel="icon" href="../../static/imgs/All-In-One 1.png" type="image/icon type">
         <!-- end of page icon -->
 
@@ -141,7 +112,7 @@
         <div class="container" id="content">
             <div class="row">
                 <div class="col">
-                    <h2>Add Group</h2>
+                    <h2>Update Group</h2>
                 </div>
                 <div class="col-2" style="padding-top: 65px ;">
                     <input type="button" value="Log Out" id="logout">
@@ -158,7 +129,6 @@
                             </div>
                             <div class="col">
                                 <select id="course" name="course">
-                                    <option value="" disabled selected>Please select course</option>
                                 </select>
                             </div>
                             <div class="col">
@@ -203,7 +173,6 @@
                             </div>
                             <div class="col">
                                 <select id="trainer" name="trainer">
-                                    <option value="" disabled selected>Please select trainer</option>
                                 </select>
                             </div>
                             <div class="col">
@@ -216,10 +185,10 @@
                             </div>
                         </div>
                         <div class="row" style="padding-top: 43px ; padding-left: 15px">
-                            <input type="button" value="Submit" id="submit" onclick="createGroup()">
+                            <input type="button" value="Submit" id="submit" onclick="updateGroup()">
                         </div>
                     </form>
-                </div>
+                </div>            
             </div>
         </div>
 
@@ -292,7 +261,106 @@
         const api_endpoint = "http://52.55.242.44:8000/"
         // const api_endpoint = "http://localhost:8000/"
 
+        let query = window.location.search.substring(1).split("&") ;
+        var groupid = query[0].slice(3,)
+
         // Populate Course Dropdown
+
+        // load existing group details
+        $(async() => {
+            const existing_group_api = api_endpoint + "group/" + groupid
+            const all_course_api = api_endpoint + "all_course"
+            const all_trainer_api = api_endpoint + "all_trainer"
+            const all_learner_api = api_endpoint + "all_learner"
+
+            try {
+                const response = 
+                    await fetch(
+                        existing_group_api, {
+                            method: 'GET'
+                        }
+                );
+
+                const response2 = 
+                    await fetch(
+                        all_course_api, {
+                            method: 'GET'
+                        }
+                    )
+
+                const response3 = 
+                    await fetch(
+                        all_trainer_api, {
+                            method: 'GET'
+                        }
+                    )
+
+                const response4 = 
+                    await fetch(
+                        all_learner_api, {
+                            method: 'GET'
+                        }
+                    )
+
+                const result = await response.json() ;
+                const result2 = await response2.json() ;
+                const result3 = await response3.json() ;
+                const result4 = await response4.json() ;
+
+                if (response.status === 200) {
+
+                    $('#gsize').val(result.data.size)
+
+                    // start date 
+                    let start_date = result.data.start_date.split(",")
+                    let sdate = start_date[0].split("/")
+                    let sday = sdate[0]
+                    let smonth = sdate[1]
+                    let syear = sdate[2]
+                    let stime = start_date[1].trim()
+                    let start_date_value = syear + "-" + smonth + "-" + sday+ "T" + stime
+                    
+                    document.getElementById('startdate').value = start_date_value
+
+                    // end date
+                    let end_date = result.data.end_date.split(",")
+                    let edate = end_date[0].split("/")
+                    let eday = edate[0]
+                    let emonth = edate[1]
+                    let eyear = edate[2]
+                    let etime = end_date[1].trim()
+                    let end_date_value = eyear + "-" + emonth + "-" + eday+ "T" + etime
+
+                    document.getElementById('enddate').value = start_date_value
+
+                    // enrollment start date
+                    let enrol_start_date = result.data.enrol_start_date.split(",")
+                    let esdate = enrol_start_date[0].split("/")
+                    let esday = esdate[0]
+                    let esmonth = esdate[1]
+                    let esyear = esdate[2]
+                    let estime = enrol_start_date[1].trim()
+                    let enrol_start_value = esyear + "-" + esmonth + "-" + esday+ "T" + estime
+                    
+                    document.getElementById('enrollmentstart').value = enrol_start_value
+
+                    // enrollment start date
+                    let enrol_end_date = result.data.enrol_end_date.split(",")
+                    let eedate = enrol_end_date[0].split("/")
+                    let eeday = eedate[0]
+                    let eemonth = eedate[1]
+                    let eeyear = eedate[2]
+                    let eetime = enrol_end_date[1].trim()
+                    let enrol_end_value = eeyear + "-" + eemonth + "-" + eeday+ "T" + eetime
+                    
+                    document.getElementById('enrollmentend').value = enrol_end_value
+                
+                }
+            } catch(err) {
+                alert(err)
+                console.log(err)
+            }
+        })
 
         $(async () => {
             // API Endpoint
@@ -385,7 +453,7 @@
             }
         });
     
-        async function createGroup() {
+        async function updateGroup() {
             $("#loadingModal").modal("show");
             data = {
                 course_id: $("#course").val(),
