@@ -206,9 +206,9 @@
 
             const api_endpoint = "http://52.55.242.44:8000/" 
 
-            let query = window.location.search.substring(1) ;
-            var courseid = query[3]
-            var groupid = query[13]
+            let query = window.location.search.substring(1).split('=') ;
+            console.log(query)
+            var courseid = query[1] 
 
             var user_id = sessionStorage.getItem("user_id")
             var all_requests = [] 
