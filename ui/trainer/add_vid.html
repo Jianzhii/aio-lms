@@ -136,7 +136,29 @@
                         </div>
                     </div>
                 </div>
-            </div>     
+            </div>    
+            
+            <!-- failure modal -->
+            <div id="failureModal" class="modal fade" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                        <div class="modal-header flex-column">
+                            <div class="icon">
+                                <i data-feather="alert-triangle"></i>
+                            </div>						
+                            <h4 class="modal-title w-100">Error!</h4>	
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p id='failureMessage'></p>
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Okay</button>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </div> 
         </div>
      
     </body>
