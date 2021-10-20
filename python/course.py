@@ -1,7 +1,8 @@
+from operator import and_
 from types import prepare_class
 from app import app, db
 from flask import json, jsonify, request
-from sqlalchemy.sql.expression import outerjoin
+from sqlalchemy.sql.expression import outerjoin, and_
 from user import User
 from datetime import datetime
 
@@ -320,8 +321,12 @@ def courseAssignedToTrainer(trainer_id):
         if assignment: 
             data = []
             for each in assignment:
-                if each['course_name'] not in data:
-                    data.append(each['course_name'])
+                info = {
+                            "course_id": each['course_id'],
+                            "course_name": each['course_name']
+                        }
+                if info not in data:
+                    data.append(info)
             return jsonify(
                 {
                     "code": 200,
@@ -348,7 +353,7 @@ def courseAssignedToTrainer(trainer_id):
 def getTrainerAssignment(trainer_id):
     try:
         from group import Group, TrainerAssignment
-        courses = db.session.query(TrainerAssignment, Group, Course).filter(TrainerAssignment.trainer_id==trainer_id)\
+        courses = db.session.query(TrainerAssignment, Group, Course).filter(and_(TrainerAssignment.trainer_id==trainer_id, TrainerAssignment.assigned_end_dt == None))\
                 .outerjoin(Group, Group.id == TrainerAssignment.group_id)\
                 .outerjoin(Course, Course.id == Group.course_id).all()
 

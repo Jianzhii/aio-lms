@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <<<<<<< HEAD
+<<<<<<< HEAD
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -49,6 +50,9 @@
 =======
     <head>
 >>>>>>> 367a9b0ddaafa1b93d09633aae408a32a2b90ea4
+=======
+    <head>
+>>>>>>> jianzhi
 
         <title>Courses</title>
         <link rel="icon" href="../../static/imgs/All-In-One 1.png" type="image/icon type">
@@ -151,6 +155,24 @@
             .buttons{
                 margin-left: 10px;
             }
+
+            #loadingModal {
+                display: block;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                text-align: center;
+                opacity: 0.7;
+                background-color: #fff;
+                z-index: 99;
+            }
+
+            #loading-image {
+                margin-top: 50px;
+                z-index: 100;
+
+            }
         </style>
     </head>
 
@@ -162,14 +184,10 @@
                     <img id="logo" src="../../static/imgs/All-In-One 1.png" width="270px" height="125px">
                 </div>
                 <h3>Courses you teach</h3>
-                <ul>
-                    <li>
-                        <a id="#" href="uploadCM.html">Engineering Basics 101</a>
-                    </li>
-                    <li>
-                        <a id="#" href="#">Engineering with Chemicals</a>
-                    </li>
+
+                <ul id='assignedCourses'>
                 </ul>
+
                 <h3>Others</h3>
                 <ul>
                     <li>
@@ -182,6 +200,68 @@
             </div>
         </div>
         <!-- end of side bar -->
+
+        
+        <div class='container'>
+            <div id="loadingModal" class="modal fade">
+                <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                        <div class="modal-header flex-column">				
+                            <h4 class="modal-title w-100">Loading.....</h4>	
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="modalloading">
+                                <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
+                            </div>  
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </div> 
         
     </body>
-WWWWWW
+
+    <script>
+            // const api_endpoint = "http://52.55.242.44:8000/" 
+            const api_endpoint = "http://localhost:8000/"
+            var user_id = sessionStorage.getItem("user_id")
+            // retrieve all courses
+            $(async () => {
+                $("#loadingModal").modal('show');
+                const courseAssignment = api_endpoint + `/course/trainer/${user_id}`
+
+                try {
+                    const response =
+                        await fetch(
+                            courseAssignment, {
+                            method: 'GET'
+                        }
+                    );
+
+                    const result = await response.json();
+                    if (response.status === 200) {
+                        let data = result.data
+                        if (data.length) {
+                            for (let course of data) {
+                            row = `
+                                <li>
+                                    <a href='uploadCM.html?id=${course.course_id}&courseName=${course.course_name}'>${course.course_name}</a>
+                                </li>`
+
+                                $('#assignedCourses').append(row)                    
+                            }
+                        } 
+                    }
+                } catch(err) {
+                    alert(err);
+                    console.log(err);
+                }
+                
+                $("#loadingModal").modal('hide');
+            });
+
+    </script>
+
+</html>
+>>>>>>> jianzhi

@@ -68,6 +68,10 @@
                 text-decoration: none ;
             }
 
+            a:active {
+                color: #FF922D;
+            }
+
             ul {
                 list-style-type: none ;
             }
@@ -113,6 +117,28 @@
             .buttons{
                 margin-left: 10px;
             }
+
+            #loadingModal {
+                display: block;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                text-align: center;
+                opacity: 0.7;
+                background-color: #fff;
+                z-index: 99;
+            }
+
+            #loading-image {
+                margin-top: 50px;
+                z-index: 100;
+
+            }
+
+            .icon {
+                color: #FF922D ;
+            }
         </style>
     </head>
 
@@ -126,8 +152,8 @@
         <div class="container" id="content">
             <div class="row" id="header">
                 <div class="col">
-                    <h4><b>Introduction to tools</b></h5>
-                    <h5><b>Section 1</b></h6>
+                    <h4 id='sectionTitle'><b>Introduction to tools</b></h5>
+                    <h5 id='sectionNo'><b>Section 1</b></h6>
                 </div>
                 <div class="col-2" style="padding-top: 65px ;">
                     <input type="button" value="Log Out" id="logout">
@@ -135,8 +161,8 @@
             </div>
             <br>
             <div class ="buttons">
-                <a href="add_vid.html"><img src="../../static/imgs/Video-btn.png" style="width:75px;height:28px;"></a>
-                <a href="add_reading.html"><img src="../../static/imgs/Reading-btn.png" style="width:92px;height:28px;"></a>
+                <a  id='addVideoButton'><img src="../../static/imgs/Video-btn.png" style="width:75px;height:28px;"></a>
+                <a  id='addReadingButton'><img src="../../static/imgs/Reading-btn.png" style="width:92px;height:28px;"></a>
                 <a href="add_quiz.html"><img src="../../static/imgs/Quiz-btn.png" style="width:75px;height:28px;"></a>
 
                 <br><br><br>
@@ -152,19 +178,221 @@
                         </tr>
                         </tbody>
                         <tbody id="tablecontent">
+                            <tr>
+                                <td>Please select a section to view details</td>
+                            </tr>
                         </tbody>
                     </table>               
                 </div>
                 <!-- End of Course Materials table -->
             </div>
 
+            <!-- modal for deleting course -->
+            <div id="addSection" class="modal fade">
+                <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                        <div class="modal-header flex-column">					
+                            <h4 class="modal-title">Add a new section</h4>	
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p id='modalMessage'>Do you really want to delete these records? This process cannot be undone.</p>
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-danger" id='deleteId' onclick='deleteCourse(this.value)'>Add Section</button>
+                        </div>
+                    </div>
+                </div>
+            </div>  
+
+
+            <!-- Modal for loading -->
+            <div id="loadingModal" class="modal fade">
+                <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                        <div class="modal-header flex-column">				
+                            <h4 class="modal-title w-100">Loading.....</h4>	
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="modalloading">
+                                <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
+                            </div>  
+                        </div>
+                    </div>
+                </div>
+            </div> 
+
         <!-- End of Main Content  -->
 
         <script>
-                /* load trainer_nav.html */
-                $(function(){
-                    $("#sidebar").load("trainer_nav.html");
+            var user_id = sessionStorage.getItem("user_id")
+            let query = window.location.search.substring(1).split("&") ;
+            let course_id = query[0].slice(3,)
+            let course_name = query[1].slice(11,).replace('%20', ' ')
+            sessionStorage.setItem('course_id', course_id)
+            sessionStorage.setItem('course_name', course_name)
+
+            /* load trainer_nav.html */
+            $(function(){
+                $("#sidebar").load("trainer_nav.html");
             });
+
+            // const api_endpoint = "http://52.55.242.44:8000/" 
+            const api_endpoint = "http://localhost:8000/"
+
+            $(async () => {
+                $("#loadingModal").modal('show');
+                const courseAssignment = api_endpoint + `/group/trainer/${user_id}/${course_id}`
+
+                try {
+                    const response =
+                        await fetch(
+                            courseAssignment, {
+                            method: 'GET'
+                        }
+                    );
+
+                    const result = await response.json();
+                    if (response.status === 200) {
+                        let data = result.data
+                        if (data.length) {
+                            for (let group of data) {
+                                row =  `<h3> Group ${group.group_id}</h3>
+                                            <ul>`
+
+                                const sections = await getSections(group.id);
+                                
+                                if (sections.length) {
+                                    for (let i = 0; i < sections.length ; i++) {
+                                        row += `
+                                            <li>
+                                                <a href="#" onclick='getSectionDetails(${sections[i].id}, "Section ${i+1}")'> Section ${i+1} </a>
+                                            </li>
+                                        `
+                                    }
+                                    row += `
+                                            <li>
+                                                <a id="#" href="#">Forum Discussions</a>
+                                            </li>
+                                            <li>
+                                                <a id="#" href="course_progression.html">Course Progression</a>
+                                            </li>`
+                                    
+                                    if (!$.trim($('#tablecontent').html())) {
+                                        console.log('tes')
+                                    } 
+                                } else {
+                                    row += `
+                                            <li>
+                                                <a> <i>No Sections Yet</i> </a>
+                                            </li>
+                                        `
+                                }
+
+                                row += `<li>
+                                            <a href="#addSection" class="trigger-btn icon" data-id="${group.group_id}" data-toggle="modal" title="Add a new section">+ Add a new section</a>
+                                        </li>
+                                    </ul>`;
+                                $('.sidenav').append(row)                    
+                            }
+                        } 
+                    }
+                    $("#courseName").text(course_name);
+                } catch(err) {
+                    alert(err);
+                    console.log(err);
+                }
+                
+                $("#loadingModal").modal('hide');
+            });
+
+            async function getSections(group_id) {
+                const courseAssignment = api_endpoint + `/all_section/${group_id}`
+
+                try {
+                    const response =
+                        await fetch(
+                            courseAssignment, {
+                            method: 'GET'
+                        }
+                    );
+
+                    const result = await response.json();
+                    if (response.status === 200) {
+                        let data = result.data
+                        return data;
+                    }
+                    return []
+                } catch(err) {
+                    alert(err);
+                    console.log(err);
+                }
+            }
+
+            async function getSectionDetails(section_id, section_no) {
+                
+                $("#loadingModal").modal('show');
+                const sectionDetails = api_endpoint + `/course_section/${section_id}`
+
+                try {
+                    const response =
+                        await fetch(
+                            sectionDetails, {
+                            method: 'GET'
+                        }
+                    );
+
+                    const result = await response.json();
+                    if (response.status === 200) {
+                        let data = result.data
+                        $('#sectionTitle').text(data.description)
+                        $('#sectionNo').text(section_no)
+                        $('#addVideoButton').attr("href",`add_vid.html?id=${data.id}&groupId=${data.group_id}`);
+                        $('#addReadingButton').attr("href",`add_reading.html?id=${data.id}&groupId=${data.group_id}`);
+                        $('#tablecontent').html(`
+                            <tr>
+                                <td> 1 </td>
+                                <td> ${data.material_url.title} </td>
+                                <td> Document </td>
+                                <td> 
+                                    <!-- download -->
+                                    <a href="${data.material_url.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
+
+                                    <!-- edit -->
+                                    <a href="add_reading.html?id=${data.id}&groupId=${data.group_id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+
+                                    <!-- delete/retire -->
+                                    <a href="#deletematerial" class="trigger-btn icon" data-id=""" data-toggle="modal" title="Delete Material"><i data-feather="trash-2"></i></a>
+                                </td>
+                            <tr>
+                            <tr>
+                                <td> 2 </td>
+                                <td> ${data.video_url.title} </td>
+                                <td> Video </td>
+                                <td>  
+                                    <!-- download -->
+                                    <a href="${data.video_url.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
+
+                                    <!-- edit -->
+                                    <a href="add_vid.html?id=${data.id}&groupId=${data.group_id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+
+                                    <!-- delete/retire -->
+                                    <a href="#deletematerial" class="trigger-btn icon" data-id=""" data-toggle="modal" title="Delete Material"><i data-feather="trash-2"></i></a>
+                                </td>
+                            <tr>
+                        `)
+                    }
+                     
+                    feather.replace()
+                    $("#loadingModal").modal('hide');
+                    return []
+                } catch(err) {
+                    alert(err);
+                    console.log(err);
+                }
+            }
         </script>
     </body>
 

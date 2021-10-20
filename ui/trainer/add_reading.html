@@ -45,6 +45,24 @@
                 margin-left: 500px;
                 width: 100px ;
             }
+
+        #loadingModal {
+            display: block;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            text-align: center;
+            opacity: 0.7;
+            background-color: #fff;
+            z-index: 99;
+        }
+
+        #loading-image {
+            margin-top: 50px;
+            z-index: 100;
+
+        }
     </style>
 </head>
     <body>
@@ -56,7 +74,7 @@
                 </div>
                 <!-- End of Main Page Icon  -->
                 <h5 id="ContentName"><u>Engineering Basics 101</u></h5>
-                <h6 id="ContentName">Group 3</h6>
+                <h6 id="GroupName">Group 3</h6>
                 <br>
             </div>
 
@@ -97,43 +115,73 @@
                 </form>
                 <!-- End of Form  -->W
             </div>
+
+            <!-- Modal for loading -->
+            <div id="loadingModal" class="modal fade" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                        <div class="modal-header flex-column">				
+                            <h4 class="modal-title w-100">Loading.....</h4>	
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="modalloading">
+                                <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
+                            </div>  
+                        </div>
+                    </div>
+                </div>
+            </div> 
         </div>
 
-        <script>
-            
-            // const api_endpoint = "http://52.55.242.44:8000/"
-            const api_endpoint = "http://localhost:8000/"
-
-            myForm.addEventListener("submit", async e => {
-                e.preventDefault();
-    
-                const myForm= document.getElementById("myForm");
-                const inpFile = document.getElementById("inpFile");
-                const formData = new FormData();
-    
-                formData.append("file", inpFile.files[0]);
-                formData.append("id", 1);
-                formData.append("title", document.getElementById("reading_title").value);
-
-                const upload_file = api_endpoint + "upload_file"
-                try {
-                    const response = await fetch(
-                        upload_file, {
-                            method: 'POST',
-                            body: formData
-                        }
-                    );
-
-                    const result = await response.json();
-                    if (response.status === 200) {
-                        console.log(result)
-                    } 
-                } catch (err) {
-                    console.log(err)
-                }
-            });
-        </script>
-
     </body>
+
+    <script>
+        // const api_endpoint = "http://52.55.242.44:8000/"
+        const api_endpoint = "http://localhost:8000/"
+        
+        let course_id = sessionStorage.getItem("course_id")
+        let course_name = sessionStorage.getItem("course_name")
+        let query = window.location.search.substring(1).split("&") ;
+        let section_id = query[0].slice(3,)
+        let group_id = query[1].slice(8,)
+
+        $(() => {
+            $('#ContentName').html(`<u>${course_name}</u>`)
+            $('#GroupName').html(`Group ${group_id}`)
+        })
+
+        myForm.addEventListener("submit", async e => {
+            e.preventDefault();
+
+            $("#loadingModal").modal('show');
+            const myForm= document.getElementById("myForm");
+            const inpFile = document.getElementById("inpFile");
+            const formData = new FormData();
+
+            formData.append("file", inpFile.files[0]);
+            formData.append("id", section_id);
+            formData.append("title", document.getElementById("reading_title").value);
+
+            const upload_file = api_endpoint + "upload_file"
+            try {
+                const response = await fetch(
+                    upload_file, {
+                        method: 'POST',
+                        body: formData
+                    }
+                );
+                
+                const result = await response.json();
+                if (response.status === 200) {
+                    console.log(result)
+                } 
+            } catch (err) {
+                console.log(err)
+            }
+            window.location.href = `uploadCM.html?id=${course_id}`;
+        });
+        
+    </script>
 </head>
 </html>
