@@ -28,6 +28,7 @@ def getAllSection(group_id):
     return jsonify(
         {
             "code": 200,
+            "message": "Successfully retrieved sections",
             "data": [course_section.json() for course_section in course_sections]            
         }
     ), 200
@@ -40,6 +41,7 @@ def getOneSection(id):
         return jsonify(
             {
                 "code": 200,
+                "message": "Successfully retrieved sections",
                 "data": course_section.json()
             }
         ), 200
@@ -65,6 +67,7 @@ def addSection():
         return jsonify(
             {
                 "code": 200,
+                "message": "Successfully added section.",
                 "data": course_section.json()
             }
         ), 200
