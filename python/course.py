@@ -320,8 +320,12 @@ def courseAssignedToTrainer(trainer_id):
         if assignment: 
             data = []
             for each in assignment:
-                if each['course_name'] not in data:
-                    data.append(each['course_name'])
+                info = {
+                            "course_id": each['course_id'],
+                            "course_name": each['course_name']
+                        }
+                if info not in data:
+                    data.append(info)
             return jsonify(
                 {
                     "code": 200,

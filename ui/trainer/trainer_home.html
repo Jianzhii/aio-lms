@@ -103,6 +103,24 @@
             .buttons{
                 margin-left: 10px;
             }
+
+            #loading {
+                display: block;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                text-align: center;
+                opacity: 0.7;
+                background-color: #fff;
+                z-index: 99;
+            }
+
+            #loading-image {
+                margin-top: 50px;
+                z-index: 100;
+
+            }
         </style>
     </head>
 
@@ -114,14 +132,10 @@
                     <img id="logo" src="../../static/imgs/All-In-One 1.png" width="270px" height="125px">
                 </div>
                 <h3>Courses you teach</h3>
-                <ul>
-                    <li>
-                        <a id="#" href="uploadCM.html">Engineering Basics 101</a>
-                    </li>
-                    <li>
-                        <a id="#" href="#">Engineering with Chemicals</a>
-                    </li>
+
+                <ul id='assignedCourses'>
                 </ul>
+
                 <h3>Others</h3>
                 <ul>
                     <li>
@@ -134,5 +148,55 @@
             </div>
         </div>
         <!-- end of side bar -->
+
+        
+        <div class='container'>
+            <div id="loading">
+                <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
+            </div>  
+        </div> 
         
     </body>
+
+    <script>
+            // const api_endpoint = "http://52.55.242.44:8000/" 
+            const api_endpoint = "http://localhost:8000/"
+            var user_id = sessionStorage.getItem("user_id")
+            // retrieve all courses
+            $(async () => {
+
+                const courseAssignment = api_endpoint + `/course/trainer/${user_id}`
+
+                try {
+                    const response =
+                        await fetch(
+                            courseAssignment, {
+                            method: 'GET'
+                        }
+                    );
+
+                    const result = await response.json();
+                    $("#loading").hide();
+                    if (response.status === 200) {
+                        let data = result.data
+                        console.log(data)
+                        if (data.length) {
+                            for (let course of data) {
+                            row = `
+                            <li>
+                                <a href='uploadCM.html?id=${course.course_id}'>${course.course_name}</a>
+                            </li>`
+
+                            $('#assignedCourses').append(row)                    
+                            }
+                        } 
+                    }
+                } catch(err) {
+                    alert(err);
+                    console.log(err);
+                }
+            });
+
+    </script>
+
+</html>
