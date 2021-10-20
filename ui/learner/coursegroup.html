@@ -174,7 +174,7 @@
                 <table class="table">
                     <tbody id="tableheader"> 
                       <tr>
-                          <th scope="col">S/N</th>
+                          <th scope="col">Group Number</th>
                           <th scope="col">Group Size</th>
                           <th scope="col">Trainer</th>
                           <th scope="col">Enrollment Start Date/Time</th>
@@ -242,7 +242,7 @@
             })
 
             /* retrieve all enrolment of user */
-            $(async() => {
+            async function getRequest() {
                 const user_requests = api_endpoint + "enrolment_request/learner/" + user_id
 
                 try {
@@ -255,25 +255,20 @@
 
                     const result = await response.json() ;
                     if (response.status === 200) {
-                        let request_list = []
                         let requests = result.data
                         for (request of requests) {
-                            request_list.push(request.group_id)
-                            console.log(request_list)
+                            console.log(request.group_id)
+                            all_requests.push(request.group_id)
                         }
-                        var all_requests = request_list
                     }
                 } catch(err) {
                     alert(err)
                     console.log(err)
                 }
-            })
-
-            console.log(all_requests)
+            }
 
             /* load groups in course */
             $(async() => {
-
                 var coursegroup_api = api_endpoint + "all_group/" + courseid
 
                 try {
@@ -287,6 +282,8 @@
                     const result = await response.json() ;
                     if (response.status === 200) {
                         let data = result.data
+                        await getRequest();
+                        console.log(all_requests)
                         // console.log(data)
                         if (data.length) {
                             for (i=0 ; i < data.length ; i++) {
@@ -298,20 +295,14 @@
                                     <td>${data[i].enrol_start_date}</td>
                                     <td>${data[i].enrol_end_date}</td>
                                     <td>${data[i].start_date}</td>
-                                    <td>${data[i].end_date}</td><td><input type="button" value="Enrol" id="${data[i].id}" onclick="selfEnrol(${data[i].id})"></td>
-                                </tr>`
+                                    <td>${data[i].end_date}</td>`
+
+                                if (data[i].id in all_requests) {
+                                    row += `<td><input type="button" value="Pending" disabled></td>`
+                                } else {
+                                    row += `<td><input type="button" value="Enrol" id="${data[i].id}" onclick="selfEnrol(${data[i].id})"></td>`
+                                }
                                 $('#tablecontent').append(row)
-
-                                if (all_requests.includes(data[i].id)){
-                                    console.log('hello')
-                                    document.getElementById(data[i].id).disabled = true ;
-                                    document.getElementById(data[i].id).value = "Pending"
-                                }
-
-                                else {
-                                    console.log('bye')
-                                }
-                                
                             }
                         } else {
                             row = `
