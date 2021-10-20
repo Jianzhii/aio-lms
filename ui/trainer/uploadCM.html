@@ -68,6 +68,10 @@
                 text-decoration: none ;
             }
 
+            a:active {
+                color: #FF922D;
+            }
+
             ul {
                 list-style-type: none ;
             }
@@ -131,6 +135,10 @@
                 z-index: 100;
 
             }
+
+            .icon {
+                color: #FF922D ;
+            }
         </style>
     </head>
 
@@ -170,6 +178,9 @@
                         </tr>
                         </tbody>
                         <tbody id="tablecontent">
+                            <tr>
+                                <td>Please select a section to view details</td>
+                            </tr>
                         </tbody>
                     </table>               
                 </div>
@@ -253,7 +264,7 @@
                                     for (let i = 0; i < sections.length ; i++) {
                                         row += `
                                             <li>
-                                                <a id="" href="uploadCM.html"> Section ${i+1} </a>
+                                                <a href="#" onclick='getSectionDetails(${sections[i].id}, "Section ${i+1}")'> Section ${i+1} </a>
                                             </li>
                                         `
                                     }
@@ -308,6 +319,67 @@
                         let data = result.data
                         return data;
                     }
+                    return []
+                } catch(err) {
+                    alert(err);
+                    console.log(err);
+                }
+            }
+
+            async function getSectionDetails(section_id, section_no) {
+                
+                $("#loadingModal").modal('show');
+                const sectionDetails = api_endpoint + `/course_section/${section_id}`
+
+                try {
+                    const response =
+                        await fetch(
+                            sectionDetails, {
+                            method: 'GET'
+                        }
+                    );
+
+                    const result = await response.json();
+                    if (response.status === 200) {
+                        let data = result.data
+                        $('#sectionTitle').text(data.description)
+                        $('#sectionNo').text(section_no)
+                        $('#tablecontent').html(`
+                            <tr>
+                                <td> 1 </td>
+                                <td> ${data.material_url.title} </td>
+                                <td> Document </td>
+                                <td> 
+                                    <!-- download -->
+                                    <a href="${data.material_url.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
+
+                                    <!-- edit -->
+                                    <a href="add_reading.html" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+
+                                    <!-- delete/retire -->
+                                    <a href="#deletematerial" class="trigger-btn icon" data-id=""" data-toggle="modal" title="Delete Material"><i data-feather="trash-2"></i></a>
+                                </td>
+                            <tr>
+                            <tr>
+                                <td> 2 </td>
+                                <td> ${data.video_url.title} </td>
+                                <td> Video </td>
+                                <td>  
+                                    <!-- download -->
+                                    <a href="${data.video_url.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
+
+                                    <!-- edit -->
+                                    <a href="add_reading.html" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+
+                                    <!-- delete/retire -->
+                                    <a href="#deletematerial" class="trigger-btn icon" data-id=""" data-toggle="modal" title="Delete Material"><i data-feather="trash-2"></i></a>
+                                </td>
+                            <tr>
+                        `)
+                    }
+                     
+                    feather.replace()
+                    $("#loadingModal").modal('hide');
                     return []
                 } catch(err) {
                     alert(err);
