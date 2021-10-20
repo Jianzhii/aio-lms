@@ -100,6 +100,16 @@
                 width: 100px ;
             }
 
+            #table{
+                width: 80%;
+                padding-left: 15px;
+            }
+
+            #tableheader{
+                background-color: #FF922D ;
+                color: white ;
+            }
+
             .buttons{
                 margin-left: 10px;
             }
@@ -129,31 +139,25 @@
                 <a href="add_reading.html"><img src="../../static/imgs/Reading-btn.png" style="width:92px;height:28px;"></a>
                 <a href="add_quiz.html"><img src="../../static/imgs/Quiz-btn.png" style="width:75px;height:28px;"></a>
 
-            <br><br><br>
-            <!-- Start of Video Link -->
-            <div class="video">
-                <h6> <span id="video_title"></span> </h6>
-                <script>
-                    document.getElementByID("video_title").innerHTML=localStorage.getItem("video_title");
-                </script>
+                <br><br><br>
+                <!-- Start of Course Materials table -->
+                <div class="row" id="table">
+                    <table class="table">
+                        <tbody id="tableheader"> 
+                        <tr>
+                            <th scope="col">S/N</th>
+                            <th scope="col">File Name</th>
+                            <th scope="col">File Type</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                        </tbody>
+                        <tbody id="tablecontent">
+                        </tbody>
+                    </table>               
+                </div>
+                <!-- End of Course Materials table -->
             </div>
-            <!-- End of Video Link -->
-            <br>
-            <!-- Start of Reading Link -->
-            <div class="reading">
-                <h6> <span id="reading_title"></span> </h6>
-                <script>
-                    document.getElementByID("reading_title").innerHTML=localStorage.getItem("reading_title");
-                </script>
-            </div>
-            <!-- End of Reading Link -->                
-            </div>
-        </div>
 
-        <script>
-            document.getElementById("video_title").innerHTML = localStorage.getItem("video_title");
-            document.getElementById("reading_title").innerHTML = localStorage.getItem("reading_title");
-        </script>
         <!-- End of Main Content  -->
 
         <script>
