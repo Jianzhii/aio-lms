@@ -7,7 +7,7 @@ body{
     padding-left: 50px;
 }
 
-#ContentName{
+#ContentName, #GroupName{
     padding-left: 30px;
 }
 

@@ -161,8 +161,8 @@
             </div>
             <br>
             <div class ="buttons">
-                <a href="add_vid.html"><img src="../../static/imgs/Video-btn.png" style="width:75px;height:28px;"></a>
-                <a href="add_reading.html"><img src="../../static/imgs/Reading-btn.png" style="width:92px;height:28px;"></a>
+                <a  id='addVideoButton'><img src="../../static/imgs/Video-btn.png" style="width:75px;height:28px;"></a>
+                <a  id='addReadingButton'><img src="../../static/imgs/Reading-btn.png" style="width:92px;height:28px;"></a>
                 <a href="add_quiz.html"><img src="../../static/imgs/Quiz-btn.png" style="width:75px;height:28px;"></a>
 
                 <br><br><br>
@@ -227,6 +227,13 @@
         <!-- End of Main Content  -->
 
         <script>
+            var user_id = sessionStorage.getItem("user_id")
+            let query = window.location.search.substring(1).split("&") ;
+            let course_id = query[0].slice(3,)
+            let course_name = query[1].slice(11,).replace('%20', ' ')
+            sessionStorage.setItem('course_id', course_id)
+            sessionStorage.setItem('course_name', course_name)
+
             /* load trainer_nav.html */
             $(function(){
                 $("#sidebar").load("trainer_nav.html");
@@ -234,9 +241,6 @@
 
             // const api_endpoint = "http://52.55.242.44:8000/" 
             const api_endpoint = "http://localhost:8000/"
-            var user_id = sessionStorage.getItem("user_id")
-            let query = window.location.search.substring(1).split("&") ;
-            let course_id = query[0].slice(3,)
 
             $(async () => {
                 $("#loadingModal").modal('show');
@@ -295,6 +299,7 @@
                             }
                         } 
                     }
+                    $("#courseName").text(course_name);
                 } catch(err) {
                     alert(err);
                     console.log(err);
@@ -344,6 +349,8 @@
                         let data = result.data
                         $('#sectionTitle').text(data.description)
                         $('#sectionNo').text(section_no)
+                        $('#addVideoButton').attr("href",`add_vid.html?id=${data.id}&groupId=${data.group_id}`);
+                        $('#addReadingButton').attr("href",`add_reading.html?id=${data.id}&groupId=${data.group_id}`);
                         $('#tablecontent').html(`
                             <tr>
                                 <td> 1 </td>
@@ -354,7 +361,7 @@
                                     <a href="${data.material_url.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
 
                                     <!-- edit -->
-                                    <a href="add_reading.html" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+                                    <a href="add_reading.html?id=${data.id}&groupId=${data.group_id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
 
                                     <!-- delete/retire -->
                                     <a href="#deletematerial" class="trigger-btn icon" data-id=""" data-toggle="modal" title="Delete Material"><i data-feather="trash-2"></i></a>
@@ -369,7 +376,7 @@
                                     <a href="${data.video_url.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
 
                                     <!-- edit -->
-                                    <a href="add_reading.html" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+                                    <a href="add_vid.html?id=${data.id}&groupId=${data.group_id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
 
                                     <!-- delete/retire -->
                                     <a href="#deletematerial" class="trigger-btn icon" data-id=""" data-toggle="modal" title="Delete Material"><i data-feather="trash-2"></i></a>
