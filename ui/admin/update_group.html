@@ -128,8 +128,7 @@
                                 <label for="cname">Course Name</label>
                             </div>
                             <div class="col">
-                                <select id="course" name="course">
-                                </select>
+                                <b id="cname" name="course"></b>
                             </div>
                             <div class="col">
                                 <label for="gsize">Group Size</label>
@@ -180,7 +179,6 @@
                             </div>
                             <div class="col">
                                 <select id="learners" name="learners" size=4 multiple>
-                                    <option value="" disabled selected>Please select learner</option>
                                 </select>
                             </div>
                         </div>
@@ -264,13 +262,11 @@
         let query = window.location.search.substring(1).split("&") ;
         var groupid = query[0].slice(3,)
 
-        // Populate Course Dropdown
-
         // load existing group details
         $(async() => {
             const existing_group_api = api_endpoint + "group/" + groupid
-            const all_course_api = api_endpoint + "all_course"
             const all_trainer_api = api_endpoint + "all_trainer"
+            const current_learners_api = api_endpoint + "enrolment/group/" + groupid
             const all_learner_api = api_endpoint + "all_learner"
 
             try {
@@ -279,36 +275,37 @@
                         existing_group_api, {
                             method: 'GET'
                         }
-                );
+                ); /* retrieve existing group details */
 
                 const response2 = 
-                    await fetch(
-                        all_course_api, {
-                            method: 'GET'
-                        }
-                    )
-
-                const response3 = 
                     await fetch(
                         all_trainer_api, {
                             method: 'GET'
                         }
-                    )
+                    ) /* populate dropdown list of trainers */
+
+                const response3 = 
+                    await fetch(
+                        current_learners_api, {
+                            method: 'GET'
+                        }
+                    ) /* populate dropdown list of learners */
 
                 const response4 = 
                     await fetch(
                         all_learner_api, {
                             method: 'GET'
                         }
-                    )
+                    ) /* retrieve current list of learners */
 
-                const result = await response.json() ;
-                const result2 = await response2.json() ;
-                const result3 = await response3.json() ;
-                const result4 = await response4.json() ;
+                const result = await response.json() ; /* retrieve existing group details */
+                const result2 = await response2.json() ; /* populate dropdown list of trainers */
+                const result3 = await response3.json() ; /* retrieve current list of learners */
+                const result4 = await response4.json() ; /* populate dropdown list of learners */
 
                 if (response.status === 200) {
 
+                    $('#cname').append(result.data.course_name)
                     $('#gsize').val(result.data.size)
 
                     // start date 
@@ -354,116 +351,61 @@
                     let enrol_end_value = eeyear + "-" + eemonth + "-" + eeday+ "T" + eetime
                     
                     document.getElementById('enrollmentend').value = enrol_end_value
-                
+                    var current_trainer = result.data.trainer_name
+                }
+
+                if (response2.status === 200) {
+                    let data = result2.data
+                    for (let trainer of data) {
+                        if ( trainer.name == current_trainer) {
+                            option = `<option value=${trainer.id} selected> ${trainer.name}</option>`
+                            $('#trainer').append(option)
+                        } else {
+                            option = `<option value=${trainer.id}> ${trainer.name}</option>`
+                            $('#trainer').append(option)
+                        }   
+                        }
+                }
+
+                if (response3.status === 200) {
+                    var current_learners = []
+                    let data = result3.data
+                    for (let learner of data) {
+                        current_learners.push(learner.learner_name)
+                    }
+                }
+
+                if (response4.status === 200) {
+                    let data = result4.data
+                    for (let learner of data) {
+                        if (current_learners.includes(learner.name)) {
+                            option = `<option value=${learner.id} selected> ${learner.name}</option>`
+                            $('#learners').append(option)
+                        } else {
+                            option = `<option value=${learner.id}> ${learner.name}</option>`
+                            $('#learners').append(option)
+                        }
+                    }
                 }
             } catch(err) {
                 alert(err)
                 console.log(err)
             }
         })
-
-        $(async () => {
-            // API Endpoint
-            var course_api = api_endpoint + "all_course"
-
-            try {
-                const response =
-                    await fetch(
-                        course_api, {
-                        method: 'GET'
-                    }
-                );
-
-                const result = await response.json();
-                if (response.status === 200) {
-                    let data = result.data
-                    if (data.length) {
-                        for (let course of data) {option = `<option value=${course.id}> ${course.name}</option>`
-                            $('#course').append(option)
-                        }
-                    } else {
-                        $('#course').append(`<option> No courses available </option`)
-                    }
-                }
-            } catch(err) {
-                alert(err)
-                console.log(err)
-            }
-        });
-
-        // Populate Trainer Dropdown
-        $(async () => {
-            // API Endpoint
-            var trainer_api = api_endpoint + "all_trainer"
-
-            try {
-                const response =
-                    await fetch(
-                        trainer_api, {
-                        method: 'GET'
-                    }
-                );
-
-                const result = await response.json();
-                if (response.status === 200) {
-                    let data = result.data
-                    if (data.length) {
-                        for (let trainer of data) {
-                            option = `<option value=${trainer.id}> ${trainer.name}</option>`
-                            $('#trainer').append(option)
-                        }
-                    } else {
-                        $('#trainer').append(`<option> No trainers available </option`)
-                    }
-                }
-            } catch(err) {
-                alert(err)
-                console.log(err)
-            }
-        });
-
-        // Populate Learner Dropdown
-        $(async () => {
-            // API Endpoint
-            var learner_api = api_endpoint + "all_learner"
-
-            try {
-                const response =
-                    await fetch(
-                        learner_api, {
-                        method: 'GET'
-                    }
-                );
-
-                const result = await response.json();
-                if (response.status === 200) {
-                    let data = result.data
-                    if (data.length) {
-                        for (let learner of data) {
-                            option = `<option value=${learner.id}> ${learner.name}</option>`
-                            $('#learners').append(option)
-                        }
-                    } else {
-                        $('#learner').append(`<option> No learners available </option`)
-                    }
-                }
-            } catch(err) {
-                alert(err)
-                console.log(err)
-            }
-        });
     
         async function updateGroup() {
             $("#loadingModal").modal("show");
             data = {
-                course_id: $("#course").val(),
-                size: $("#ssize").val(),
+                id: groupid, 
+                course_id: $("#cname").val(),
+                size: $("#gsize").val(),
                 start_date: $("#startdate").val(),
                 end_date: $("#enddate").val(),
                 enrol_start_date: $("#enrollmentstart").val(),
                 enrol_end_date: $("#enrollmentend").val(),
                 trainer_id: $("#trainer").val()
             }
+
             let learners = $("#learners").val();
 
             const create_group_api = api_endpoint + "group"
@@ -480,7 +422,7 @@
                 if (response.status === 200) {
                     enrolment_body = {
                         user_id: learners,
-                        group_id: result.data.id
+                        group_id: groupid
                     }
                     let enrolment_result = await enrolLearners(enrolment_body);
                     $("#loadingModal").modal("hide");
@@ -512,7 +454,6 @@
                         body: JSON.stringify(body)
                     }
                 );
-
                 return await response.json();                
             } catch (err) {
                 console.log(err);
