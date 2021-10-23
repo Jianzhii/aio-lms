@@ -7,6 +7,8 @@ from course import Course
 from enrol import Enrolment, processEnrolmentEligibility, addEnrolment
 from group import Group
 
+from datetime import datetime
+
 
 class EnrolmentRequest(db.Model):
     __tablename__ = 'enrolment_request'
@@ -78,15 +80,48 @@ def getRequests(userid):
             }
         ),404
 
-
-
+'''
+Sample Request Body:
+{
+    "user_id" : 1,
+    "group_id" : 1,
+    "start_date" : "16/11/21 20:20:20"
+    
+}
+'''
 
 #Add Request
 @app.route("/enrolment_request",methods=["POST"])
 def addRequest():
     data= request.get_json()
     try:
+        # check for same course
+        # join enrolment, group and course check if they have pending request
+
+        # Approval need to check whether it is within start_date and end date  of class
+        enrolment_period  = checkEnrolmentPeriod(data)
+        if enrolment_period[1]!=200:
+            return enrolment_period 
+
+        #check for pending request
+        # user = User.query.filter_by(id=data['user_id']).first()
+        # group = Group.query.filter_by(id=data['group_id']).first()
+        # course_info = Course.query.filter_by(id=group.course_id).first()
+        # all_groups_under_course = [each.id for each in Group.query.filter_by(course_id=course_info.id).all()]
+        # enrolment_requests = [each.group_id for each in  db.session.query(EnrolmentRequest).filter(EnrolmentRequest.user_id == data['user_id']).filter(EnrolmentRequest.is_approved==1 | EnrolmentRequest.is_approved == None).all()]
+        # print(enrolment_requests)
+        # if len(list(set(all_groups_under_course) & set(enrolment_requests))): 
+        #     return jsonify(
+        #             {
+        #                 "code":406,
+        #                 "data": data,
+        #                 "message": f"{user.name} contains a pending request"
+        #             }
+        #     ), 406
+
+
         result = processEnrolmentEligibility(data)
+        
         if result[1] != 200:
             return result
 
@@ -112,6 +147,18 @@ def addRequest():
 
 
 
+def checkEnrolmentPeriod(data):
+        group = Group.query.filter_by(id=data['group_id']).first()
+        class_start_date = group.start_date
+        class_end_date = group.end_date 
+        enrol_datetime = datetime.strptime(data['start_date'], '%d/%m/%y %H:%M:%S')
+        if not(enrol_datetime>=class_start_date and enrol_datetime <=class_end_date):
+            return jsonify(
+                {
+                    "code" : 406,
+                    "message" : f"Sorry you are not allowed to submit a request that is before the start date or after end date of class:{data['group_id']}"
+                }
+            ),406
 
 
 
