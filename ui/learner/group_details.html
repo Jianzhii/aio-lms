@@ -133,6 +133,12 @@
                 padding: 20px ; 
             }
 
+            .course_material{
+                color: #FF922D; 
+                font-size: 20px; 
+                padding-top: 10px; 
+                padding-left: 15px;
+            }
         </style>
     </head>
 
@@ -172,9 +178,14 @@
                 <div class="col" id="edate"></div>
             </div>
 
+            <!-- Course Materials  -->
+            <div class="course_material">
+                View your course materials 
+            </div> 
+
             <!-- loading -->
             <div id="loading">
-                <img id="loading-image" src="static/imgs/loading.gif" alt="Loading..." />
+                <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
             </div>
         </div>
 
@@ -189,9 +200,9 @@
 
             /* load details of course's group */
 
-            let query = window.location.search.substring(1) ;
-            var courseid = query[3]
-            var groupid = query[13]
+            let query = window.location.search.substring(1).split('=') ;
+            console.log(query)
+            var groupid = query[1]            
 
             $(async() => {
                 

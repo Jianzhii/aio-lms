@@ -100,6 +100,16 @@
                 width: 100px ;
             }
 
+            input[type=button]:disabled {
+                background: lightgrey ;
+                color: black ; 
+                border: none ;
+                border-radius: 3px ; 
+                padding: 5px ;
+                width: 100px ;
+                
+            }
+
             #tableheader{
                 background-color: #FF922D ;
                 color: white ;
@@ -164,7 +174,7 @@
                 <table class="table">
                     <tbody id="tableheader"> 
                       <tr>
-                          <th scope="col">S/N</th>
+                          <th scope="col">Group Number</th>
                           <th scope="col">Group Size</th>
                           <th scope="col">Trainer</th>
                           <th scope="col">Enrollment Start Date/Time</th>
@@ -178,74 +188,33 @@
                         <!-- populate rows of groups -->
                     </tbody>
                 </table>
+            
+
+
             <!-- loading -->
             <div id="loading">
-                <img id="loading-image" src="static/imgs/loading.gif" alt="Loading..." />
+                <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
             </div>
         </div>
 
         <script>
 
-            /* load learner_nav.html */
+            /* load admin_nav.html */
             $(function(){
                 $("#sidebar").load("admin_nav.html");
             });
 
             const api_endpoint = "http://52.55.242.44:8000/" 
 
-            let query = window.location.search.substring(1).split("&") ;
-            var courseid = query[0].slice(3,)
+            let query = window.location.search.substring(1).split('=') ;
+            console.log(query)
+            var courseid = query[1] 
 
-            /* load groups in course */
-            $(async() => {
-                
-                var coursegroup_api = api_endpoint + "all_group/" + courseid
-
-                try {
-                    const response =
-                        await fetch(
-                            coursegroup_api, {
-                                method: 'GET'
-                            }
-                        );
-                    
-                    const result = await response.json() ;
-                    if (response.status === 200) {
-                        let data = result.data
-                        console.log(data)
-                        if (data.length) {
-                            for (i=0 ; i < data.length ; i++) {
-                                row = `
-                                <tr>
-                                    <td>${i+1}</td>
-                                    <td>${data[i].size}</td>
-                                    <td>${data[i].trainer_name}</td>
-                                    <td>${data[i].enrol_start_date}</td>
-                                    <td>${data[i].enrol_end_date}</td>
-                                    <td>${data[i].start_date}</td>
-                                    <td>${data[i].end_date}</td>
-                                    <td><input type="button" value="Enrol" id="selfenrol" onclick=""></td>
-                                </tr>`
-                                $('#tablecontent').append(row)
-                            }
-                        } else {
-
-                            $('#table').append("No groups available")
-                            
-                        }
-
-                    }
-                } catch(err) {
-                    alert(err)
-                    console.log(err)
-                }
-
-            })
+            var user_id = sessionStorage.getItem("user_id")
+            var all_requests = [] 
 
             /* load course details */
-
             $(async() => {
-                
 
                 var course_api = api_endpoint + "course/" + courseid
 
@@ -262,7 +231,6 @@
                         let data = result.data
                         $('.cname').append(data.name)
                         $('#cdes').append(data.description)
-                        $('#preq').append(data.prerequisite)
                         $('#loading').hide()
                     }
                 } catch(err) {
@@ -272,6 +240,59 @@
 
             })
 
+            /* load groups in course */
+            $(async() => {
+                var coursegroup_api = api_endpoint + "all_group/" + courseid
+
+                try {
+                    const response =
+                        await fetch(
+                            coursegroup_api, {
+                                method: 'GET'
+                            }
+                        );
+                        
+                    const result = await response.json() ;
+                    if (response.status === 200) {
+                        let data = result.data
+                        // console.log(data)
+                        if (data.length) {
+                            for (i=0 ; i < data.length ; i++) {
+                                row = `
+                                <tr>
+                                    <td>Group ${data[i].id}</td>
+                                    <td>${data[i].size}</td>
+                                    <td>${data[i].trainer_name}</td>
+                                    <td>${data[i].enrol_start_date}</td>
+                                    <td>${data[i].enrol_end_date}</td>
+                                    <td>${data[i].start_date}</td>
+                                    <td>${data[i].end_date}</td>
+                                    <td>
+                                    <!-- edit -->
+                                    <a href="./update_group.html?id=${data[i].id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+
+                                    <!-- delete/retire -->
+                                    <a href="#deletemodal" class="trigger-btn icon" data-id="${data[i].name}" data-toggle="modal" title="Retire Course"><i data-feather="trash-2"></i></a></td>
+                                </tr>`
+                                $('#tablecontent').append(row)
+                            }
+                        } else {
+                            row = `
+                            <tr>
+                                <td>There are no groups for you to enrol in currently :<</td>
+                            </tr>`
+                            $('tablecontent').append(row)
+                        }
+
+                    }
+                } catch(err) {
+                    alert(err)
+                    console.log(err)
+                }
+
+                $('#loading').hide();
+                feather.replace()
+            })
         </script>   
     </body>
 </html>

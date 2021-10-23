@@ -1,6 +1,8 @@
+from operator import and_
 from types import prepare_class
 from app import app, db
 from flask import json, jsonify, request
+from sqlalchemy.sql.expression import outerjoin, and_
 from user import User
 from datetime import datetime
 
@@ -71,6 +73,7 @@ def getAllCourse():
         }
     ), 200
 
+# get course by search
 @app.route("/search_course", methods=["POST"])
 def searchCourse():
     data = request.get_json()
@@ -310,3 +313,56 @@ def viewCompletedCourses(id):
         }
     ),200
 
+# Get distinct courses assigned to trainer
+@app.route("/course/trainer/<int:trainer_id>", methods=["GET"])
+def courseAssignedToTrainer(trainer_id):
+    try:
+        assignment = getTrainerAssignment(trainer_id)
+        if assignment: 
+            data = []
+            for each in assignment:
+                info = {
+                            "course_id": each['course_id'],
+                            "course_name": each['course_name']
+                        }
+                if info not in data:
+                    data.append(info)
+            return jsonify(
+                {
+                    "code": 200,
+                    "message": "Successfully retrieved courses",
+                    "data": data
+                }
+            ), 200
+        else:
+            return jsonify(
+                {
+                    "code": 200,
+                    "message": "Successfully retrieved courses",
+                    "data": []
+                }
+            ), 200
+    except Exception as e:
+        return jsonify(
+            {
+                "code":404,
+                "message": f"Error while retrieving courses: {e}."
+            }
+        ), 404
+
+def getTrainerAssignment(trainer_id):
+    try:
+        from group import Group, TrainerAssignment
+        courses = db.session.query(TrainerAssignment, Group, Course).filter(and_(TrainerAssignment.trainer_id==trainer_id, TrainerAssignment.assigned_end_dt == None))\
+                .outerjoin(Group, Group.id == TrainerAssignment.group_id)\
+                .outerjoin(Course, Course.id == Group.course_id).all()
+
+        data = []
+        for assignment, group, course in courses: 
+            assignment = assignment.json()
+            assignment['course_name'] =  course.name
+            assignment['course_id'] = course.id
+            data.append(assignment)
+        return data
+    except Exception as e:
+        raise e
