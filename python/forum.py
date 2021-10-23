@@ -2,15 +2,12 @@ from sqlalchemy import and_
 from flask import jsonify, request
 from app import app, db
 from datetime import date
-
-
 from course import Course
 from enrol import Enrolment
 from group import Group
 from sqlalchemy.sql.expression import outerjoin
 from user import User
-
-
+from datetime import date
 class ForumThread(db.Model):
     __tablename__ = 'forum_thread'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -19,8 +16,6 @@ class ForumThread(db.Model):
     created_dt =db.Column(db.DateTime, nullable=False)
     updated_dt =db.Column(db.DateTime, nullable=False)
     title = db.Column(db.String,nullable=False)
-
-    
     def json(self):
         return {
             'id': self.id,
@@ -30,7 +25,6 @@ class ForumThread(db.Model):
             'updated_dt' : self.updated_dt.strftime("%d/%m/%Y, %H:%M:%S"),
             'title' : self.title
         }
-
 class ForumPost(db.Model):
     __tablename__ = 'forum_post'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -50,9 +44,10 @@ class ForumPost(db.Model):
             'messsage' : self.message
         }
 
+
 # retrieve all forum threads & posts based on user_id in enrolment table
 @app.route("/forum/thread/<int:id>", methods = ["GET"])
-def getAllThreadsAndPosts(id):
+def getSpecificThreadsAndPosts(id):
     # if learner/trainer check if he is enrolled
     enrolment = Enrolment.query.filter_by(user_id=id).first()
     if enrolment:
@@ -83,6 +78,7 @@ def getAllThreadsAndPosts(id):
             }
         ),404
 
+
 '''
 Sample request body
 {
@@ -90,7 +86,9 @@ Sample request body
     "course_id" : 1,
     "created_dt" : "2021-10-15 12:00:00",
     "updated_dt" :  "2021-10-15 12:00:00",
-    "title" : "Topic 1 : Engineering 101"
+    "title" : "Topic 1 : Engineering 101",
+    "message" : "In the question it states why mary had a little lamb?"
+    
 }
 '''
 #create
@@ -101,17 +99,27 @@ def createThread():
         forumThread = ForumThread(
             user_id = data['user_id'],
             course_id = data['course_id'],
-            created_dt =data['created_dt'],
-            updated_dt =data['updated_dt'],
+            created_dt =date.today(),
+            updated_dt =date.today(),
             title = data['title']
             
         )
         db.session.add(forumThread)
         db.session.commit()
+        forumThread = db.session.query(ForumThread).order_by(ForumThread.id.desc()).first()
+        forumPost = ForumPost(
+            forum_thread_id = forumThread.id,
+            user_id = data['user_id'],
+            created_dt =date.today(),
+            updated_dt = date.today(),
+            message = data['message']
+        )
+        db.session.add(forumPost)
+        db.session.commit()
         return jsonify(
             {
                 "code": 200,
-                "message": "Forum Thread Created!"
+                "message": "Your Question has Been Successfully Created!"
             }
         ), 200
     except Exception as e:
@@ -164,6 +172,8 @@ def updateThread(id):
         ),404
 
 
+
+
 #Delete Forum Thread 
 @app.route("/forum/thread/<int:id>", methods = ["DELETE"])
 def deleteThread(id):
@@ -196,45 +206,7 @@ def deleteThread(id):
             }
         ),500
 
-'''
-Sample request body
-{
-    "forum_thread_id" : 1,
-    "user_id" :1,
-    "course_id" : 1,
-    "created_dt" : "2021-10-15 12:00:00",
-    "updated_dt" :  "2021-10-15 12:00:00",
-    "message" : "In the question it states why mary had a little lamb?"
-}
-'''
-#create forum post
-@app.route("/forum/post", methods = ["POST"])
-def createPost():
-    data= request.get_json()
-    try:
-        forumPost = ForumPost(
-            forum_thread_id = data['forum_thread_id'],
-            user_id = data['user_id'],
-            created_dt =data['created_dt'],
-            updated_dt =data['updated_dt'],
-            message = data['message']
-            
-        )
-        db.session.add(forumPost)
-        db.session.commit()
-        return jsonify(
-            {
-                "code": 200,
-                "message": "Forum Post Created!"
-            }
-        ), 200
-    except Exception as e:
-        return jsonify(
-            {
-                "code":500,
-                "message": f"An error occurred while creating a forum post: {e}"
-            }
-        ),500
+
 
 '''
 Sample Request Body to Update Forum
@@ -280,10 +252,9 @@ def updatePost(id):
             }
         ),404
 
-
 # Delete forum post 
 @app.route("/forum/post/<int:id>", methods = ["DELETE"])
-def deleteForumPost(id):
+def deletePost(id):
     try:
         forum_post = ForumPost.query.filter_by(id=id).first()
         if not forum_post:

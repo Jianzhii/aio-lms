@@ -25,6 +25,7 @@ import course_section
 import enrol 
 import enrolment_request
 import forum
+import chat
 # import upload
 
 @app.route("/test", methods=['GET'])
