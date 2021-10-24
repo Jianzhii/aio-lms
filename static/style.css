@@ -10,3 +10,17 @@
     font-weight: bold;
     font-size:2em;
 }
+
+.modal-icon {
+    color: #f15e5e;
+    font-size: 46px;
+    display: inline-block;
+    margin-top: 13px;
+    }
+
+.modal-icon i {
+    color: #f15e5e;
+    font-size: 46px;
+    display: inline-block;
+    margin-top: 13px;
+}
