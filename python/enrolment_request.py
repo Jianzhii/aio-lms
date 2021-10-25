@@ -6,7 +6,7 @@ from user import User
 from course import Course
 from enrol import Enrolment, processEnrolmentEligibility, addEnrolment
 from group import Group
-
+from sqlalchemy import or_
 from datetime import datetime
 
 
@@ -98,26 +98,46 @@ def addRequest():
         # check for same course
         # join enrolment, group and course check if they have pending request
 
+        user = User.query.filter_by(id=data['user_id']).first()
+        #check if learner has already submitted an enrolment request
+        # exisiting_enrolment_request = EnrolmentRequest.query.filter_by(user_id= data['user_id'],group_id=data['group_id']).all()
+        # if exisiting_enrolment_request:
+        #     return jsonify(
+        #         {
+        #             "code":406,
+        #             "message": f"This user has already submitted an enrolment request!"
+        #         }
+        #     ),406
+        
+        #check for approval of course
+        group = Group.query.filter_by(id=data['group_id']).first()
+        course_info= Course.query.filter_by(id=group.course_id).first()
+        all_groups_under_course = [each.id for each in Group.query.filter_by(course_id=course_info.id).all()]
+        approved_requests = [each.group_id for each in EnrolmentRequest.query.filter_by(user_id=data['user_id'], is_approved =1).all()]
+        pending_requests = [each.group_id for each in EnrolmentRequest.query.filter_by(user_id=data['user_id'], is_approved =None).all()]
+        if len(list(set(all_groups_under_course) & set(approved_requests))): 
+                return jsonify(
+                    {
+                        "code":406,
+                        "data": data,
+                        "message": f"{user.name} enrolment request has already been approved!"
+                    }
+                ), 406
+
+        if len(list(set(all_groups_under_course) & set(pending_requests))): 
+            return jsonify(
+                    {
+                        "code":406,
+                        "data": data,
+                        "message": f"{user.name} has submitted a request and it is pending"
+                    }
+                ), 406
+
         # Approval need to check whether it is within start_date and end date  of class
         enrolment_period  = checkEnrolmentPeriod(data)
         if enrolment_period[1]!=200:
             return enrolment_period 
 
-        #check for pending request
-        # user = User.query.filter_by(id=data['user_id']).first()
-        # group = Group.query.filter_by(id=data['group_id']).first()
-        # course_info = Course.query.filter_by(id=group.course_id).first()
-        # all_groups_under_course = [each.id for each in Group.query.filter_by(course_id=course_info.id).all()]
-        # enrolment_requests = [each.group_id for each in  db.session.query(EnrolmentRequest).filter(EnrolmentRequest.user_id == data['user_id']).filter(EnrolmentRequest.is_approved==1 | EnrolmentRequest.is_approved == None).all()]
-        # print(enrolment_requests)
-        # if len(list(set(all_groups_under_course) & set(enrolment_requests))): 
-        #     return jsonify(
-        #             {
-        #                 "code":406,
-        #                 "data": data,
-        #                 "message": f"{user.name} contains a pending request"
-        #             }
-        #     ), 406
 
 
         result = processEnrolmentEligibility(data)
