@@ -315,7 +315,7 @@
 
             $(async () => {
                 $("#loadingModal").modal('show');
-                const courseAssignment = api_endpoint + `/group/trainer/${user_id}/${course_id}`
+                const courseAssignment = api_endpoint + `group/trainer/${user_id}/${course_id}`
 
                 try {
                     const response =
@@ -336,6 +336,7 @@
                                             <ul>`
 
                                 const sections = await getSections(group.group_id);
+                                console.log(sections)
                                 
                                 if (sections.length) {
                                     for (let i = 0; i < sections.length ; i++) {
@@ -382,7 +383,8 @@
             });
 
             async function getSections(group_id) {
-                const courseAssignment = api_endpoint + `/all_section/${group_id}`
+                const courseAssignment = api_endpoint + `all_section/${group_id}`
+                console.log(courseAssignment)
 
                 try {
                     const response =
@@ -407,7 +409,7 @@
             async function getSectionDetails(section_id, section_no) {
                 
                 $("#loadingModal").modal('show');
-                const sectionDetails = api_endpoint + `/course_section/${section_id}`
+                const sectionDetails = api_endpoint + `course_section/${section_id}`
 
                 try {
                     const response =
