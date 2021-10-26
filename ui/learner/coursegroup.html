@@ -257,7 +257,6 @@
                     if (response.status === 200) {
                         let requests = result.data
                         for (request of requests) {
-                            console.log(request.group_id)
                             all_requests.push(request.group_id)
                         }
                     }
@@ -297,7 +296,7 @@
                                     <td>${data[i].start_date}</td>
                                     <td>${data[i].end_date}</td>`
 
-                                if (data[i].id in all_requests) {
+                                if (all_requests.includes(data[i].id)) {
                                     row += `<td><input type="button" value="Pending" disabled></td>`
                                 } else {
                                     row += `<td><input type="button" value="Enrol" id="${data[i].id}" onclick="selfEnrol(${data[i].id})"></td>`
