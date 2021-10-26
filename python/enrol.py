@@ -118,6 +118,7 @@ def addEnrolment(data=None):
 
 def processEnrolmentEligibility(data): 
         try:
+            # check if learner alr enrolled in group
             existing_enrolment = Enrolment.query.filter_by(user_id = data['user_id'], group_id = data['group_id']).all()
             user = User.query.filter_by(id=data['user_id']).first()
             if existing_enrolment: 
@@ -129,20 +130,33 @@ def processEnrolmentEligibility(data):
                     }
                 ), 406
 
-            # check for same course
+            # check if learner has alr completed course
             group = Group.query.filter_by(id=data['group_id']).first()
             course_info = Course.query.filter_by(id=group.course_id).first()
             all_groups_under_course = [each.id for each in Group.query.filter_by(course_id=course_info.id).all()]
-            user_enrolment = [each.group_id for each in Enrolment.query.filter_by(user_id = data['user_id']).all()]
+            user_enrolment = [each.group_id for each in Enrolment.query.filter_by(user_id = data['user_id'], completed = True).all()]
             if len(list(set(all_groups_under_course) & set(user_enrolment))): 
                 return jsonify(
                     {
                         "code":406,
                         "data": data,
-                        "message": f"{user.name} has already been enrolled in this course"
+                        "message": f"{user.name} has already been completed in this course"
                     }
                 ), 406
 
+            # check if learner is alr enrolled in upcoming or ongoing group under same course
+            ongoing_groups_under_course = [each.id for each in Group.query.filter(Group.course_id==course_info.id, Group.end_date >= datetime.now()).all()]
+            incompleted_user_enrolment = [each.group_id for each in Enrolment.query.filter_by(user_id = data['user_id'], completed = False).all()]
+            if len(list(set(ongoing_groups_under_course) & set(incompleted_user_enrolment))): 
+                return jsonify(
+                    {
+                        "code":406,
+                        "data": data,
+                        "message": f"{user.name} has already been enrolled in an ongoing or upcoming group for this course"
+                    }
+                ), 406
+
+            # check if group size can accommodate learner
             current_group_size = Enrolment.query.filter_by(group_id = data['group_id']).count()
             if current_group_size == group.size:
                 return jsonify(
@@ -152,6 +166,8 @@ def processEnrolmentEligibility(data):
                         "message": "Group enrollment is already full."
                     }
                 ),406
+
+            # check if learner has alr fulfilled prerequisite
             if course_info.prerequisite:
                 completed_course = [ course.id for enrolment, group, course in db.session.query(Enrolment, Group, Course).filter_by(user_id=data['user_id'], completed=True)\
                                                                                         .outerjoin(Group, Group.id == Enrolment.group_id)\
