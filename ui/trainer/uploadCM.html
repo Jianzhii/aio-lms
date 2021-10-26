@@ -426,41 +426,49 @@
                         $('#sectionNo').text(section_no)
                         $('#addVideoButton').attr("href",`add_vid.html?id=${data.id}&groupId=${data.group_id}`);
                         $('#addReadingButton').attr("href",`add_reading.html?id=${data.id}&groupId=${data.group_id}`);
+                        let i = 1;
                         if (data.material_url) {
-                            $('#tablecontent').html(`
-                                <tr>
-                                    <td> 1 </td>
-                                    <td> ${data.material_url.title} </td>
-                                    <td> Document </td>
-                                    <td> 
-                                        <!-- download -->
-                                        <a href="${data.material_url.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
+                            for (let material of material_url) {
+                                $('#tablecontent').html(`
+                                    <tr>
+                                        <td> ${i} </td>
+                                        <td> ${material.title} </td>
+                                        <td> Document </td>
+                                        <td> 
+                                            <!-- download -->
+                                            <a href="${material.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
 
-                                        <!-- edit -->
-                                        <a href="add_reading.html?id=${data.id}&groupId=${data.group_id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+                                            <!-- edit -->
+                                            <a href="add_reading.html?id=${data.id}&groupId=${data.group_id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
 
-                                        <!-- delete/retire -->
-                                        <a href="#deletematerial" class="trigger-btn icon" data-id=""" data-toggle="modal" title="Delete Material"><i data-feather="trash-2"></i></a>
-                                    </td>
-                                <tr>`)
-                        } else if (data.video_url){
-                            $('#tablecontent').html(`                             
-                                <tr>
-                                    <td> 2 </td>
-                                    <td> ${data.video_url.title} </td>
-                                    <td> Video </td>
-                                    <td>  
-                                        <!-- download -->
-                                        <a href="${data.video_url.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
+                                            <!-- delete/retire -->
+                                            <a href="#deletematerial" class="trigger-btn icon" data-id=""" data-toggle="modal" title="Delete Material"><i data-feather="trash-2"></i></a>
+                                        </td>
+                                    <tr>`)
+                                i++;
+                            }
+                        } else if (data.video_url) {
+                            for (let video of video_url) {
+                                $('#tablecontent').html(`                             
+                                    <tr>
+                                        <td> 2 </td>
+                                        <td> ${video.title} </td>
+                                        <td> Video </td>
+                                        <td>  
+                                            <!-- download -->
+                                            <a href="${video.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
 
-                                        <!-- edit -->
-                                        <a href="add_vid.html?id=${data.id}&groupId=${data.group_id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+                                            <!-- edit -->
+                                            <a href="add_vid.html?id=${data.id}&groupId=${data.group_id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
 
-                                        <!-- delete/retire -->
-                                        <a href="#deletematerial" class="trigger-btn icon" data-id=""" data-toggle="modal" title="Delete Material"><i data-feather="trash-2"></i></a>
-                                    </td>
-                                <tr>
-                            `)
+                                            <!-- delete/retire -->
+                                            <a href="#deletematerial" class="trigger-btn icon" data-id=""" data-toggle="modal" title="Delete Material"><i data-feather="trash-2"></i></a>
+                                        </td>
+                                    <tr>
+                                `)
+                                i++;
+                            }
+                          
                         } else {
                             $('#tablecontent').html(`
                             <tr>

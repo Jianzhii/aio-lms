@@ -77,7 +77,8 @@ sample request
     "user_id": 3,
     "group_id": 1,
 }
-# '''
+will have to update course request... so everything 
+'''
 @app.route("/enrolment", methods=['POST'])
 def addEnrolment(data=None):
     if not data:
@@ -94,6 +95,7 @@ def addEnrolment(data=None):
                     return result
                 else: 
                     db.session.add(result[0])
+                    # have to insert into chapter progress also 
         else: 
             result = processEnrolmentEligibility(data)
             if result[1] != 200: 
