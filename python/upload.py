@@ -14,7 +14,7 @@ from app import app, db
 def uploadFiles():
     try:
         if 'file' not in request.files:
-            raise Exception('Error while uploading the file')
+            raise Exception('Please upload a file.')
         else: 
             file = request.files['file']
             filename = upload_file_to_s3(file)
@@ -59,7 +59,7 @@ def uploadFiles():
 def uploadVideo():
     try:
         if 'file' not in request.files:
-            raise Exception('Error while uploading the video')
+            raise Exception('Please upload a video')
         else: 
             file = request.files['file']
             filename = upload_file_to_s3(file)

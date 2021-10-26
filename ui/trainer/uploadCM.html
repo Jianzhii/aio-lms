@@ -310,8 +310,8 @@
                 $("#sidebar").load("./trainer_nav.html");
             });
 
-            const api_endpoint = "http://52.55.242.44:8000/" 
-            // const api_endpoint = "http://localhost:8000/"
+            // const api_endpoint = "http://52.55.242.44:8000/" 
+            const api_endpoint = "http://localhost:8000/"
 
             $(async () => {
                 $("#loadingModal").modal('show');
@@ -336,7 +336,6 @@
                                             <ul>`
 
                                 const sections = await getSections(group.group_id);
-                                console.log(sections)
                                 
                                 if (sections.length) {
                                     for (let i = 0; i < sections.length ; i++) {
@@ -384,7 +383,6 @@
 
             async function getSections(group_id) {
                 const courseAssignment = api_endpoint + `all_section/${group_id}`
-                console.log(courseAssignment)
 
                 try {
                     const response =
@@ -419,17 +417,19 @@
                         }
                     );
 
-                    const result = await response.json();
+                    const result = await response.json();                    
+                    $("#loadingModal").modal('hide');
                     if (response.status === 200) {
                         let data = result.data
                         $('#sectionTitle').text(data.description)
                         $('#sectionNo').text(section_no)
                         $('#addVideoButton').attr("href",`add_vid.html?id=${data.id}&groupId=${data.group_id}`);
                         $('#addReadingButton').attr("href",`add_reading.html?id=${data.id}&groupId=${data.group_id}`);
+                        $('#tablecontent').html('')
                         let i = 1;
                         if (data.material_url) {
-                            for (let material of material_url) {
-                                $('#tablecontent').html(`
+                            for (let material of data.material_url) {
+                                $('#tablecontent').append(`
                                     <tr>
                                         <td> ${i} </td>
                                         <td> ${material.title} </td>
@@ -448,10 +448,10 @@
                                 i++;
                             }
                         } else if (data.video_url) {
-                            for (let video of video_url) {
-                                $('#tablecontent').html(`                             
+                            for (let video of data.video_url) {
+                                $('#tablecontent').append(`                             
                                     <tr>
-                                        <td> 2 </td>
+                                        <td> ${i} </td>
                                         <td> ${video.title} </td>
                                         <td> Video </td>
                                         <td>  
@@ -473,7 +473,8 @@
                             $('#tablecontent').html(`
                             <tr>
                                 <td>No materials have been added to this section yet. </td>
-                            </tr>`);
+                            </tr>`);                            
+                            $("#loadingModal").modal('hide');
                         } 
                     }
                      
@@ -482,7 +483,8 @@
                     return []
                 } catch(err) {
                     alert(err);
-                    console.log(err);
+                    console.log(err);                    
+                    $("#loadingModal").modal('hide');
                 }
             }
         
