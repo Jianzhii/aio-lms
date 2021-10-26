@@ -183,7 +183,7 @@
                           <th scope="col">S/N</th>
                           <th scope="col">Course Name</th>
                           <th scope="col">Course Description</th>
-                          <th scope="col"> Prerequisite Course(s) </th>
+                          <th scope="col">Prerequisite Course(s)</th>
                           <th scope="col">Actions</th>  
                       </tr>
                     </tbody>
@@ -321,7 +321,7 @@
                                     <a href="./update_course.html?id=${data[i].id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
 
                                     <!-- delete/retire -->
-                                    <a href="#deletemodal" class="trigger-btn icon" data-id="${data[i].name}" data-toggle="modal" title="Retire Course"><i data-feather="trash-2"></i></a>
+                                    <a href="#deletemodal" class="trigger-btn icon" data-id="${data[i].id}" data-toggle="modal" title="Retire Course"><i data-feather="trash-2"></i></a>
                                 </td>
                             </tr>`
 
@@ -422,7 +422,7 @@
                 
                 $('#deletemodal').modal('hide');
                 $("#loadingModal").modal('show');
-                var delete_api = api_endpoint + `course/${id}`
+                var delete_api = api_endpoint + "course/" + id
                 try {
                     const response =
                         await fetch(
