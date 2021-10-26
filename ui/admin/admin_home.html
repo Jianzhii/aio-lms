@@ -55,6 +55,10 @@
                 font-weight: bold ;
             }
 
+            h4 {
+                text-align: center /* modal titles */
+            }
+
             .sidenav a {
                 color: black ;
                 padding: 16px ;
@@ -200,15 +204,12 @@
             <div id="deletemodal" class="modal fade">
                 <div class="modal-dialog modal-confirm">
                     <div class="modal-content">
-                        <div class="modal-header flex-column">
-                            <div class="modal-icon">
-                                <i data-feather="x-circle"></i>
-                            </div>						
-                            <h4 class="modal-title w-100">Are you sure?</h4>	
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <div class="modal-header flex-column">					
+                            <h4 class="modal-title w-100">Delete Course</h4>	
                         </div>
                         <div class="modal-body">
-                            <p id='modalMessage'>Do you really want to delete these records? This process cannot be undone.</p>
+                            <p id='deleteName'></p>
+                            <p id='modalMessage'>This process cannot be undone.</p>
                         </div>
                         <div class="modal-footer justify-content-center">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -222,18 +223,14 @@
             <div id="successModal" class="modal fade">
                 <div class="modal-dialog modal-confirm">
                     <div class="modal-content">
-                        <div class="modal-header flex-column">
-                            <div class="icon">
-                                <i data-feather="check-circle"></i>
-                            </div>						
-                            <h4 class="modal-title w-100">Success!</h4>	
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <div class="modal-header flex-column">	
+                            <h4 class="modal-title w-100">Success</h4>	
                         </div>
                         <div class="modal-body">
                             <p id='successMessage'></p>
                         </div>
                         <div class="modal-footer justify-content-center">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="location.reload()">Okay</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="location.reload()">Dismiss</button>
                         </div>
                     </div>
                 </div>
@@ -243,18 +240,14 @@
             <div id="failureModal" class="modal fade">
                 <div class="modal-dialog modal-confirm">
                     <div class="modal-content">
-                        <div class="modal-header flex-column">
-                            <div class="icon">
-                                <i data-feather="alert-triangle"></i>
-                            </div>						
+                        <div class="modal-header flex-column">					
                             <h4 class="modal-title w-100">Error!</h4>	
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                         </div>
                         <div class="modal-body">
                             <p id='failureMessage'></p>
                         </div>
                         <div class="modal-footer justify-content-center">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Okay</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Dismiss</button>
                         </div>
                     </div>
                 </div>
@@ -265,7 +258,6 @@
                     <div class="modal-content">
                         <div class="modal-header flex-column">				
                             <h4 class="modal-title w-100">Loading.....</h4>	
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                         </div>
                         <div class="modal-body">
                             <div id="modalloading">
@@ -321,7 +313,7 @@
                                     <a href="./update_course.html?id=${data[i].id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
 
                                     <!-- delete/retire -->
-                                    <a href="#deletemodal" class="trigger-btn icon" data-id="${data[i].id}" data-toggle="modal" title="Retire Course"><i data-feather="trash-2"></i></a>
+                                    <a href="#deletemodal" class="trigger-btn icon" data-id="${data[i].id}" data-name="${data[i].name}" data-toggle="modal" title="Retire Course"><i data-feather="trash-2"></i></a>
                                 </td>
                             </tr>`
 
@@ -415,7 +407,8 @@
 
             $(document).on("click", ".trigger-btn", function () {
                 var course_id = $(this).data('id');
-                $(".modal-footer #deleteId").val( course_id );
+                var course_name = $(this).data('name')
+                $(".modal-footer #deleteId").val(course_id);
             });
 
             async function deleteCourse(id) {
