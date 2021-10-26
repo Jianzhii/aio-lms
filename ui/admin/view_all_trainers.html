@@ -46,7 +46,7 @@
             h3 {
                 text-indent: 34px ;
                 font-size: 13px ;
-                font-weight: bold ;
+                font-weight: bold ; 
             }
 
             .sidenav a {
@@ -86,7 +86,7 @@
                 padding: 12px ;
             }
 
-            #searchbar, #table {
+            #table {
                 padding: 30px ; 
             }
 
@@ -103,21 +103,20 @@
                 width: 100px ;
             }
 
-            #tableheader{
-                background-color: #FF922D ;
-                color: white ;
-            }
-
             .icon {
                 color: #FF922D ;
                 padding: 2px ;
+            }
+
+            .card-deck {
+                padding-top: 30px ; 
             }
 
         </style>
 
         <!-- start of page icon -->
         <title>All Trainers</title>
-        <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
+        <link rel="icon" href="../../static/imgs/All-In-One 1.png" type="image/icon type">
         <!-- end of page icon -->
 
     </head>
@@ -139,21 +138,9 @@
                     <input type="button" value="Log Out" id="logout">
                 </div>
             </div>
-                 
-            <!-- start of table showing list of courses -->
-            <div class="row" id="table">
-                <table class="table">
-                    <tbody id="tableheader"> 
-                      <tr>
-                          <th scope="col">S/N</th>
-                          <th scope="col">Trainer Name</th>
-                          <th scope="col">Actions</th>  
-                      </tr>
-                    </tbody>
-                    <tbody id="tablecontent">
-                        <!-- populate rows of trainers -->
-                    </tbody>
-                </table>
+            
+            <!-- start of content showing list of trainers -->
+            <div class="card-deck">
             </div>
         </div>
             
@@ -166,7 +153,6 @@
 
             const api_endpoint = "http://52.55.242.44:8000/"
 
-            // Populate Learner Dropdown
             $(async () => {
                 // API Endpoint
                 var trainer_api = api_endpoint + "all_trainer"
@@ -185,23 +171,25 @@
                         console.log(data)
                         if (data.length) {
                             for (let i = 0 ; i < data.length ; i++ ) {
-                                row = `
-                                <tr>
-                                    <td>${i+1}</td>
-                                    <td>${data[i].name}</td>
-                                    <td>
-                                        <!-- view -->
-                                        <a href="./individual_profile.html?id=${data[i].id}" class="icon" title="View Profile"><i data-feather="eye"></i></a>
+                                card = `
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${data[i].name}
+                                        </h5>
+                                        <p class="card-text">
+                                        Phone Number: ${data[i].phone_number} <br>
+                                        Email Address: ${data[i].email}
+                                        </p>
+                                    </div>
+                                    <div class="card-footer">
+                                        <input type="button" value="view details" id="">
+                                    </div>
+                                </div>`
+                                
+                                
+                            
 
-                                        <!-- edit -->
-                                        <a href="#" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
-
-                                        <!-- delete/retire -->
-                                        <a href="#" class="icon" title="Retire Course"><i data-feather="trash-2"></i></a>
-                                    </td>
-                                </tr>`
-
-                                $('#tablecontent').append(row)
+                                $('.card-deck').append(card)
                             }
 
                             feather.replace()
