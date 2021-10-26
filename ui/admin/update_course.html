@@ -260,7 +260,7 @@
                     if (response.status === 200 && result.code === 200) {
                         $("#successMessage").text(result.message)
                         $('#successModal').modal('show');
-                        document.getElementById("success").addEventListener("click",function() {return window.location.href = `coursegroup.html?id=${courseid}`})
+                        document.getElementById("success").addEventListener("click",function() {window.location.href = "coursegroup.html?id=" + courseid })
 
                     } else { 
                         $("#failureMessage").text(result.message)
