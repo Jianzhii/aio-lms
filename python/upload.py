@@ -14,17 +14,19 @@ from app import app, db
 def uploadFiles():
     try:
         if 'file' not in request.files:
-            raise Exception('Error while uploading the file')
+            raise Exception('Please upload a file.')
         else: 
             file = request.files['file']
             filename = upload_file_to_s3(file)
 
         if filename[0]:
             course = CourseSection.query.filter(CourseSection.id==request.form['id']).first()
-            course.material_url = {
+            materials = course.material_url 
+            materials.append({
                 "title": request.form['title'],
                 "url": f"{os.getenv('AWS_DOMAIN')}{filename[1]}"
-            }
+            })
+            course.material_url = materials
             db.session.commit()
             return jsonify(
                 {
@@ -59,17 +61,19 @@ def uploadFiles():
 def uploadVideo():
     try:
         if 'file' not in request.files:
-            raise Exception('Error while uploading the video')
+            raise Exception('Please upload a video')
         else: 
             file = request.files['file']
             filename = upload_file_to_s3(file)
 
         if filename[0]:
             course = CourseSection.query.filter(CourseSection.id==request.form['id']).first()
-            course.video_url = {
+            video = course.video_url
+            video.video_url.append({
                 "title": request.form['title'],
                 "url": f"{os.getenv('AWS_DOMAIN')}{filename[1]}"
-            }
+            })
+            course.video_url = video
             db.session.commit()
             return jsonify(
                 {

@@ -1,44 +1,47 @@
-from flask import Flask, jsonify, redirect, render_template, request, url_for
 from app import app, db
-
+from flask import jsonify, request
 
 class CourseSection(db.Model):
 
     __tablename__ = 'chapter'
     id = db.Column(db.Integer, primary_key=True)
-    course_id = db.Column(db.Integer, nullable=False)
-    title = db.Column(db.String(100), nullable=False)
-    video_url = db.Column(db.String(100), nullable=False)
-    material_url = db.Column(db.String(100), nullable=False)
+    group_id = db.Column(db.Integer, nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(100), nullable=False)
+    video_url = db.Column(db.JSON, nullable=False)
+    material_url = db.Column(db.JSON, nullable=False)
 
     def json(self): 
         return {
             'id': self.id,
-            'course_id': self.course_id,
-            'title': self.title,
+            'group_id': self.group_id,
+            'name': self.name,
+            'description': self.description,
             'video_url': self.video_url,
             'material_url': self.material_url
         }
 
 #Get all Sections
-@app.route("/all_section", methods=['GET'])
-def getAllSection(): 
-    course_sections = CourseSection.query.all()
+@app.route("/all_section/<int:group_id>", methods=['GET'])
+def getAllSection(group_id): 
+    course_sections = CourseSection.query.filter(CourseSection.group_id==group_id).all()
     return jsonify(
         {
             "code": 200,
+            "message": "Successfully retrieved sections",
             "data": [course_section.json() for course_section in course_sections]            
         }
     ), 200
 
 # Get one section
 @app.route("/course_section/<int:id>", methods=['GET'])
-def getoneSection(id):
+def getOneSection(id):
     course_section = CourseSection.query.filter_by(id=id).first()
     if course_section:
         return jsonify(
             {
                 "code": 200,
+                "message": "Successfully retrieved sections",
                 "data": course_section.json()
             }
         ), 200
@@ -51,7 +54,7 @@ def getoneSection(id):
                 },
                 "message": "Section not found."
             }
-        )
+        ), 404
 
 # Add one section
 @app.route("/course_section", methods=['POST'])
@@ -61,21 +64,20 @@ def addSection():
     try:
         db.session.add(course_section)
         db.session.commit()
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Successfully added section.",
+                "data": course_section.json()
+            }
+        ), 200
     except Exception as e:
         return jsonify(
             {
                 "code":500,
                 "message": f"An error occurred while creating section: {e}"
             }
-        )
-    
-    return jsonify(
-        {
-            "code": 200,
-            "data": course_section.json()
-        }
-    ), 200
-
+        ), 500
 
 #  Update Section
 @app.route("/course_section", methods=['PUT'])
@@ -96,6 +98,8 @@ def updateSection():
             )
         course_section.name = data['name']
         course_section.description = data['description']
+        course_section.video_url = data['video_url']
+        course_section.material_url = data['material_url']
         db.session.commit()
         
         return jsonify(
@@ -104,7 +108,7 @@ def updateSection():
                 "data": data,
                 "message": "Section successfully updated"
             }
-        )
+        ), 200
 
     except Exception as e:
         return jsonify(
@@ -112,35 +116,36 @@ def updateSection():
                 "code":500,
                 "message": f"An error occurred while updating section: {e}"
             }
-        )
+        ), 500
 
 # Delete section
 @app.route("/course_section/<int:id>", methods=['DELETE'])
 def deleteSection(id):
-    course_section = CourseSection.query.filter_by(id=id).first()
-    if not course_section:
-        return jsonify(
-            {
-                "code":404,
-                "data": {
-                    "id": id
-                },
-                "message": "Section not found."
-            }
-        )
     try:
+        course_section = CourseSection.query.filter_by(id=id).first()
+        if not course_section:
+            return jsonify(
+                {
+                    "code":404,
+                    "data": {
+                        "id": id
+                    },
+                    "message": "Section not found."
+                }
+            )
         db.session.delete(course_section)
         db.session.commit()
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Section successfully deleted"
+            }
+        ), 200
+
     except Exception as e: 
         return jsonify( 
             {
                 "code":500,
                 "message": f"An error occurred while deleting section: {e}"
             }
-        )
-    return jsonify(
-        {
-            "code": 200,
-            "message": "Section successfully deleted"
-        }
-    )
+        ), 500

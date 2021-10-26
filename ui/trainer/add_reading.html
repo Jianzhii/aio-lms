@@ -196,9 +196,12 @@
                 
                 const result = await response.json();
                 if (response.status === 200) {
-                    console.log(result)
-                } 
-                window.location.href = `uploadCM.html?id=${course_id}&courseName=${course_name}`;
+                    console.log(result)                    
+                    window.location.href = `uploadCM.html?id=${course_id}&courseName=${course_name}`;
+                }                 
+                $('#loadingModal').modal('hide');
+                $("#failureMessage").text(result.message)
+                $('#failureModal').modal('show');
             } catch (err) {
                 $('#loadingModal').modal('hide');
                 $("#failureMessage").text(result.message)

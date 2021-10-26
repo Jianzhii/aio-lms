@@ -17,7 +17,7 @@ class ChapterProgress(db.Model):
     course_enrolment_id = db.Column(db.Integer, primary_key=True)
     material = db.Column(db.JSON, nullable=False)
     quiz_result = db.Column(db.Float, nullable=True)
-    pass = db.Column(db.Integer, nullable=True)
+    is_pass = db.Column(db.Integer, nullable=True)
 
     def json(self):
         return {
@@ -26,5 +26,5 @@ class ChapterProgress(db.Model):
             'course_enrolment_id': self.course_enrolment_id,
             'material' : self.material,
             'quiz_result': self.quiz_result,
-            'pass': self.pass
+            'is_pass': self.is_pass
         }
