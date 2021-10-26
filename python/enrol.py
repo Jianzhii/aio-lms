@@ -105,7 +105,8 @@ def addEnrolment(data=None):
         return jsonify(
             {
                 "code": 200,
-                "message": "Successfully enrolled learner(s)"
+                "data": result[0].json(),
+                "message": "Successfully enrolled learners"
             }
         ), 200
     except Exception as e:
