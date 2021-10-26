@@ -21,10 +21,12 @@ def uploadFiles():
 
         if filename[0]:
             course = CourseSection.query.filter(CourseSection.id==request.form['id']).first()
-            course.material_url.append({
+            materials = course.material_url 
+            materials.append({
                 "title": request.form['title'],
                 "url": f"{os.getenv('AWS_DOMAIN')}{filename[1]}"
             })
+            course.material_url = materials
             db.session.commit()
             return jsonify(
                 {
@@ -66,10 +68,12 @@ def uploadVideo():
 
         if filename[0]:
             course = CourseSection.query.filter(CourseSection.id==request.form['id']).first()
-            course.video_url.append({
+            video = course.video_url
+            video.video_url.append({
                 "title": request.form['title'],
                 "url": f"{os.getenv('AWS_DOMAIN')}{filename[1]}"
             })
+            course.video_url = video
             db.session.commit()
             return jsonify(
                 {
