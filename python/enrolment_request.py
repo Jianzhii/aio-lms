@@ -84,7 +84,7 @@ def getRequests(userid):
 Sample Request Body:
 {
     "user_id" : 1,
-    "group_id" : 1
+    "group_id" : 1,
 }
 '''
 
@@ -148,7 +148,7 @@ def checkEnrolmentPeriod(data):
             return jsonify(
                 {
                     "code" : 406,
-                    "message" : f"Sorry you are not allowed to submit a request outside the enrolment period:{data['group_id']}"
+                    "message" : f"Sorry you are not allowed to submit a request outside the enrolment period: {data['group_id']}"
                 }
             ),406
 
@@ -170,14 +170,14 @@ def approveRequest(request_id):
             user = User.query.filter_by(id=data['approved_by']).first()
             if user:
                 enrolment_request.is_approved=1
-                enrolment_request.course_enrolment_id = data['course_enrolment_id']
                 enrolment_request.approved_by=user.id
-                db.session.commit()
                 user_id = enrolment_request.user_id
                 group_id = enrolment_request.group_id
                 data['user_id']= user_id
                 data['group_id']=group_id
-                addEnrolment(data)
+                result = addEnrolment(data)
+                enrolment_request.course_enrolment_id = result[0].get_json()['data']['id']
+                db.session.commit()
                 return jsonify(
                     {
                         "code": 200,
