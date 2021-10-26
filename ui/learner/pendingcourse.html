@@ -92,7 +92,7 @@
                 padding: 12px ;
             }
 
-            #searchbar, #table {
+            #table {
                 padding: 30px ; 
             }
 
@@ -103,6 +103,7 @@
                 border-radius: 3px ; 
                 padding: 5px ;
                 width: 100px ;
+                margin-right: 10px ;
             }
 
             #tableheader{
@@ -151,11 +152,6 @@
                     <input type="button" value="Log Out" id="logout">
                 </div>
             </div>
-            
-            <!-- start of search bar -->
-            <div class="row" id="searchbar">
-                <input id="search" class="form-control" type="text" placeholder="Search Course" aria-label="Search">
-            </div>
                  
             <!-- start of table showing list of courses -->
             <div class="row" id="table">
@@ -196,9 +192,8 @@
 
             // API Endpoint
             var userpendingrequest_api = api_endpoint + "enrolment_request/learner/" + user_id
-            
             console.log(userpendingrequest_api)
-
+            
                 try {
                     const response =
                         await fetch(
@@ -219,8 +214,10 @@
                                 <td>${data[i].course_name}</td>
                                 <td>${data[i].course_description}</td>
                                 <td>Group ${data[i].group_id}</td>
-                                <td><input type="button" value="View Details" id="viewdetails" onclick=groupdetails(${data[i].group_id})></td>
+                                <td><input type="button" value="Withdraw" id="withdraw" onclick="withdrawRequest(${data[i].id})"><input type="button" value="View Details" id="viewdetails" onclick=groupdetails(${data[i].group_id})></td>
                             </tr>`
+
+                            console.log(data[i])
 
                             $('#tablecontent').append(row)                    
                             }
@@ -240,70 +237,34 @@
             feather.replace()
         });
 
-            // function for search bar
-            var search = document.getElementById("search");
-
-            search.addEventListener("keyup", function (event) {
-                // Number 13 is the "Enter" key on the keyboard
-                if (event.keyCode === 13) {
-                    // Cancel the default action, if needed
-                    event.preventDefault();
-                    $('#tablecontent').empty();
-                    $('#loading').show();
-                    var input = document.getElementById("search").value;
-
-                    $(async () => {
-                        // API Endpoint
-                        var user_api = api_endpoint + "search_course"
-
-                        try {
-                            const response =
-                                await fetch(
-                                    user_api, {
-                                    method: 'POST',
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({"search": input})
-                                }
-                            );
-
-                            const result = await response.json();
-                            if (response.status === 200) {
-                                let data = result.data
-                                if (data.length) {
-                                    for (let i = 0; i < data.length; i++) {
-                                        row = `
-                                        <tr>
-                                            <td>${i+1}</td>
-                                            <td>${data[i].name}</td>
-                                            <td>${data[i].description}</td>
-                                            <td>${data[i].prerequisite}</td>
-                                            <td><input type="button" value="View Details" id="viewdetails" onclick=groupdetails(${data[i].group_id})></td>
-                                        </tr>`
-
-                                        $('#tablecontent').append(row)                    
-                                    }
-                                } else {
-                                    $('#tablecontent').append(`
-                                        <tr>
-                                            <td> No Results </td>
-                                        </tr>
-                                        `)
-                                }
-                            }
-                            $('#loading').hide();
-                            feather.replace();
-                        } catch(err) {
-                            alert(err)
-                            console.log(err)
-                            $('#loading').hide();
-                        }
-                    });
-                }
-            });
-
             // function for view details button
             function groupdetails(groupid) {
                 location.href = "./group_details.html?id=" + groupid
+            }
+
+            // function for withdrawing of request
+             async function withdrawRequest(request_id) {
+                var delete_api = api_endpoint + "enrolment_request/" + request_id
+
+                try {
+                    const response = 
+                        await fetch(
+                            delete_api, {
+                                method: 'DELETE'
+                            }
+                    );
+
+                    const result = await response.json() ;
+                    if (response.status === 200 & result.code === 200) {
+                        window.location.reload(true)
+                        alert(result.message)
+                    } else {
+                        alert(result.message)
+                    }
+                } catch(err) {
+                    alert(err)
+                    console.log(err)
+                }
             }
 
         </script>   
