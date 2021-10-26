@@ -142,7 +142,7 @@ def addGroup():
             e = Exception('Enrolment end start cannot be before enrolment start date!')
             raise e
 
-        if data['enrol_end_date'] < data['start_date']:
+        if data['enrol_end_date'] > data['start_date']:
             e = Exception('Enrolment period cannot end after group started!')
             raise e
 
