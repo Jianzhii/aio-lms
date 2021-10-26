@@ -134,6 +134,25 @@ sample request
 def addGroup():
     data = request.get_json()
     try:
+        if data['start_date'] > data['end_date']:
+            e = Exception('End date cannot be before start date!')
+            raise e
+
+        if data['enrol_start_date'] > data['enrol_end_date']:
+            e = Exception('Enrolment end start cannot be before enrolment start date!')
+            raise e
+
+        if data['enrol_end_date'] < data['start_date']:
+            e = Exception('Enrolment period cannot end after group started!')
+            raise e
+
+        if not data['size']:
+            e = Exception('Please input group size!')
+            raise e   
+        if not data['trainer_id']:
+            e = Exception('Please select a trainer!')
+            raise e   
+
         group = Group(
             course_id = data['course_id'],
             start_date = data['start_date'],
