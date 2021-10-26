@@ -82,6 +82,7 @@ sample request
 def addEnrolment(data=None):
     if not data:
         data = request.get_json()
+    result = None
 
     try:
         if type(data['user_id']) == list:
@@ -105,7 +106,7 @@ def addEnrolment(data=None):
         return jsonify(
             {
                 "code": 200,
-                "data": result[0].json(),
+                "data": result[0].json() if result else {},
                 "message": "Successfully enrolled learners"
             }
         ), 200
