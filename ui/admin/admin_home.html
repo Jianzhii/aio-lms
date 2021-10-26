@@ -208,7 +208,6 @@
                             <h4 class="modal-title w-100">Delete Course</h4>	
                         </div>
                         <div class="modal-body">
-                            <p id='deleteName'></p>
                             <p id='modalMessage'>This process cannot be undone.</p>
                         </div>
                         <div class="modal-footer justify-content-center">
@@ -409,6 +408,7 @@
                 var course_id = $(this).data('id');
                 var course_name = $(this).data('name')
                 $(".modal-footer #deleteId").val(course_id);
+                $(".modal-title").text("Delete " + course_name +" ?");
             });
 
             async function deleteCourse(id) {
