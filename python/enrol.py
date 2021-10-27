@@ -84,7 +84,6 @@ def addEnrolment(data=None):
     if not data:
         data = request.get_json()
     result = None
-
     try:
         if type(data['user_id']) == list:
             for user in data['user_id']:
@@ -102,9 +101,7 @@ def addEnrolment(data=None):
                 return result
             else: 
                 db.session.add(result[0])
-
         db.session.commit()
-
         return jsonify(
             {
                 "code": 200,
