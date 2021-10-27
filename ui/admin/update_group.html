@@ -189,63 +189,7 @@
             </div>
         </div>
 
-        <!-- Success modal -->
-        <div id="successModal" class="modal fade">
-            <div class="modal-dialog modal-confirm">
-                <div class="modal-content">
-                    <div class="modal-header flex-column">
-                        <div class="icon">
-                            <i data-feather="check-circle"></i>
-                        </div>						
-                        <h4 class="modal-title w-100">Success!</h4>	
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <p id='successMessage'></p>
-                    </div>
-                    <div class="modal-footer justify-content-center">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="window.location='./admin_home.html'">Okay</button>
-                    </div>
-                </div>
-            </div>
-        </div> 
-
-        <!-- failure modal -->
-        <div id="failureModal" class="modal fade">
-            <div class="modal-dialog modal-confirm">
-                <div class="modal-content">
-                    <div class="modal-header flex-column">
-                        <div class="image">
-                            <i data-feather="alert-triangle"></i>
-                        </div>						
-                        <h4 class="modal-title w-100">Error!</h4>	
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <p id='failureMessage'></p>
-                    </div>
-                    <div class="modal-footer justify-content-center">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Okay</button>
-                    </div>
-                </div>
-            </div>
-        </div> 
-
-        <div id="loadingModal" class="modal fade">
-            <div class="modal-dialog modal-confirm">
-                <div class="modal-content">
-                    <div class="modal-header flex-column">				
-                        <h4 class="modal-title w-100">Loading.....</h4>	
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <div id="modalloading">
-                            <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
-                        </div>  
-                    </div>
-                </div>
-            </div>
-        </div> 
+        <div id="modals"></div>
 
     </body>
 
@@ -253,13 +197,15 @@
 
         $(function(){
             $("#sidebar").load("admin_nav.html");
+            $('#modals').load('admin_modals.html')
         });
 
         const api_endpoint = "http://52.55.242.44:8000/"
         // const api_endpoint = "http://localhost:8000/"
 
         let query = window.location.search.substring(1).split("&") ;
-        var groupid = query[0].slice(3,)
+        var courseid = query[0].slice(9,)
+        var groupid = query[1].slice(8,)
 
         // load existing group details
         $(async() => {
@@ -396,7 +342,7 @@
             $("#loadingModal").modal("show");
             data = {
                 id: groupid, 
-                course_id: $("#cname").val(),
+                course_id: courseid,
                 size: $("#gsize").val(),
                 start_date: $("#startdate").val(),
                 end_date: $("#enddate").val(),
@@ -407,11 +353,13 @@
 
             let learners = $("#learners").val();
 
+            console.log(data)
+
             const create_group_api = api_endpoint + "group"
             try {
                 const response = await fetch(
                     create_group_api, {
-                        method: 'POST',
+                        method: 'PUT',
                         headers: { "Content-Type":"application/json"},
                         body: JSON.stringify(data)
                     }
@@ -428,11 +376,13 @@
                     if (enrolment_result.code === 200) {
                         $("#successMessage").text(result.message)
                         $("#successModal").modal("show");
+                        document.getElementById("success").addEventListener("click",function() {window.location.href = "coursegroup.html?id=" + courseid})
                     } else { 
                         $("#failureMessage").text(enrolment_result.message)
                         $("#failureModal").modal("show");
                     }
-                } else { 
+                } else {
+                    $("#loadingModal").modal("hide"); 
                     $("#failureMessage").text(result.message)
                     $("#failureModal").modal("show");
                 }
