@@ -255,7 +255,7 @@
                     const result = await response.json() ;
                     if (response.status === 200) {
                         let data = result.data
-                        // console.log(data)
+                        console.log(data)
                         if (data.length) {
                             for (i=0 ; i < data.length ; i++) {
                                 row = `
@@ -279,9 +279,10 @@
                         } else {
                             row = `
                             <tr>
-                                <td>There are no groups for you to enrol in currently :<</td>
+                                <td>No Groups Available</td>
+                                <td><a href="add_group.html">Add Group</a></td>
                             </tr>`
-                            $('tablecontent').append(row)
+                            $('#tablecontent').append(row)
                         }
 
                     }
