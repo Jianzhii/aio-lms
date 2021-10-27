@@ -195,6 +195,8 @@
             <div id="loading">
                 <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
             </div>
+
+            <div id="modals"></div>
         </div>
 
         <script>
@@ -202,6 +204,7 @@
             /* load admin_nav.html */
             $(function(){
                 $("#sidebar").load("admin_nav.html");
+                $("#modals").load("admin_modals.html");
             });
 
             const api_endpoint = "http://52.55.242.44:8000/" 
@@ -277,7 +280,8 @@
                                     <a href="./update_group.html?courseID=${courseid}&groupID=${data[i].id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
 
                                     <!-- delete/retire -->
-                                    <a href="#deletemodal" class="trigger-btn icon" data-id="${data[i].name}" data-toggle="modal" title="Retire Course"><i data-feather="trash-2"></i></a></td>
+                                    <a href="#deletemodal" class="trigger-btn icon" data-id="${data[i].id}" data-toggle="modal" title="Retire Course"><i data-feather="trash-2"></i></a>
+                                    </td>
                                 </tr>`
                                 $('#tablecontent').append(row)
                             }
@@ -298,6 +302,46 @@
                 $('#loading').hide();
                 feather.replace()
             })
+
+            $(document).on("click", ".trigger-btn", function () {
+                var group_id = $(this).data('id');
+                $("#deleteId").val(group_id);
+                $("#deleteConfirmation").text("Delete Group " + group_id +"?");
+            });
+
+            async function deleteCourse(id) {
+                
+                $('#deletemodal').modal('hide');
+                $("#loadingModal").modal('show');
+                var delete_api = api_endpoint + "group/" + id
+                try {
+                    const response =
+                        await fetch(
+                            delete_api, {
+                            method: 'DELETE'
+                        }
+                    );
+
+                    const result = await response.json();
+                    
+                    $("#loadingModal").modal('hide');
+                    if (response.status === 200 && result.code === 200) {
+                        $("#successMessage").text(result.message)
+                        $('#successModal').modal('show');
+                        document.getElementById("success").addEventListener("click",function() {location.reload(true)})
+                    } else { 
+                        $("#failureMessage").text(result.message)
+                        $('#failureModal').modal('show');
+                    }
+
+                } catch(err) {
+                    $("#failureMessage").text(result.message)
+                    $('#failureModal').modal('show');
+                    console.log(err);
+                }
+                
+                feather.replace();
+            }
 
             
         </script>   
