@@ -219,8 +219,8 @@ def updateGroup():
         group.start_date = data['start_date']
         group.end_date = data['end_date']
         group.size = data['size']
-        group.enrol_start_date = data['enrol_start_date'],
-        group.enrol_end_date = data['enrol_end_date'],
+        group.enrol_start_date = data['enrol_start_date']
+        group.enrol_end_date = data['enrol_end_date']
 
         assignment = TrainerAssignment.query.filter(TrainerAssignment.group_id == id, TrainerAssignment.assigned_end_dt == None).first()
         if data['trainer_id'] != assignment.json()['trainer_id']:
