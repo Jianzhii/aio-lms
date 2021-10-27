@@ -96,6 +96,7 @@
                 border-radius: 3px ; 
                 padding: 5px ;
                 width: 100px ;
+                cursor: pointer ;
             }
 
             #modalloading {
@@ -157,8 +158,7 @@
                                 <label for="cname">Course Name</label>
                             </div>
                             <div class="col">
-                                <select id="course" name="course">
-                                    <option value="" disabled selected>Please select course</option>
+                                <select id="cname" name="name">
                                 </select>
                             </div>
                             <div class="col">
@@ -239,31 +239,61 @@
         // Populate Course Dropdown
 
         $(async () => {
+
+            let query = window.location.search.substring(1).split('=') ;
+            console.log(query[1])
+            var courseid = query[1] 
+
             // API Endpoint
-            var course_api = api_endpoint + "all_course"
+            var one_course_api = api_endpoint + "course/" + courseid 
+            var multiple_course_api = api_endpoint + "all_course"
 
-            try {
-                const response =
-                    await fetch(
-                        course_api, {
-                        method: 'GET'
-                    }
-                );
+            if(typeof courseid != "undefined") { /* if add_group.html redirected from coursegroup.html */
 
-                const result = await response.json();
-                if (response.status === 200) {
-                    let data = result.data
-                    if (data.length) {
-                        for (let course of data) {option = `<option value=${course.id}> ${course.name}</option>`
-                            $('#course').append(option)
+                try {
+                    const response =
+                        await fetch(
+                            one_course_api, {
+                            method: 'GET'
                         }
-                    } else {
-                        $('#course').append(`<option> No courses available </option`)
+                    );
+
+                    const result = await response.json();
+                    if (response.status === 200) { 
+                        $("#cname").replaceWith(`<b id="cname" name="cname" value=${courseid}>${result.data.name}</b>`)
+                        document.getElementsByTagName("b")[0].value = courseid
                     }
+                } catch(err) {
+                    alert(err)
+                    console.log(err)
                 }
-            } catch(err) {
-                alert(err)
-                console.log(err)
+
+            } else {
+
+                try {
+                    const response = 
+                        await fetch(
+                            multiple_course_api, {
+                                method: 'GET'
+                            }
+                    );
+                    
+                    const result = await response.json();
+                    if (response.status === 200) {
+                        let data = result.data
+                        if (data.length) {
+                            row = `<option value="" disabled selected>Please select course</option>`
+                            $('#cname').append(row)
+                            for (let course of data) {
+                                option = `<option value=${course.id}> ${course.name}</option>`
+                                $('#cname').append(option)
+                            }
+                        }
+                    }
+                } catch(err) {
+                    alert(err)
+                    console.log(err)
+                }
             }
         });
 
@@ -332,7 +362,7 @@
         async function createGroup() {
             $("#loadingModal").modal("show");
             data = {
-                course_id: $("#course").val(),
+                course_id: $("#cname").val(),
                 size: $("#gsize").val(),
                 start_date: $("#startdate").val(),
                 end_date: $("#enddate").val(),
@@ -340,6 +370,9 @@
                 enrol_end_date: $("#enrollmentend").val(),
                 trainer_id: $("#trainer").val()
             }
+
+            console.log(data)
+
             let learners = $("#learners").val();
 
             const create_group_api = api_endpoint + "group"
@@ -363,12 +396,13 @@
                     if (enrolment_result.code === 200) {
                         $("#successMessage").text(result.message)
                         $("#successModal").modal("show");
-                        document.getElementById("success").addEventListener("click",function() {window.location.href = "coursegroup.html?id=" + $("#course").val()})
-                    } else { 
+                        document.getElementById("success").addEventListener("click",function() {window.location.href = "coursegroup.html?id=" + $("#cname").val()})
+                    } else {
                         $("#failureMessage").text(enrolment_result.message)
                         $("#failureModal").modal("show");
                     }
                 } else { 
+                    $("#loadingModal").modal("hide");
                     $("#failureMessage").text(result.message)
                     $("#failureModal").modal("show");
                 }

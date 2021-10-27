@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
 
-        <title class="cname"></title>
+        <title id="cname_title"></title>
         <link rel="icon" href="/static/imgs/All-In-One 1.png" type="image/icon type">
 
         <meta charset="utf-8">
@@ -118,6 +118,7 @@
             .icon {
                 color: #FF922D ;
                 padding: 2px ;
+                cursor: pointer ;
             }
 
             #loading {
@@ -154,7 +155,7 @@
         <div class="container" id="content">
             <div class="row" id="header">
                 <div class="col">
-                    <h2 class="cname"></h2>
+                    <h2 id="cname"></h2>
                 </div>
                 <div class="col-2" style="padding-top: 65px ;">
                     <input type="button" value="Log Out" id="logout">
@@ -229,7 +230,8 @@
                     const result = await response.json() ;
                     if (response.status === 200) {
                         let data = result.data
-                        $('.cname').append(data.name)
+                        $('#cname_title').append(data.name)
+                        $('#cname').append(data.name + ` <a href="add_group.html?id=${courseid}" class="icon" title="Add Group" id="addIcon"><i data-feather="plus"></i></a>`)
                         $('#cdes').append(data.description)
                         $('#loading').hide()
                     }
@@ -237,6 +239,10 @@
                     alert(err)
                     console.log(err)
                 }
+
+                document.getElementById("addIcon").addEventListener("click", function() {
+                window.location.href = "add_group.html?id=" + courseid
+                })
 
             })
 
@@ -294,6 +300,8 @@
                 $('#loading').hide();
                 feather.replace()
             })
+
+            
         </script>   
     </body>
 </html>
