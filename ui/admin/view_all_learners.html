@@ -90,6 +90,11 @@
                 padding: 30px ; 
             }
 
+            #tableheader{
+                background-color: #FF922D ;
+                color: white ;
+            }
+
             input[type=text] {
                 width: 257px ;
             }
@@ -106,10 +111,6 @@
             .icon {
                 color: #FF922D ;
                 padding: 2px ;
-            }
-
-            .card-deck {
-                padding-top: 30px ; 
             }
 
         </style>
@@ -140,7 +141,21 @@
             </div>
             
             <!-- start of content showing list of learners -->
-            <div class="card-deck">
+            <div class="row" id="table">
+                <table class="table">
+                    <tbody id="tableheader"> 
+                      <tr>
+                          <th scope="col">S/N</th>
+                          <th scope="col">Learner Name</th>
+                          <th scope="col">Phone Number</th>
+                          <th scope="col">Email Address</th>
+                          <th scope="col"></th>
+                      </tr>
+                    </tbody>
+                    <tbody id="tablecontent">
+                        <!-- populate rows of learners -->
+                    </tbody>
+                </table>
             </div>
         </div>
             
@@ -172,29 +187,16 @@
                         console.log(data)
                         if (data.length) {
                             for (let i = 0 ; i < data.length ; i++ ) {
-                                card = `
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="card-title">${data[i].name}
-                                        </h5>
-                                        <p class="card-text">
-                                        Phone Number: ${data[i].phone_number} <br>
-                                        Email Address: ${data[i].email}
-                                        </p>
-                                    </div>
-                                    <div class="card-footer">
-                                        <input type="button" value="view details" id="">
-                                    </div>
-                                </div>`
-                                
-                                
-                            
-
-                                $('.card-deck').append(card)
+                                row = `
+                                <tr>
+                                    <td>${i+1}</td>
+                                    <td>${data[i].name}</td>
+                                    <td>${data[i].phone_number}</td>
+                                    <td>${data[i].email}</td>
+                                    <td><input type="button" value="View Details"></td>
+                                </tr>`
+                                $('#tablecontent').append(row)
                             }
-
-                            feather.replace()
-
                         } else {
                             $('#tablecontent').append(`No learners available`)
                         }
