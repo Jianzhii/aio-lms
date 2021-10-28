@@ -33,12 +33,16 @@ class EnrolmentRequest(db.Model):
 @app.route("/enrolment_request",methods=["GET"])
 def getAllRequests():
     #Query DB
-    enrolment_requests = db.session.query(EnrolmentRequest,Group)\
-                        .join(Group,Group.id == EnrolmentRequest.group_id).all()
+    enrolment_requests = db.session.query(EnrolmentRequest,Group,User,Course)\
+                        .join(Group,Group.id == EnrolmentRequest.group_id)\
+                        .join(User,User.id == EnrolmentRequest.user_id)\
+                        .join(Course,Course.id == Group.course_id).all()
     data=[]
-    for enrol_request,group in enrolment_requests:
+    for enrol_request,group,user,course in enrolment_requests:
         enrol_request = enrol_request.json()
         enrol_request['course_id'] = group.course_id
+        enrol_request['course_name'] = course.name
+        enrol_request['user_name'] = user.name
         data.append(enrol_request)
     return jsonify(
         {
@@ -148,7 +152,7 @@ def checkEnrolmentPeriod(data):
             return jsonify(
                 {
                     "code" : 406,
-                    "message" : f"Sorry you are not allowed to submit a request outside the enrolment period: {data['group_id']}"
+                    "message" : f"Sorry you are not allowed to submit a request outside the enrolment period: {enrol_datetime}"
                 }
             ),406
 
@@ -156,8 +160,7 @@ def checkEnrolmentPeriod(data):
 '''
 Sample Request Body
 {
-    "approved_by":1,
-    "course_enrolment_id":1
+    "approved_by":1
 }
 '''
 # Approve requests 
