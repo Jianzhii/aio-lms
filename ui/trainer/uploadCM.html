@@ -239,6 +239,24 @@
                 </div>
             </div>  
 
+            <!-- Modal for deleting materials -->
+            <div id="deletematerial" class="modal fade">
+                <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                        <div class="modal-header flex-column">					
+                            <h4 class="modal-title w-100">Delete Material</h4>	
+                        </div>
+                        <div class="modal-body">
+                            <p id='deleteName'></p>
+                            <p id='modalMessage'>This process cannot be undone.</p>
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-danger" id='deleteId' onclick='deleteMaterial(this.value)'>Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>  
 
             <!-- Modal for loading -->
             <div id="loadingModal" class="modal fade">
@@ -256,6 +274,7 @@
                     </div>
                 </div>
             </div> 
+
              <!-- Success modal -->
              <div id="successModal" class="modal fade">
                 <div class="modal-dialog modal-confirm">
@@ -436,21 +455,22 @@
                                     <tr>
                                         <td> ${i} </td>
                                         <td> ${material.title} </td>
-                                        <td> Document </td>
+                                        <td> ${material.material_type} </td>
                                         <td> 
                                             <!-- download -->
                                             <a href="${material.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
 
                                             <!-- edit -->
-                                            <a href="add_reading.html?id=${data.id}&groupId=${data.group_id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+                                            <a href="edit_reading.html?id=${material.id}&sectionId=${data.id}&groupId=${data.group_id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
 
                                             <!-- delete/retire -->
-                                            <a href="#deletematerial" class="trigger-btn icon" data-id=""" data-toggle="modal" title="Delete Material"><i data-feather="trash-2"></i></a>
+                                            <a href="#deletematerial" class="trigger-btn icon" data-id="${material.id}" data-name="${material.title}" data-toggle="modal" title="Delete Material"><i data-feather="trash-2"></i></a>
                                         </td>
                                     <tr>`)
                                 i++;
                             }
-                        } else if (data.video_url) {
+                        } 
+                        if (data.video_url) {
                             for (let video of data.video_url) {
                                 $('#tablecontent').append(`                             
                                     <tr>
@@ -462,10 +482,10 @@
                                             <a href="${video.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
 
                                             <!-- edit -->
-                                            <a href="add_vid.html?id=${data.id}&groupId=${data.group_id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+                                            <a href="edit_vid.html?id=${video.id}&sectionId=${data.id}&groupId=${data.group_id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
 
                                             <!-- delete/retire -->
-                                            <a href="#deletematerial" class="trigger-btn icon" data-id=""" data-toggle="modal" title="Delete Material"><i data-feather="trash-2"></i></a>
+                                            <a href="#deletematerial" class="trigger-btn icon" data-id="${video.id}" data-toggle="modal" title="Delete Material"><i data-feather="trash-2"></i></a>
                                         </td>
                                     <tr>
                                 `)
@@ -531,6 +551,46 @@
                     $("#failureModal").modal("show");
                     console.log(err)
                 }
+            }
+
+            $(document).on("click", ".trigger-btn", function () {
+                var material_id = $(this).data('id');
+                var material_title = $(this).data('name')
+                $(".modal-title #deleteName").text(material_title);
+                $(".modal-footer #deleteId").val(material_id);
+            });
+
+            async function deleteMaterial(id) {
+
+                $('#deletematerial').modal('hide');
+                $("#loadingModal").modal('show');
+                var delete_api = api_endpoint + "material/" + id
+                try {
+                    const response =
+                        await fetch(
+                            delete_api, {
+                            method: 'DELETE'
+                        }
+                    );
+
+                    const result = await response.json();
+                    
+                    $("#loadingModal").modal('hide');
+                    if (response.status === 200 && result.code === 200) {
+                        $("#successMessage").text(result.message)
+                        $('#successModal').modal('show');
+                    } else { 
+                        $("#failureMessage").text(result.message)
+                        $('#failureModal').modal('show');
+                    }
+
+                } catch(err) {
+                    $("#failureMessage").text(result.message)
+                    $('#failureModal').modal('show');
+                    console.log(err);
+                }
+                
+                feather.replace();
             }
         </script>
     </body>
