@@ -8,7 +8,7 @@ from user import User
 
 class CourseSection(db.Model):
 
-    __tablename__ = 'chapter'
+    __tablename__ = 'section'
     id = db.Column(db.Integer, primary_key=True)
     group_id = db.Column(db.Integer, nullable=False)
     name = db.Column(db.String(100), nullable=False)

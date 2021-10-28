@@ -219,8 +219,8 @@ def updateGroup():
         group.start_date = data['start_date']
         group.end_date = data['end_date']
         group.size = data['size']
-        group.enrol_start_date = data['enrol_start_date'],
-        group.enrol_end_date = data['enrol_end_date'],
+        group.enrol_start_date = data['enrol_start_date']
+        group.enrol_end_date = data['enrol_end_date']
 
         assignment = TrainerAssignment.query.filter(TrainerAssignment.group_id == id, TrainerAssignment.assigned_end_dt == None).first()
         if data['trainer_id'] != assignment.json()['trainer_id']:
@@ -253,6 +253,7 @@ def updateGroup():
 def deleteGroup(id):
     try:
         from enrol import Enrolment
+        from enrolment_request  import EnrolmentRequest
         group = Group.query.filter_by(id=id).first()
         if not group:
             return jsonify(
@@ -273,6 +274,11 @@ def deleteGroup(id):
         if all_enrolment:
             for enrolment in all_enrolment:
                 db.session.delete(enrolment)
+
+        all_enrolment_request = EnrolmentRequest.query.filter_by(group_id=id).all()
+        if all_enrolment_request: 
+            for requests in all_enrolment_request: 
+                db.session.delete(requests)
                 
         db.session.delete(group)
         db.session.commit()

@@ -67,13 +67,16 @@ def uploadVideo():
             filename = upload_file_to_s3(file)
 
         if filename[0]:
-            course = CourseSection.query.filter(CourseSection.id==request.form['id']).first()
+            course = db.session.query(CourseSection).filter(CourseSection.id==request.form['id']).first()
+            print(course.json())
             video = course.video_url
-            video.video_url.append({
+            video.append({
                 "title": request.form['title'],
                 "url": f"{os.getenv('AWS_DOMAIN')}{filename[1]}"
             })
+            print(video)
             course.video_url = video
+            print(course.json())
             db.session.commit()
             return jsonify(
                 {

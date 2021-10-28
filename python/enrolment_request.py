@@ -141,14 +141,14 @@ def addRequest():
 
 def checkEnrolmentPeriod(data):
         group = Group.query.filter_by(id=data['group_id']).first()
-        class_start_date = group.enrol_start_date
-        class_end_date = group.enrol_end_date 
+        enrol_start_date = group.enrol_start_date
+        enrol_end_date = group.enrol_end_date 
         enrol_datetime = data['start_date']
-        if not(enrol_datetime>=class_start_date and enrol_datetime <=class_end_date):
+        if not(enrol_datetime >= enrol_start_date and enrol_datetime <= enrol_end_date):
             return jsonify(
                 {
                     "code" : 406,
-                    "message" : f"Sorry you are not allowed to submit a request outside the enrolment period: {data['group_id']}"
+                    "message" : f"Sorry you are not allowed to submit a request outside the enrolment period: {enrol_datetime}"
                 }
             ),406
 
