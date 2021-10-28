@@ -13,17 +13,30 @@ class CourseSection(db.Model):
     group_id = db.Column(db.Integer, nullable=False)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(100), nullable=False)
-    video_url = db.Column(db.JSON, nullable=False)
-    material_url = db.Column(db.JSON, nullable=False)
 
     def json(self): 
         return {
             'id': self.id,
             'group_id': self.group_id,
             'name': self.name,
-            'description': self.description,
-            'video_url': self.video_url,
-            'material_url': self.material_url
+            'description': self.description
+        }
+class Materials(db.Model):
+
+    __tablename__ = 'material'
+    id = db.Column(db.Integer, primary_key=True)
+    section_id = db.Column(db.Integer, nullable=False)
+    title = db.Column(db.String(100), nullable=False)
+    material_type = db.Column(db.Enum('Video', 'Document'), nullable=False)
+    url = db.Column(db.String(100), nullable=False)
+
+    def json(self): 
+        return {
+            'id': self.id,
+            'section_id': self.section_id,
+            'title': self.title,
+            'material_type': self.material_type,
+            'url': self.url
         }
 
 #Get all Sections
@@ -41,13 +54,24 @@ def getAllSection(group_id):
 # Get one section
 @app.route("/course_section/<int:id>", methods=['GET'])
 def getOneSection(id):
-    course_section = CourseSection.query.filter_by(id=id).first()
+    course_section = CourseSection.query.filter_by(id = id).first()
     if course_section:
+        materials = Materials.query.filter_by(section_id = id).all()
+        material_url = []
+        video_url = []
+        for material in materials:
+            if material.material_type == 'Video':
+                video_url.append(material.json())
+            else:
+                material_url.append(material.json())
+        course_section_json = course_section.json()
+        course_section_json['material_url'] = material_url
+        course_section_json['video_url'] = video_url
         return jsonify(
             {
                 "code": 200,
                 "message": "Successfully retrieved sections",
-                "data": course_section.json()
+                "data": course_section_json
             }
         ), 200
     else:
@@ -128,8 +152,6 @@ def updateSection():
             )
         course_section.name = data['name']
         course_section.description = data['description']
-        course_section.video_url = data['video_url']
-        course_section.material_url = data['material_url']
         db.session.commit()
         
         return jsonify(
@@ -163,6 +185,10 @@ def deleteSection(id):
                     "message": "Section not found."
                 }
             )
+        materials = Materials.query.filter_by(section_id = id).all()
+        if materials: 
+            for material in materials: 
+                db.session.delete(material)        
         db.session.delete(course_section)
         db.session.commit()
         return jsonify(

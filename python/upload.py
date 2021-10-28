@@ -5,11 +5,11 @@ import boto3
 import botocore
 from flask import jsonify, request
 from werkzeug.utils import secure_filename
-from course_section import CourseSection
+from course_section import CourseSection, Materials
 
 from app import app, db
 
-
+# Upload a new document 
 @app.route('/upload_file', methods=["POST"])
 def uploadFiles():
     try:
@@ -20,22 +20,19 @@ def uploadFiles():
             filename = upload_file_to_s3(file)
 
         if filename[0]:
-            course = CourseSection.query.filter(CourseSection.id==request.form['id']).first()
-            materials = course.material_url 
-            materials.append({
-                "title": request.form['title'],
-                "url": f"{os.getenv('AWS_DOMAIN')}{filename[1]}"
-            })
-            course.material_url = materials
+            material = Materials(
+                section_id = request.form['id'],
+                title = request.form['title'],
+                material_type = "Document",
+                url = f"{os.getenv('AWS_DOMAIN')}{filename[1]}"
+            )
+            db.session.add(material)
             db.session.commit()
             return jsonify(
                 {
                     "code" : 200,
                     "message" : "File uploaded successfully",
-                    "data": {
-                                "title": request.form['title'],
-                                "url": f"{os.getenv('AWS_DOMAIN')}{filename[1]}"
-                            }
+                    "data": material.json()
                 }
             ), 200
 
@@ -56,7 +53,7 @@ def uploadFiles():
             }
         ), 500
 
-
+# Upload a new video
 @app.route('/upload_video', methods=["POST"])
 def uploadVideo():
     try:
@@ -67,24 +64,19 @@ def uploadVideo():
             filename = upload_file_to_s3(file)
 
         if filename[0]:
-            course = db.session.query(CourseSection).filter(CourseSection.id==request.form['id']).first()
-            print(course.json())
-            video = course.video_url
-            video.append({
-                "title": request.form['title'],
-                "url": f"{os.getenv('AWS_DOMAIN')}{filename[1]}"
-            })
-            print(video)
-            course.video_url = video
-            print(course.json())
+            material = Materials(
+                section_id = request.form['id'],
+                title = request.form['title'],
+                material_type = "Video",
+                url = f"{os.getenv('AWS_DOMAIN')}{filename[1]}"
+            )
+            db.session.add(material)
             db.session.commit()
             return jsonify(
                 {
                     "code" : 200,
                     "message" : "Video uploaded successfully",
-                    "data": {
-                        "url_link": f"{os.getenv('AWS_DOMAIN')}{filename[1]}"
-                    }
+                    "data": material.json()
                 }
             ), 200
 
@@ -105,6 +97,40 @@ def uploadVideo():
             }
         ), 500
 
+
+# Delete material
+@app.route('/material/<int:id>', methods=["DELETE"])
+def deleteMaterial(id):
+    try:
+        material = Materials.query.filter_by(id=id).first()
+        if not material: 
+            return jsonify(
+                {
+                    "code":404,
+                    "data": {
+                        "id": id
+                    },
+                    "message": "Material not found."
+                }
+            ), 404
+
+        db.session.delete(material)
+        db.session.commit()
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Material successfully deleted"
+            }
+        ), 200
+
+    except Exception as e: 
+        return jsonify(
+            {
+                "code" : 500,
+                "message" : f"Error while deleteing file: {e}",
+                "data": ""
+            }
+        ), 500
 
 
 def upload_file_to_s3(file, acl="public-read"):
