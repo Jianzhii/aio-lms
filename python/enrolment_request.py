@@ -148,7 +148,7 @@ def checkEnrolmentPeriod(data):
             return jsonify(
                 {
                     "code" : 406,
-                    "message" : f"Sorry you are not allowed to submit a request outside the enrolment period: {data['group_id']}"
+                    "message" : f"Sorry you are not allowed to submit a request outside the enrolment period: {enrol_datetime}"
                 }
             ),406
 
