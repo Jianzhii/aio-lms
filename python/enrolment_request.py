@@ -160,8 +160,7 @@ def checkEnrolmentPeriod(data):
 '''
 Sample Request Body
 {
-    "approved_by":1,
-    "course_enrolment_id":1
+    "approved_by":1
 }
 '''
 # Approve requests 
