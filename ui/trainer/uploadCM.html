@@ -240,7 +240,7 @@
             </div>  
 
             <!-- Modal for deleting materials -->
-            <div id="deletemodal" class="modal fade">
+            <div id="deletematerial" class="modal fade">
                 <div class="modal-dialog modal-confirm">
                     <div class="modal-content">
                         <div class="modal-header flex-column">					
@@ -482,10 +482,10 @@
                                             <a href="${video.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
 
                                             <!-- edit -->
-                                            <a href="edit_vid.html?id=${material.id}&sectionId=${data.id}&groupId=${data.group_id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+                                            <a href="edit_vid.html?id=${video.id}&sectionId=${data.id}&groupId=${data.group_id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
 
                                             <!-- delete/retire -->
-                                            <a href="#deletematerial" class="trigger-btn icon" data-id="${material.id}" data-toggle="modal" title="Delete Material"><i data-feather="trash-2"></i></a>
+                                            <a href="#deletematerial" class="trigger-btn icon" data-id="${video.id}" data-toggle="modal" title="Delete Material"><i data-feather="trash-2"></i></a>
                                         </td>
                                     <tr>
                                 `)
@@ -560,9 +560,9 @@
                 $(".modal-footer #deleteId").val(material_id);
             });
 
-            function deleteMaterial(id) {
+            async function deleteMaterial(id) {
 
-                $('#deletemodal').modal('hide');
+                $('#deletematerial').modal('hide');
                 $("#loadingModal").modal('show');
                 var delete_api = api_endpoint + "material/" + id
                 try {
