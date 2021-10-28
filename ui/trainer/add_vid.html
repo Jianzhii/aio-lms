@@ -189,7 +189,7 @@
                 const formData = new FormData();
     
                 formData.append("file", inpFile.files[0]);
-                formData.append("id", section_id);
+                formData.append("section_id", section_id);
                 formData.append("title", document.getElementById("video_title").value);
 
                 const upload_file = api_endpoint + "upload_video"

@@ -9,7 +9,7 @@ from course_section import CourseSection, Materials
 
 from app import app, db
 
-# Upload a new document 
+# Upload a new file
 @app.route('/upload_file', methods=["POST"])
 def uploadFiles():
     try:
@@ -21,7 +21,7 @@ def uploadFiles():
 
         if filename[0]:
             material = Materials(
-                section_id = request.form['id'],
+                section_id = request.form['section_id'],
                 title = request.form['title'],
                 material_type = "Document",
                 url = f"{os.getenv('AWS_DOMAIN')}{filename[1]}"
@@ -65,7 +65,7 @@ def uploadVideo():
 
         if filename[0]:
             material = Materials(
-                section_id = request.form['id'],
+                section_id = request.form['section_id'],
                 title = request.form['title'],
                 material_type = "Video",
                 url = f"{os.getenv('AWS_DOMAIN')}{filename[1]}"
@@ -97,6 +97,57 @@ def uploadVideo():
             }
         ), 500
 
+
+# Update file
+@app.route('/upload_file', methods=["PUT"])
+def updateFile():
+    try:
+        if 'file' not in request.files:
+            raise Exception('Please upload a document')
+
+        material = Materials.query.filter_by(id=request.form['id']).first()
+        if not material: 
+            return jsonify(
+                {
+                    "code":404,
+                    "data": {
+                        "id": id
+                    },
+                    "message": "Material not found."
+                }
+            ), 404       
+        
+        file = request.files['file']
+        filename = upload_file_to_s3(file)
+
+        if filename[0]:
+            material.title = request.form['title']
+            material.url = f"{os.getenv('AWS_DOMAIN')}{filename[1]}"
+            db.session.commit()
+            return jsonify(
+                {
+                    "code" : 200,
+                    "message" : "Video updated successfully",
+                    "data": material.json()
+                }
+            ), 200
+
+        return jsonify(
+            {
+                "code" : 500,
+                "message" : f"Error while uploading file: {filename[1]}",
+                "data": ""
+            }
+        ), 500
+        
+    except Exception as e:
+        return jsonify(
+            {
+                "code" : 500,
+                "message" : f"Error while updating file: {e}",
+                "data": ""
+            }
+        ), 500
 
 # Delete material
 @app.route('/material/<int:id>', methods=["DELETE"])
