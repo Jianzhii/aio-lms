@@ -173,7 +173,7 @@
                             </div>
                             <div class="col">
                                 <select id="cpre" name="cpre" multiple>
-                                    <option value="" disabled selected>Please select course</option><!-- need to hold down ctrl button to multi-select??? wtf man -->
+                                    <option value="" disabled selected>Please select course</option>
                                 </select>
                             </div>
                         </div>
@@ -182,72 +182,16 @@
                         </div>
                     </form>
                 </div>
+
+                <div id="modals"></div>
             </div>
-
-            <!-- Success modal -->
-            <div id="successModal" class="modal fade">
-                <div class="modal-dialog modal-confirm">
-                    <div class="modal-content">
-                        <div class="modal-header flex-column">
-                            <div class="icon">
-                                <i data-feather="check-circle"></i>
-                            </div>						
-                            <h4 class="modal-title w-100">Success!</h4>	
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <p id='successMessage'></p>
-                        </div>
-                        <div class="modal-footer justify-content-center">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="window.location='./admin_home.html'">Okay</button>
-                        </div>
-                    </div>
-                </div>
-            </div> 
-
-            <!-- failure modal -->
-            <div id="failureModal" class="modal fade">
-                <div class="modal-dialog modal-confirm">
-                    <div class="modal-content">
-                        <div class="modal-header flex-column">
-                            <div class="icon">
-                                <i data-feather="alert-triangle"></i>
-                            </div>						
-                            <h4 class="modal-title w-100">Error!</h4>	
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <p id='failureMessage'></p>
-                        </div>
-                        <div class="modal-footer justify-content-center">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Okay</button>
-                        </div>
-                    </div>
-                </div>
-            </div> 
-
-            <!-- loading modal -->
-            <div id="loadingModal" class="modal fade">
-                <div class="modal-dialog modal-confirm">
-                    <div class="modal-content">
-                        <div class="modal-header flex-column">				
-                            <h4 class="modal-title w-100">Loading.....</h4>	
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div id="modalloading">
-                                <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
-                            </div>  
-                        </div>
-                    </div>
-                </div>
-            </div> 
         </div>
 
         <script>
 
             $(function(){
                 $("#sidebar").load("admin_nav.html");
+                $("#modals").load("admin_modals.html")
             }); 
 
             // populate list of courses
@@ -305,6 +249,7 @@
                     if (response.status === 200) {
                         $("#successMessage").text(result.message)
                         $("#successModal").modal("show");
+                        document.getElementById("success").addEventListener("click",function() {window.location.href = "admin_home.html"})
                     } else { 
                         $("#failureMessage").text(result.message)
                         $("#failureModal").modal("show");
