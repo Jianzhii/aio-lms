@@ -189,12 +189,12 @@
                     </tbody>
                 </table>
             
-
-
             <!-- loading -->
             <div id="loading">
                 <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
             </div>
+
+            <div id="modals"></div>
         </div>
 
         <script>
@@ -202,6 +202,7 @@
             /* load learner_nav.html */
             $(function(){
                 $("#sidebar").load("learner_nav.html");
+                $("#modals").load("learner_modals.html");
             });
 
             const api_endpoint = "http://52.55.242.44:8000/" 
@@ -319,6 +320,9 @@
             })
 
             async function selfEnrol(group_id) {
+
+                $('#laodingModal').modal('show');
+
                 data = {
                     user_id: user_id,
                     group_id: group_id
@@ -338,14 +342,22 @@
 
                     const result = await response.json(); 
                     console.log(result)
-                    if (response.status === 200) {
+
+                    $('#loadingModal').modal('hide')
+                    if (response.status === 200 && result.code === 200) {
+                        $("#successMessage").text(result.message)
+                        $('#successModal').modal('show');
                         console.log(document.getElementById(group_id))
                         document.getElementById(group_id).disabled = true
                         document.getElementById(group_id).value = "Pending"
                     }
+                    else { /* unable to send enrolment request */
+                        $("#failureMessage").text(result.message)
+                        $('#failureModal').modal('show');
+                    }
                 } catch(err) {
-                    alert(err)
-                    console.log(err)
+                    $("#failureMessage").text(result.message)
+                    $('#failureModal').modal('show');
                 }
             }
 
