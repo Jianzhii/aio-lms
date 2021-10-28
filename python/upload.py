@@ -98,12 +98,45 @@ def uploadVideo():
         ), 500
 
 
+# Get File
+@app.route('/file/<int:id>', methods=['GET'])
+def getFile(id):
+    try:
+        material = Materials.query.filter_by(id=id).first()
+        if not material: 
+            return jsonify(
+                {
+                    "code":404,
+                    "data": {
+                        "id": id
+                    },
+                    "message": "Material not found."
+                }
+            ), 404   
+
+        return jsonify(
+                {
+                    "code":200,
+                    "data": material.json(),
+                    "message": "Material successfully retrieved."
+                }
+            ), 200
+    except Exception as e: 
+        return jsonify(
+            {
+                "code" : 500,
+                "message" : f"Error while retrieving file: {e}",
+                "data": ""
+            }
+        ), 500
+
+
 # Update file
 @app.route('/upload_file', methods=["PUT"])
 def updateFile():
     try:
         if 'file' not in request.files:
-            raise Exception('Please upload a document')
+            raise Exception('Please upload a file')
 
         material = Materials.query.filter_by(id=request.form['id']).first()
         if not material: 
@@ -127,7 +160,7 @@ def updateFile():
             return jsonify(
                 {
                     "code" : 200,
-                    "message" : "Video updated successfully",
+                    "message" : "Material updated successfully",
                     "data": material.json()
                 }
             ), 200
