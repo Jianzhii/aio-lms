@@ -70,6 +70,17 @@ def getEnrolmentByUser(user_id):
         }
     ), 200
 
+
+@app.route("/date", methods=['GET'])
+def getdate():
+    time = datetime.now()
+    return jsonify(
+        {
+            "code": 200,
+            "time": time
+        }
+    ), 200
+
 # Enrol learner
 '''
 sample request
