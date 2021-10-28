@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
 
-        <title class="cname"></title>
+        <title id="cname_title"></title>
         <link rel="icon" href="/static/imgs/All-In-One 1.png" type="image/icon type">
 
         <meta charset="utf-8">
@@ -122,6 +122,7 @@
             .icon {
                 color: #FF922D ;
                 padding: 2px ;
+                cursor: pointer ;
             }
 
             #loading {
@@ -158,7 +159,7 @@
         <div class="container" id="content">
             <div class="row" id="header">
                 <div class="col">
-                    <h2 class="cname"></h2>
+                    <h2 id="cname"></h2>
                 </div>
                 <div class="col-2" style="padding-top: 65px ;">
                     <input type="button" value="Log Out" id="logout" onclick='logout()'>
@@ -192,13 +193,14 @@
                         <!-- populate rows of groups -->
                     </tbody>
                 </table>
-            
-
+            </div>
 
             <!-- loading -->
             <div id="loading">
                 <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
             </div>
+
+            <div id="modals"></div>
         </div>
 
         <script>
@@ -206,6 +208,7 @@
             /* load admin_nav.html */
             $(function(){
                 $("#sidebar").load("admin_nav.html");
+                $("#modals").load("admin_modals.html");
             });
 
             const api_endpoint = "http://52.55.242.44:8000/" 
@@ -233,7 +236,8 @@
                     const result = await response.json() ;
                     if (response.status === 200) {
                         let data = result.data
-                        $('.cname').append(data.name)
+                        $('#cname_title').append(data.name)
+                        $('#cname').append(data.name + ` <a href="add_group.html?id=${courseid}" class="icon" title="Add Group" id="addIcon"><i data-feather="plus"></i></a>`)
                         $('#cdes').append(data.description)
                         $('#loading').hide()
                     }
@@ -241,6 +245,10 @@
                     alert(err)
                     console.log(err)
                 }
+
+                document.getElementById("addIcon").addEventListener("click", function() {
+                window.location.href = "add_group.html?id=" + courseid
+                })
 
             })
 
@@ -259,7 +267,7 @@
                     const result = await response.json() ;
                     if (response.status === 200) {
                         let data = result.data
-                        // console.log(data)
+                        console.log(data)
                         if (data.length) {
                             for (i=0 ; i < data.length ; i++) {
                                 row = `
@@ -273,19 +281,20 @@
                                     <td>${data[i].end_date}</td>
                                     <td>
                                     <!-- edit -->
-                                    <a href="./update_group.html?id=${data[i].id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+                                    <a href="./update_group.html?courseID=${courseid}&groupID=${data[i].id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
 
                                     <!-- delete/retire -->
-                                    <a href="#deletemodal" class="trigger-btn icon" data-id="${data[i].name}" data-toggle="modal" title="Retire Course"><i data-feather="trash-2"></i></a></td>
+                                    <a href="#deletemodal" class="trigger-btn icon" data-id="${data[i].id}" data-toggle="modal" title="Retire Course"><i data-feather="trash-2"></i></a>
+                                    </td>
                                 </tr>`
                                 $('#tablecontent').append(row)
                             }
                         } else {
                             row = `
                             <tr>
-                                <td>There are no groups for you to enrol in currently :<</td>
+                                <td>No Groups Available</td>
                             </tr>`
-                            $('tablecontent').append(row)
+                            $('#tablecontent').append(row)
                         }
 
                     }
@@ -297,6 +306,48 @@
                 $('#loading').hide();
                 feather.replace()
             })
+
+            $(document).on("click", ".trigger-btn", function () {
+                var group_id = $(this).data('id');
+                $("#deleteId").val(group_id);
+                $("#deleteConfirmation").text("Delete Group " + group_id +"?");
+            });
+
+            async function deleteCourse(id) {
+                
+                $('#deletemodal').modal('hide');
+                $("#loadingModal").modal('show');
+                var delete_api = api_endpoint + "group/" + id
+                try {
+                    const response =
+                        await fetch(
+                            delete_api, {
+                            method: 'DELETE'
+                        }
+                    );
+
+                    const result = await response.json();
+                    
+                    $("#loadingModal").modal('hide');
+                    if (response.status === 200 && result.code === 200) {
+                        $("#successMessage").text(result.message)
+                        $('#successModal').modal('show');
+                        document.getElementById("success").addEventListener("click",function() {location.reload(true)})
+                    } else { 
+                        $("#failureMessage").text(result.message)
+                        $('#failureModal').modal('show');
+                    }
+
+                } catch(err) {
+                    $("#failureMessage").text(result.message)
+                    $('#failureModal').modal('show');
+                    console.log(err);
+                }
+                
+                feather.replace();
+            }
+
+            
         </script>   
     </body>
 </html>

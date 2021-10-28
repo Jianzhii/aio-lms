@@ -9,6 +9,7 @@ from user import User
 from group import Group
 from datetime import datetime
 from sqlalchemy import and_
+import pytz
 
 
 class Enrolment(db.Model):
@@ -67,6 +68,19 @@ def getEnrolmentByUser(user_id):
         {
             "code": 200,
             "data": data
+        }
+    ), 200
+
+
+@app.route("/date", methods=['GET'])
+def getdate():
+    sgt = pytz.timezone('Asia/Singapore')    
+    time = datetime.now()
+    d_aware = sgt.localize(time)
+    return jsonify(
+        {
+            "code": 200,
+            "time": time
         }
     ), 200
 

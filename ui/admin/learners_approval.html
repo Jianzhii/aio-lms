@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <title>View All Requests</title>
+        <link rel="icon" href="../../static/imgs/All-In-One 1.png" type="image/icon type">
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+        <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+
+        <!-- Icons -->
+        <script src="https://unpkg.com/feather-icons"></script>
+
+        <!-- Bootstrap/ CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+
+        <style>
+
+            body {
+                font-family: 'Montserrat' ;
+                font-size: 12px ;
+            }
+
+            .sidenav {
+                height: 100% ;
+                width: 20% ;
+                position: fixed ;
+                top: 0 ;
+                left: 0 ;
+                z-index: 1 ;
+                overflow-x: hidden ;
+                border-right: solid lightgrey 2px ; 
+            }
+
+            h2 {
+                padding-top: 45px ;
+                padding-left: 5px ;
+                color: #FF922D ;
+            }
+
+
+            h3 {
+                text-indent: 34px ;
+                font-size: 13px ;
+                font-weight: bold ;
+            }
+
+            h4 {
+                text-align: center /* modal titles */
+            }
+
+            .sidenav a {
+                color: black ;
+                padding: 16px ;
+                display: block ;
+            }
+
+            a {
+                text-decoration: none ;
+            }
+
+            ul {
+                list-style-type: none ;
+            }
+
+            #logo {
+                height: 150px ;
+                width: 200px ;
+            }
+
+            #approvelearners {
+                color: #FF922D ;
+                font-weight: bold ;
+            }
+
+            #sidebar {
+                width: 30% ;
+            }
+
+            #content {
+                width: 80% ;
+                margin-left: 20% ;
+            }
+
+            #header {
+                padding: 12px ;
+            }
+
+            #searchbar, #table {
+                padding: 30px ; 
+            }
+
+            input[type=text] {
+                width: 257px ;
+            }
+
+            input[type=button] {
+                background: #FF922D ;
+                color: white ; 
+                border: none ;
+                border-radius: 3px ; 
+                padding: 5px ;
+                width: 100px ;
+                margin-right: 10px ;
+            }
+
+            #tableheader{
+                background-color: #FF922D ;
+                color: white ;
+            }
+
+            .icon {
+                color: #FF922D ;
+                padding: 2px ;
+            }
+
+            #modalloading, #loading {
+                display: block;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                text-align: center;
+                opacity: 0.7;
+                background-color: #fff;
+                z-index: 99;
+            }
+
+            #loading-image {
+                margin-top: 50px;
+                z-index: 100;
+
+            }
+            
+            .modal-icon {
+                color: #f15e5e;
+                font-size: 46px;
+                display: inline-block;
+                margin-top: 13px;
+            }
+
+            .modal-icon i {
+                color: #f15e5e;
+                font-size: 46px;
+                display: inline-block;
+                margin-top: 13px;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <!-- start of side bar -->
+        <div class="container" id="sidebar">
+        </div>
+        <!-- end of side bar -->
+    
+        <div class="container" id="content">
+            <div class="row" id="header">
+                <div class="col">
+                    <h2>Pending Requests</h2>
+                </div>
+                <div class="col-2" style="padding-top: 65px ;">
+                    <input type="button" value="Log Out" id="logout">
+                </div>
+            </div>
+            
+            <!-- start of search bar -->
+            <div class="row" id="searchbar">
+                <input id="search" class="form-control" type="text" placeholder="Search By Course Name" aria-label="Search">
+            </div>
+                 
+            <!-- start of table showing list of requests -->
+            <div class="row" id="table">
+                <table class="table">
+                    <tbody id="tableheader"> 
+                      <tr>
+                          <th scope="col">Course Name</th>
+                          <th scope="col">Group Number</th>
+                          <th scope="col">Learner's Name</th>
+                          <th scope="col"></th>  
+                      </tr>
+                    </tbody>
+                    <tbody id="tablecontent">
+                        <!-- populate rows of requests -->
+                    </tbody>
+                </table>
+                <div id="loading">
+                    <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
+                </div>    
+            </div>
+
+            <div id="modals">
+            </div>
+
+            
+        </div> 
+
+        <script>
+
+            /* load admin_nav.html & admin_modals.html */
+            $(function(){
+                $("#sidebar").load("admin_nav.html");
+                $('#modals').load("admin_modals.html");
+            });
+
+            const api_endpoint = "http://52.55.242.44:8000/" 
+            // const api_endpoint = "http://localhost:8000/"
+
+            // retrieve all requests
+            $(async () => {
+
+            var all_request_api = api_endpoint + "enrolment_request"
+
+                try {
+                    const response =
+                        await fetch(
+                            all_request_api, {
+                            method: 'GET'
+                        }
+                    );
+
+                    const result = await response.json();
+                    
+                    $('#loading').hide();
+                    if (response.status === 200) {
+                        let data = result.data
+                        if (data.length) {
+                            for (let i = 0; i < data.length; i++) {
+                                if (data[i].is_approved == null) {
+                                    /* check that requests are not approved */
+                                    row = `
+                                    <tr>
+                                        <td>${data[i].course_name}</td>
+                                        <td>Group ${data[i].group_id}</td>
+                                        <td>${data[i].user_name}</td>
+                                        <td><input type="button" value="Approve" onclick="approveRequest(${data[i].id})"><input type="button" value="Reject" onclick="rejectRequest(${data[i].id})"></td>
+                                    </tr>`
+                                    $('#tablecontent').append(row)
+                                }               
+                            }
+                        }  else {
+                            row = `
+                            <tr>
+                                <td>There are no requests</td>
+                            </tr>`
+                            $('#tablecontent').append(row)
+                        }
+                    }
+                } catch(err) {
+                    alert(err);
+                    console.log(err);
+                }
+                $('#loading').hide();
+            });
+
+
+            /* function to reject request */
+            async function rejectRequest(id) {
+                
+                $("#loadingModal").modal('show');
+                var delete_api = api_endpoint + "enrolment_request/" + id
+                try {
+                    const response =
+                        await fetch(
+                            delete_api, {
+                            method: 'DELETE'
+                        }
+                    );
+
+                    const result = await response.json();
+                    $("#loadingModal").modal('hide');
+                    if (response.status === 200 && result.code === 200) {
+                        $("#successMessage").text(result.message)
+                        $('#successModal').modal('show');
+                        document.getElementById("success").addEventListener("click",function() {window.location.reload(true)})
+                    } else { 
+                        $("#failureMessage").text(result.message)
+                        $('#failureModal').modal('show');
+                    }
+
+                } catch(err) {
+                    $("#failureMessage").text(result.message)
+                    $('#failureModal').modal('show');
+                    console.log(err);
+                }
+            }
+
+            /* function to approve request */
+            async function approveRequest(id) {
+                
+                $("#loadingModal").modal('show');
+
+                var user_id = sessionStorage.getItem("user_id")
+                data = {
+                    approved_by: user_id
+                }
+
+                var approve_api = api_endpoint + "enrolment_request/approve/" + id
+                try {
+                    const response =
+                        await fetch(
+                            approve_api, {
+                            method: 'PUT',
+                            headers: {"Content-Type":"application/json"},
+                            body: JSON.stringify(data)
+                        }
+                    );
+
+                    const result = await response.json();
+                    $("#loadingModal").modal('hide');
+                    if (response.status === 200 && result.code === 200) {
+                        $("#successMessage").text(result.message)
+                        $('#successModal').modal('show');
+                        document.getElementById("success").addEventListener("click",function() {window.location.reload(true)})
+                    } else { 
+                        $("#failureMessage").text(result.message)
+                        $('#failureModal').modal('show');
+                    }
+                } catch(err) {
+                    $("#failureMessage").text(result.message)
+                    $('#failureModal').modal('show');
+                    console.log(err);
+                }
+            }
+        </script>   
+    </body>
+</html>

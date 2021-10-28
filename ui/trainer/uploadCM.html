@@ -448,57 +448,59 @@
                         $('#addVideoButton').attr("href",`add_vid.html?id=${data.id}&groupId=${data.group_id}`);
                         $('#addReadingButton').attr("href",`add_reading.html?id=${data.id}&groupId=${data.group_id}`);
                         $('#tablecontent').html('')
-                        let i = 1;
-                        if (data.material_url) {
-                            for (let material of data.material_url) {
-                                $('#tablecontent').append(`
-                                    <tr>
-                                        <td> ${i} </td>
-                                        <td> ${material.title} </td>
-                                        <td> ${material.material_type} </td>
-                                        <td> 
-                                            <!-- download -->
-                                            <a href="${material.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
-
-                                            <!-- edit -->
-                                            <a href="edit_reading.html?id=${material.id}&sectionId=${data.id}&groupId=${data.group_id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
-
-                                            <!-- delete/retire -->
-                                            <a href="#deletematerial" class="trigger-btn icon" data-id="${material.id}" data-name="${material.title}" data-toggle="modal" title="Delete Material"><i data-feather="trash-2"></i></a>
-                                        </td>
-                                    <tr>`)
-                                i++;
-                            }
-                        } 
-                        if (data.video_url) {
-                            for (let video of data.video_url) {
-                                $('#tablecontent').append(`                             
-                                    <tr>
-                                        <td> ${i} </td>
-                                        <td> ${video.title} </td>
-                                        <td> Video </td>
-                                        <td>  
-                                            <!-- download -->
-                                            <a href="${video.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
-
-                                            <!-- edit -->
-                                            <a href="edit_vid.html?id=${video.id}&sectionId=${data.id}&groupId=${data.group_id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
-
-                                            <!-- delete/retire -->
-                                            <a href="#deletematerial" class="trigger-btn icon" data-id="${video.id}" data-toggle="modal" title="Delete Material"><i data-feather="trash-2"></i></a>
-                                        </td>
-                                    <tr>
-                                `)
-                                i++;
-                            }
-                          
-                        } else {
+                        if (!data.video_url.length && !data.material_url.length ) {
                             $('#tablecontent').html(`
                             <tr>
                                 <td>No materials have been added to this section yet. </td>
                             </tr>`);                            
                             $("#loadingModal").modal('hide');
-                        } 
+                        } else {
+                            let i = 1;
+                            if (data.material_url) {
+                                for (let material of data.material_url) {
+                                    $('#tablecontent').append(`
+                                        <tr>
+                                            <td> ${i} </td>
+                                            <td> ${material.title} </td>
+                                            <td> ${material.material_type} </td>
+                                            <td> 
+                                                <!-- download -->
+                                                <a href="${material.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
+
+                                                <!-- edit -->
+                                                <a href="edit_reading.html?id=${material.id}&sectionId=${data.id}&groupId=${data.group_id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+
+                                                <!-- delete/retire -->
+                                                <a href="#deletematerial" class="trigger-btn icon" data-id="${material.id}" data-name="${material.title}" data-toggle="modal" title="Delete Material"><i data-feather="trash-2"></i></a>
+                                            </td>
+                                        <tr>`)
+                                    i++;
+                                }
+                            } 
+                            if (data.video_url) {
+                                for (let video of data.video_url) {
+                                    $('#tablecontent').append(`                             
+                                        <tr>
+                                            <td> ${i} </td>
+                                            <td> ${video.title} </td>
+                                            <td> Video </td>
+                                            <td>  
+                                                <!-- download -->
+                                                <a href="${video.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
+
+                                                <!-- edit -->
+                                                <a href="edit_vid.html?id=${video.id}&sectionId=${data.id}&groupId=${data.group_id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+
+                                                <!-- delete/retire -->
+                                                <a href="#deletematerial" class="trigger-btn icon" data-id="${video.id}" data-toggle="modal" title="Delete Material"><i data-feather="trash-2"></i></a>
+                                            </td>
+                                        <tr>
+                                    `)
+                                    i++;
+                                }
+                            
+                            } 
+                        }
                     }
                      
                     feather.replace()

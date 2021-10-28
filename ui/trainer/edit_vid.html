@@ -27,29 +27,48 @@
         <!-- common js functions -->
         <script src="../js/common.js"></script>
 
-    <style>
-        .addbutton{
-            background-color: #566E92;
-            border: none;
-            color: white;
-            padding: 3px 5px;
-            text-align: center;
-            font-size: 16px;
-            cursor: pointer;
-            margin: 120px 130px;
-        }
-
-        input[type=button] {
-                background: #FF922D ;
-                color: white ; 
-                border: none ;
-                border-radius: 3px ; 
-                padding-left: 5px ;
-                margin-left: 500px;
-                width: 100px ;
+        <style>
+            .addbutton{
+                background-color: #566E92;
+                border: none;
+                color: white;
+                padding: 3px 5px;
+                text-align: center;
+                font-size: 16px;
+                cursor: pointer;
+                margin: 120px 130px;
             }
-    </style>
-</head>
+
+            input[type=button] {
+                    background: #FF922D ;
+                    color: white ; 
+                    border: none ;
+                    border-radius: 3px ; 
+                    padding-left: 5px ;
+                    margin-left: 500px;
+                    width: 100px ;
+                }
+
+            #loadingModal {
+                display: block;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                text-align: center;
+                opacity: 0.7;
+                background-color: #fff;
+                z-index: 99;
+            }
+
+            #loading-image {
+                margin-top: 50px;
+                z-index: 100;
+
+            }
+        </style>
+    </head>
+
     <body>
         <div class="row">
             <div class="col-4">
@@ -59,7 +78,7 @@
                 </div>
                 <!-- End of Main Page Icon  -->
                 <h5 id="ContentName"><u>Engineering Basics 101</u></h5>
-                <h6 id="ContentName">Group 3</h6>
+                <h6 id="GroupName">Group 3</h6>
                 <br>
             </div>
 
@@ -82,7 +101,7 @@
                     <div class="mb-3">
                         <label for="formGroupExampleInput" class="form-label">Title</label>
                         <br>
-                        <input type="text" id="reading_title"/>
+                        <input type="text" id="video_title"/>
                     </div>
                     <!-- End of Title Field -->
 
@@ -95,14 +114,131 @@
                 </div> 
             <div class="col-5">                       
                 <!-- Start of Add Button  -->
-                <input type="submit" class="addbutton" value="Add";/>
+                <input type="submit" class="addbutton" value="Update" />
                 <!-- End of Add Button  -->
                 </form>
                 <!-- End of Form  -->
             </div>
+
+            <!-- Modal for loading -->
+            <div id="loadingModal" class="modal fade" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                        <div class="modal-header flex-column">				
+                            <h4 class="modal-title w-100">Loading.....</h4>	
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="modalloading">
+                                <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
+                            </div>  
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            
+            <!-- failure modal -->
+            <div id="failureModal" class="modal fade" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                        <div class="modal-header flex-column">
+                            <div class="icon">
+                                <i data-feather="alert-triangle"></i>
+                            </div>						
+                            <h4 class="modal-title w-100">Error!</h4>	
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p id='failureMessage'></p>
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Okay</button>
+                        </div>
+                    </div>
+                </div>
+            </div> 
         </div>
 
-
     </body>
+
+    <script>
+        // const api_endpoint = "http://52.55.242.44:8000/"
+        const api_endpoint = "http://localhost:8000/"
+        
+        let course_id = sessionStorage.getItem("course_id")
+        let course_name = sessionStorage.getItem("course_name")
+        let query = window.location.search.substring(1).split("&") ;
+        let id = query[0].slice(3,)
+        let section_id = query[1].slice(10,)
+        let group_id = query[2].slice(8,)
+        $(async () => {
+
+            $("#loadingModal").modal('show');
+            $('#ContentName').html(`<u>${course_name}</u>`)
+            $('#GroupName').html(`Group ${group_id}`)
+
+            const get_material = api_endpoint + `file/${id}`
+            try {
+                const response = await fetch(
+                                    get_material, {
+                                        method: 'GET',
+                                    }
+                                );
+                
+                const result = await response.json();                
+                $('#loadingModal').modal('hide');
+                if (response.status === 200) {                    
+                    $('#video_title').val(result.data.title)
+                    
+                } else { 
+                    $("#failureMessage").text(result.message)
+                    $('#failureModal').modal('show');
+                }
+            } catch (err) {
+                $('#loadingModal').modal('hide');
+                $("#failureMessage").text(result.message)
+                $('#failureModal').modal('show');
+                console.log(err)
+            }
+        })
+
+        myForm.addEventListener("submit", async e => {
+            e.preventDefault();
+
+            $("#loadingModal").modal('show');
+            const myForm= document.getElementById("myForm");
+            const inpFile = document.getElementById("inpFile");
+            const formData = new FormData();
+
+            formData.append("file", inpFile.files[0]);
+            formData.append("id", id);
+            formData.append("title", document.getElementById("video_title").value);
+
+            const upload_file = api_endpoint + "upload_file"
+            try {
+                const response = await fetch(
+                    upload_file, {
+                        method: 'PUT',
+                        body: formData
+                    }
+                );
+                
+                const result = await response.json();
+                if (response.status === 200) {
+                    console.log(result)                    
+                    window.location.href = `uploadCM.html?id=${course_id}&courseName=${course_name}`;
+                }                 
+                $('#loadingModal').modal('hide');
+                $("#failureMessage").text(result.message)
+                $('#failureModal').modal('show');
+            } catch (err) {
+                $('#loadingModal').modal('hide');
+                $("#failureMessage").text(result.message)
+                $('#failureModal').modal('show');
+                console.log(err)
+            }
+        });
+        
+    </script>
 </head>
 </html>
