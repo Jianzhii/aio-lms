@@ -51,10 +51,31 @@ def getEnrolmentByGroup(group_id):
         }
     ), 200
 
-# Get enrolment by user_id
-@app.route("/enrolment/user/<int:user_id>", methods=['GET'])
-def getEnrolmentByUser(user_id):
-    groups = db.session.query(Enrolment, Group, User, Course).filter(User.id == user_id)\
+# Get ongoing/ upcoming enrolment by user_id
+@app.route("/enrolment/user/ongoing/<int:user_id>", methods=['GET'])
+def getOngoingEnrolmentByUser(user_id):
+    groups = db.session.query(Enrolment, Group, User, Course).filter(User.id == user_id, Enrolment.completed == False)\
+            .outerjoin(Group, Group.id == Enrolment.group_id)\
+            .outerjoin(User, Enrolment.user_id == User.id)\
+            .outerjoin(Course, Group.course_id == Course.id).all()
+    data = []
+    for enrolment, group, user, course in groups:
+        enrolment = enrolment.json()
+        enrolment['learner_name'] = user.name
+        enrolment['course_name'] = course.name
+        enrolment['course_id'] = course.id
+        data.append(enrolment)
+    return jsonify(
+        {
+            "code": 200,
+            "data": data
+        }
+    ), 200
+
+# Get ongoing/ upcoming enrolment by user_id
+@app.route("/enrolment/user/completed/<int:user_id>", methods=['GET'])
+def getCompletedEnrolmentByUser(user_id):
+    groups = db.session.query(Enrolment, Group, User, Course).filter(User.id == user_id, Enrolment.completed == True)\
             .outerjoin(Group, Group.id == Enrolment.group_id)\
             .outerjoin(User, Enrolment.user_id == User.id)\
             .outerjoin(Course, Group.course_id == Course.id).all()

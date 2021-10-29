@@ -294,7 +294,7 @@ def deleteCourse(id):
         )
 
 # View completed courses and Bages by user
-@app.route("/course/completed/<int:id>", methods=["GET"])
+@app.route("/course/badges/<int:id>", methods=["GET"])
 def viewCompletedCourses(id):
     from enrol import Enrolment
     courses = db.session.query(UserBadge,Badge,Enrolment).filter(UserBadge.user_id==id)\
