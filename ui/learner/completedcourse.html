@@ -46,7 +46,7 @@
 
             h2 {
                 padding-top: 45px ;
-                padding-left: 5px ;
+                padding-left: 15px ;
                 color: #FF922D ;
             }
 
@@ -93,7 +93,7 @@
                 padding: 12px ;
             }
 
-            #searchbar, #badges {
+            #badges {
                 padding: 30px ; 
             }
 
@@ -148,14 +148,9 @@
                 <div class="col">
                     <h2>Completed Courses</h2>
                 </div>
-                <div class="col-2" style="padding-top: 65px ;">
+                <div class="col-2" style="padding-top: 60px ;">
                     <input type="button" value="Log Out" id="logout" onclick='logout()'>
                 </div>
-            </div>
-            
-            <!-- start of search bar -->
-            <div class="row" id="searchbar">
-                <input id="search" class="form-control" type="text" placeholder="Search Course" aria-label="Search">
             </div>
                  
             <!-- show badges showing list of courses -->
@@ -174,14 +169,13 @@
             const api_endpoint = "http://52.55.242.44:8000/" 
             // const api_endpoint = "http://localhost:8000/"
 
-            var user_id = 1
+            var user_id = sessionStorage.getItem("user_id")
 
             // retrieve completed courses
-
             $(async () => {
 
                 // API endpoint
-                var completed_courses_api = api_endpoint + "course/completed/" + user_id
+                var completed_courses_api = api_endpoint + "enrolment/user/completed/" + user_id
 
                 console.log(completed_courses_api)
 
@@ -201,13 +195,15 @@
                         if (data.length) {
                             for (let i=0 ; i < data.length ; i++) {
                                 badge = `
-                                <div class="card bg-light mb-3" style="max-width: 18rem;">
-                                <img class="card-img-top" src="../../static/imgs/badges.png" alt="Card image cap">
-                                <div class="card-header">Group ${data[i].group_id}</div>
-                                <div class="card-body">
-                                    <h5 class="card-title">${data[i].course_name}</h5>
-                                    <p class="card-text">Completed on ${data[i].assigned_dt}</p>
-                                </div>
+                                <div class="col-sm-3">
+                                    <div class="card bg-light mb-3" style="max-width: 18rem;">
+                                    <img class="card-img-top" src="../../static/imgs/badges.png" alt="Card image cap">
+                                    <div class="card-header">Group ${data[i].group_id}</div>
+                                    <div class="card-body">
+                                        <h6 class="card-title">${data[i].course_name}</h6>
+                                        <input type="button" value="View Details" onclick="window.location.href='group_details.html?id=' + ${data[i].id} + '&groupId=' + ${data[i].group_id}">
+                                    </div>
+                                    </div>
                                 </div>` 
                                 $('#badges').append(badge)
                             }
@@ -216,7 +212,7 @@
                             <tr>
                                 <td>You have not attained any badges</td>
                             </tr>`
-                            $('##badges').append(badge)
+                            $('#badges').append(badge)
                         }
                     }
                 } catch(err) {
@@ -224,73 +220,6 @@
                     console.log(err)
                 }
             });
-
-            // function to direct to individual group pages
-            function coursegroupdetails(courseid, groupid) {
-                location.href = "./group_details.html?id=" + courseid + "&groupId=" + groupid
-            }
-
-            // function for search bar
-            var search = document.getElementById("search");
-
-            search.addEventListener("keyup", function (event) {
-                // Number 13 is the "Enter" key on the keyboard
-                if (event.keyCode === 13) {
-                    // Cancel the default action, if needed
-                    event.preventDefault();
-                    $('#tablecontent').empty();
-                    $('#loading').show();
-                    var input = document.getElementById("search").value;
-
-                    $(async () => {
-                        // API Endpoint
-                        var user_api = api_endpoint + "search_course"
-
-                        try {
-                            const response =
-                                await fetch(
-                                    user_api, {
-                                    method: 'POST',
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({"search": input})
-                                }
-                            );
-
-                            const result = await response.json();
-                            if (response.status === 200) {
-                                let data = result.data
-                                if (data.length) {
-                                    for (let i = 0; i < data.length; i++) {
-                                        row = `
-                                        <tr>
-                                            <td>${i+1}</td>
-                                            <td>${data[i].name}</td>
-                                            <td>${data[i].description}</td>
-                                            <td>${data[i].prerequisite}</td>
-                                            <td><input type="button" value="View Details" id="viewdetails"></td>
-                                        </tr>`
-
-                                        $('#tablecontent').append(row)                    
-                                    }
-                                } else {
-                                    $('#tablecontent').append(`
-                                        <tr>
-                                            <td> No Results </td>
-                                        </tr>
-                                        `)
-                                }
-                            }
-                            $('#loading').hide();
-                            feather.replace();
-                        } catch(err) {
-                            alert(err)
-                            console.log(err)
-                            $('#loading').hide();
-                        }
-                    });
-                }
-            });
-
         </script>   
     </body>
 </html>

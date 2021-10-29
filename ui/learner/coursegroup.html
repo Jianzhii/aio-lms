@@ -100,6 +100,7 @@
                 border-radius: 3px ; 
                 padding: 5px ;
                 width: 100px ;
+                margin-left: 10px ;
             }
 
             input[type=button]:disabled {
@@ -109,7 +110,6 @@
                 border-radius: 3px ; 
                 padding: 5px ;
                 width: 100px ;
-                
             }
 
             #tableheader{
@@ -177,12 +177,8 @@
                     <tbody id="tableheader"> 
                       <tr>
                           <th scope="col">Group Number</th>
-                          <th scope="col">Group Size</th>
-                          <th scope="col">Trainer</th>
-                          <th scope="col">Enrollment Start Date/Time</th>
-                          <th scope="col">Enrollment End Date/Time</th>
-                          <th scope="col">Group Start Date/Time</th>
-                          <th scope="col">Group End Date/Time</th>
+                          <th scope="col">Enrollment Period</th>
+                          <th scope="col">Group Period</th>
                           <th scope="col"></th>
                       </tr>
                     </tbody>
@@ -190,11 +186,11 @@
                         <!-- populate rows of groups -->
                     </tbody>
                 </table>
-            
-            <!-- loading -->
+            </div>
+
             <div id="loading">
                 <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
-            </div>
+            </div>    
 
             <div id="modals"></div>
         </div>
@@ -215,6 +211,7 @@
 
             var user_id = sessionStorage.getItem("user_id")
             var all_requests = [] 
+            var all_enrolments = []
 
             /* load course details */
             $(async() => {
@@ -235,16 +232,14 @@
                         $('.cname').append(data.name)
                         $('#cdes').append(data.description)
                         $('#preq').append(data.prerequisite)
-                        $('#loading').hide()
                     }
                 } catch(err) {
                     alert(err)
                     console.log(err)
                 }
-
             })
 
-            /* retrieve all enrolment of user */
+            /* retrieve all enrolment requests of user */
             async function getRequest() {
                 const user_requests = api_endpoint + "enrolment_request/learner/" + user_id
 
@@ -269,10 +264,53 @@
                 }
             }
 
+            /* retrieve all enrolments of user */
+            async function getEnrolment() {
+                var ongoing_api = api_endpoint + "enrolment/user/ongoing/" + user_id
+                var completed_api = api_endpoint + "enrolment/user/completed/" + user_id
+ 
+                try {
+                    const response = 
+                        await fetch(
+                            ongoing_api, {
+                                method: 'GET'
+                            }
+                        );
+
+
+                    const response2 = 
+                        await fetch(
+                            completed_api, {
+                                method: 'GET'
+                            }
+                        );
+
+                    const result = await response.json()
+                    const result2 = await response2.json()
+
+                    if (response.status === 200) {
+                        let enrolments = result.data
+                        for (enrolment of enrolments) {
+                            all_enrolments.push(enrolment.group_id)
+                        }
+                    }
+
+                    if (response2.status === 200) {
+                        let enrolments = result2.data
+                        for (enrolment of enrolments) {
+                            all_enrolments.push(enrolment.group_id)
+                        }
+                    }
+
+                } catch(err) {
+                    alert(err)
+                    console.log(err)
+                }
+            }
+
             /* load groups in course */
             $(async() => {
                 var coursegroup_api = api_endpoint + "all_group/" + courseid
-
                 try {
                     const response =
                         await fetch(
@@ -280,30 +318,39 @@
                                 method: 'GET'
                             }
                         );
-                        
                     const result = await response.json() ;
-                    if (response.status === 200) {
+                    if (response.status === 200 & result.code === 200) {
                         let data = result.data
                         await getRequest();
+                        await getEnrolment();
                         console.log(all_requests)
-                        // console.log(data)
+                        console.log(all_enrolments)
                         if (data.length) {
                             for (i=0 ; i < data.length ; i++) {
                                 row = `
                                 <tr>
                                     <td>Group ${data[i].id}</td>
-                                    <td>${data[i].size}</td>
-                                    <td>${data[i].trainer_name}</td>
-                                    <td>${data[i].enrol_start_date}</td>
-                                    <td>${data[i].enrol_end_date}</td>
-                                    <td>${data[i].start_date}</td>
-                                    <td>${data[i].end_date}</td>`
+                                    <td>${data[i].enrol_start_date} - ${data[i].enrol_end_date}</td>
+                                    <td>${data[i].start_date} - ${data[i].end_date}</td>`
 
-                                if (all_requests.includes(data[i].id)) {
-                                    row += `<td><input type="button" value="Pending" disabled></td>`
-                                } else {
-                                    row += `<td><input type="button" value="Enrol" id="${data[i].id}" onclick="selfEnrol(${data[i].id})"></td>`
+                                if (all_enrolments.includes(data[i].id)) {
+                                    row += `<td>
+                                                <input type="button" value="Enrolled" disabled>
+                                            `
                                 }
+
+                                else if (all_requests.includes(data[i].id)) {
+                                    row += `<td>
+                                                <input type="button" value="Pending" disabled>
+                                            `
+                                } else {
+                                    row += `<td>
+                                        <input type="button" value="Enrol" onclick="selfEnrol(${data[i].id})">
+                                    `
+                                }
+
+                                row += `<input type="button" value="View Details" onclick="window.location.href='group_details.html?id=' + ${courseid} + '&groupId=' + ${data[i].id}"></td></tr>`
+
                                 $('#tablecontent').append(row)
                             }
                         } else {
@@ -311,9 +358,9 @@
                             <tr>
                                 <td>There are no groups for you to enrol in currently :<</td>
                             </tr>`
-                            $('tablecontent').append(row)
+                            $('#tablecontent').append(row)
                         }
-
+                        $('#loading').hide();
                     }
                 } catch(err) {
                     alert(err)
@@ -322,17 +369,13 @@
             })
 
             async function selfEnrol(group_id) {
-
-                $('#laodingModal').modal('show');
-
+                $("#loadingModal").modal('show');
                 data = {
                     user_id: user_id,
                     group_id: group_id
                 }
                 
                 const self_enrol_api = api_endpoint + "enrolment_request"
-                console.log(self_enrol_api)
-                console.log(data)
                 try {
                     const response = await fetch(
                         self_enrol_api, {
@@ -343,13 +386,11 @@
                     );
 
                     const result = await response.json(); 
-                    console.log(result)
-
-                    $('#loadingModal').modal('hide')
+                    $("#loadingModal").modal('hide');
                     if (response.status === 200 && result.code === 200) {
-                        $("#successMessage").text(result.message)
+                        $("#successMessage").text(result.message);
                         $('#successModal').modal('show');
-                        console.log(document.getElementById(group_id))
+                        document.getElementById("success").addEventListener("click",function() {window.location.reload(true)})
                         document.getElementById(group_id).disabled = true
                         document.getElementById(group_id).value = "Pending"
                     }

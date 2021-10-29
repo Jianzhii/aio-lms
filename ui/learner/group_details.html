@@ -45,9 +45,8 @@
                 border-right: solid lightgrey 2px ; 
             }
 
-            h2 {
+            h2, h4 {
                 padding-top: 45px ;
-                padding-left: 5px ;
                 color: #FF922D ;
             }
 
@@ -85,7 +84,13 @@
                 margin-left: 20% ;
             }
 
-            #header {
+            #table {
+                width: 90% ;
+                margin-left: auto ;
+                margin-right: auto ;
+            }
+
+            #header, h4 {
                 padding: 12px ;
             }
 
@@ -101,7 +106,7 @@
             #tableheader{
                 background-color: #FF922D ;
                 color: white ;
-                padding-left: 35px 
+                padding-left: 35px ;
             }
 
             #tablecontent {
@@ -131,16 +136,10 @@
 
             }
 
-            .row {
-                padding: 20px ; 
+            .gdetails, #section {
+                padding: 15px ; 
             }
 
-            .course_material{
-                color: #FF922D; 
-                font-size: 20px; 
-                padding-top: 10px; 
-                padding-left: 15px;
-            }
         </style>
     </head>
 
@@ -155,35 +154,49 @@
                 <div class="col">
                     <h2 id="cname"></h2>
                 </div>
-                <div class="col-2" style="padding-top: 65px ;">
+                <div class="col-2" style="padding-top: 55px ;">
                     <input type="button" value="Log Out" id="logout" onclick='logout()'>
                 </div>
             </div>
 
             <!-- details about group -->
-            <div class="row">
+            <div class="row gdetails">
                 <div class="col" style="font-weight: bold">Course Description</div>
                 <div class="col" id="cdes"></div>
                 <div class="col" style="font-weight: bold">Pre-Requisite Course(s)</div>
                 <div class="col" id="preq"></div>
             </div>
-            <div class="row">
+            <div class="row gdetails">
                 <div class="col" style="font-weight: bold">Group Size</div>
                 <div class="col" id="gsize"></div>
                 <div class="col" style="font-weight: bold">Trainer Assigned</div>
                 <div class="col" id="trainer"></div>
             </div>
-            <div class="row">
-                <div class="col" style="font-weight: bold">Start Date</div>
-                <div class="col" id="sdate"></div>
-                <div class="col" style="font-weight: bold">End Date</div>
-                <div class="col" id="edate"></div>
+            <div class="row gdetails">
+                <div class="col" style="font-weight: bold">Enrolment Period</div>
+                <div class="col" id="eperiod"></div>
+                <div class="col" style="font-weight: bold">Group Period</div>
+                <div class="col" id="gperiod"></div>
             </div>
 
-            <!-- Course Materials  -->
-            <div class="course_material">
-                View your course materials 
+            <!-- Sections  -->
+            <div class="row" id="section">
+                <h4>Sections</h4>
             </div> 
+
+            <div class="row" id="table">
+                <table class="table">
+                    <tbody id="tableheader"> 
+                      <tr>
+                          <th scope="col">Section Number</th>
+                          <th scope="col">Description</th>
+                          <th scope="col"></th>
+                      </tr>
+                    </tbody>
+                    <tbody id="tablecontent">
+                        <!-- populate rows of sections -->
+                    </tbody>
+                </table>
 
             <!-- loading -->
             <div id="loading">
@@ -200,15 +213,14 @@
 
             const api_endpoint = "http://52.55.242.44:8000/" 
 
-            /* load details of course's group */
-
-            let query = window.location.search.substring(1).split('=') ;
-            console.log(query)
-            var groupid = query[1]            
-
-            $(async() => {
-                
-
+            let query = window.location.search.substring(1).split('&') ;
+            var courseid = query[0].slice(3,) 
+            var groupid = query[1].slice(8,)
+            console.log("course id: " + courseid)
+            console.log("group id: " + groupid)
+           
+            /* retrieve information of group */
+            $(async() => { 
                 var coursegroup_api = api_endpoint + "group/" + groupid
 
                 try {
@@ -227,8 +239,9 @@
                         $('#cname').append(cname)
                         $('#gsize').append(data.size)
                         $('#trainer').append(data.trainer_name)
-                        $('#sdate').append(data.start_date)
-                        $('#edate').append(data.end_date)
+                        $('#eperiod').append(data.enrol_start_date.slice(0,data.enrol_start_date.length - 3) + " - " + data.enrol_end_date.slice(0,data.enrol_end_date.length - 3) )
+                        $('#gperiod').append(data.start_date.slice(0,data.start_date.length - 3) + " - " + data.end_date.slice(0,data.end_date.length - 3))
+                        $('#loading').hide()
                     }
                 } catch(err) {
                     alert(err)
@@ -237,10 +250,9 @@
 
             })
 
+            /* retrieve information of course */
             $(async() => {
-                
-
-                var coursegroup_api = api_endpoint + "course/" + groupid
+                var coursegroup_api = api_endpoint + "course/" + courseid
 
                 try {
                     const response =
@@ -261,9 +273,47 @@
                     alert(err)
                     console.log(err)
                 }
-
             })
 
+            /* retrieve sections */
+            $(async() => {
+                var sections_api = api_endpoint + "all_section/" + groupid
+
+                console.log(sections_api)
+
+                try {
+                    const response = 
+                        await fetch(
+                            sections_api, {
+                                method: 'GET'
+                            }
+                        );
+                    const result = await response.json(); 
+                    if (response.status === 200) {
+                        let data = result.data
+                        if (data.length) {
+                            for (i=0 ; i<data.length ; i++) {
+                                row = `
+                                <tr>
+                                    <td>Section ${i+1}</td>
+                                    <td>${data[i].description}</td>
+                                    <td><input type="button" value="View Materials" onclick="window.location.href='coursematerials.html?id=' + ${data[i].id}"></td>
+                                </tr>`
+
+                                $("#tablecontent").append(row)
+                            }
+                        } else {
+                            row = "<tr><td>There are no sections available</td></tr>"
+                            $("#tablecontent").append(row)
+                        }
+                        
+                    }
+                } catch(err) {
+                    alert(err)
+                    console.log(err)
+                }
+            })
+        
         </script>   
     </body>
 </html>

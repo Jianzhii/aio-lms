@@ -134,7 +134,6 @@
                 z-index: 100;
 
             }
-
         </style>
     </head>
 
@@ -218,7 +217,7 @@
                                 <td>${data[i].course_name}</td>
                                 <td>${data[i].course_description}</td>
                                 <td>Group ${data[i].group_id}</td>
-                                <td><input type="button" value="Withdraw" id="withdraw" onclick="withdrawRequest(${data[i].id})"><input type="button" value="View Details" id="viewdetails" onclick=groupdetails(${data[i].group_id})></td>
+                                <td><input type="button" value="Withdraw" id="withdraw" onclick="withdrawRequest(${data[i].id})"><input type="button" value="View Details" onclick="window.location.href='group_details.html?id=' + ${data[i].course_id} + '&groupId=' + ${data[i].group_id}"></td>
                             </tr>`
 
                             console.log(data[i])
@@ -237,14 +236,7 @@
                     alert(err)
                     console.log(err)
                 }
-
-            feather.replace()
         });
-
-            // function for view details button
-            function groupdetails(groupid) {
-                location.href = "./group_details.html?id=" + groupid
-            }
 
             // function for withdrawing of request
              async function withdrawRequest(request_id) {
