@@ -177,7 +177,6 @@
                     <tbody id="tableheader"> 
                       <tr>
                           <th scope="col">Group Number</th>
-                          <th scope="col">Trainer</th>
                           <th scope="col">Enrollment Period</th>
                           <th scope="col">Group Period</th>
                           <th scope="col"></th>
@@ -267,23 +266,42 @@
 
             /* retrieve all enrolments of user */
             async function getEnrolment() {
-                var enrolled_courses_api = api_endpoint + "enrolment/user/" + user_id
-
+                var ongoing_api = api_endpoint + "enrolment/user/ongoing/" + user_id
+                var completed_api = api_endpoint + "enrolment/user/completed/" + user_id
+ 
                 try {
                     const response = 
                         await fetch(
-                            enrolled_courses_api, {
+                            ongoing_api, {
+                                method: 'GET'
+                            }
+                        );
+
+
+                    const response2 = 
+                        await fetch(
+                            completed_api, {
                                 method: 'GET'
                             }
                         );
 
                     const result = await response.json()
+                    const result2 = await response2.json()
+
                     if (response.status === 200) {
                         let enrolments = result.data
                         for (enrolment of enrolments) {
                             all_enrolments.push(enrolment.group_id)
                         }
                     }
+
+                    if (response2.status === 200) {
+                        let enrolments = result2.data
+                        for (enrolment of enrolments) {
+                            all_enrolments.push(enrolment.group_id)
+                        }
+                    }
+
                 } catch(err) {
                     alert(err)
                     console.log(err)
@@ -312,7 +330,6 @@
                                 row = `
                                 <tr>
                                     <td>Group ${data[i].id}</td>
-                                    <td>${data[i].trainer_name}</td>
                                     <td>${data[i].enrol_start_date} - ${data[i].enrol_end_date}</td>
                                     <td>${data[i].start_date} - ${data[i].end_date}</td>`
 
