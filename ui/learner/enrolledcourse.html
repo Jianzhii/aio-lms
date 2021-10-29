@@ -176,7 +176,7 @@
                     </tbody>
                 </table>
                 <div id="loading">
-                    <img id="loading-image" src="static/imgs/loading.gif" alt="Loading..." />
+                    <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
                 </div>    
             </div>
         </div>
@@ -194,7 +194,6 @@
             var user_id = sessionStorage.getItem("user_id")
 
             // retrieve enrolled courses
-
             $(async () => {
 
                 // API endpoint
@@ -223,7 +222,7 @@
                                     <td>${data[i].course_name}</td>
                                     <td>Group ${data[i].group_id}</td>
                                     <td>${data[i].enrolled_dt}</td>
-                                    <td><input type="button" value="View Details" id="viewdetails" onclick="coursegroupdetails(${data[i].id},${data[i].group_id})"></td>   
+                                    <td><input type="button" value="View Details" onclick="window.location.href='group_details.html?id=' + ${data[i].course_id} + '&groupId=' + ${data[i].group_id}"></td>   
                                 </tr>`
                                 $('#tablecontent').append(row)
                             }
