@@ -63,6 +63,7 @@ def getEnrolmentByUser(user_id):
         enrolment = enrolment.json()
         enrolment['learner_name'] = user.name
         enrolment['course_name'] = course.name
+        enrolment['course_id'] = course.id
         data.append(enrolment)
     return jsonify(
         {
