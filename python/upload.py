@@ -13,6 +13,10 @@ from app import app, db
 @app.route('/upload_file', methods=["POST"])
 def uploadFiles():
     try:
+        if 'section_id' not in request.form:
+            raise Exception('Section ID is missing from form!')
+        if 'title' not in request.form:
+            raise Exception('File title is missing from form!')
         if 'file' not in request.files:
             raise Exception('Please upload a file.')
         else: 
@@ -57,6 +61,10 @@ def uploadFiles():
 @app.route('/upload_video', methods=["POST"])
 def uploadVideo():
     try:
+        if 'section_id' not in request.form:
+            raise Exception('Section ID is missing from form!')
+        if 'title' not in request.form:
+            raise Exception('Video title is missing from form!')
         if 'file' not in request.files:
             raise Exception('Please upload a video')
         else: 
@@ -135,6 +143,10 @@ def getFile(id):
 @app.route('/upload_file', methods=["PUT"])
 def updateFile():
     try:
+        if 'id' not in request.form:
+            raise Exception('ID is missing from form!')
+        if 'title' not in request.form:
+            raise Exception('Material title is missing from form!')
         if 'file' not in request.files:
             raise Exception('Please upload a file')
 
@@ -235,10 +247,8 @@ def upload_file_to_s3(file, acl="public-read"):
             }
         )
 
+        # after upload file to s3 bucket, return filename of the uploaded file
+        return (True, file.filename)
     except Exception as e:
         print("Something Happened: ", e)
         return (False, e)
-    
-
-    # after upload file to s3 bucket, return filename of the uploaded file
-    return (True, file.filename)
