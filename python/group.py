@@ -58,6 +58,7 @@ def getAllGroups(id):
                         TrainerAssignment.assigned_end_dt == None))\
                 .outerjoin(User, TrainerAssignment.trainer_id == User.id)\
                 .outerjoin(Course, Group.course_id == Course.id).all()
+        print(groups)
         data = []
         for group, trainer_assignment, user, course in groups:
             group = group.json()
@@ -270,16 +271,17 @@ def deleteGroup(id):
             for assignment in trainer_assignment:
                 db.session.delete(assignment)
 
-        all_enrolment = Enrolment.query.filter_by(group_id=id).all()
-        if all_enrolment:
-            for enrolment in all_enrolment:
-                db.session.delete(enrolment)
-
         all_enrolment_request = EnrolmentRequest.query.filter_by(group_id=id).all()
         if all_enrolment_request: 
             for requests in all_enrolment_request: 
                 db.session.delete(requests)
-                
+
+        all_enrolment = Enrolment.query.filter_by(group_id=id).all()      
+        if all_enrolment:
+            for enrolment in all_enrolment:
+                db.session.delete(enrolment)
+        
+        db.session.commit()
         db.session.delete(group)
         db.session.commit()
         return jsonify(
