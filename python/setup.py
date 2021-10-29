@@ -15,6 +15,7 @@ setup(
         'mysql-connector-python',
         'requests',
         'werkzeug',
-        'boto3'
+        'boto3',
+        'pytz'
     ],
 )
