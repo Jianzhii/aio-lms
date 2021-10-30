@@ -188,7 +188,8 @@ def deleteSection(id):
         materials = Materials.query.filter_by(section_id = id).all()
         if materials: 
             for material in materials: 
-                db.session.delete(material)        
+                db.session.delete(material)                        
+        db.session.commit()
         db.session.delete(course_section)
         db.session.commit()
         return jsonify(
