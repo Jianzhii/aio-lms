@@ -3,7 +3,7 @@ from course_section import CourseSection, Materials
 from flask.json import jsonify
 from sqlalchemy.ext.mutable import MutableDict
 
-class ChapterProgress(db.Model):
+class SectionProgress(db.Model):
     __tablename__ = 'section_progress'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     section_id = db.Column(db.Integer, nullable=False)
@@ -21,7 +21,7 @@ class ChapterProgress(db.Model):
         }
 
 
-# Create records in chapter progress table
+# Create records in section progress table
 def createProgressRecord(data):
     try:
         sections = CourseSection.query.filter_by(group_id = data['group_id']).all()
@@ -30,7 +30,7 @@ def createProgressRecord(data):
             materials = Materials.query.filter_by(section_id = section.id).all()
             for material in materials:
                 section_material[material.id] = False
-            progress = ChapterProgress(
+            progress = SectionProgress(
                 section_id = section.id,
                 course_enrolment_id = data['id'],
                 material = section_material,
@@ -46,7 +46,7 @@ def createProgressRecord(data):
 @app.route("/section_progress/<int:enrolment_id>/<int:section_id>", methods=['GET'])
 def getProgress(enrolment_id, section_id):
     try: 
-        progress = ChapterProgress.query.filter_by(course_enrolment_id = enrolment_id, section_id = section_id).first().json()
+        progress = SectionProgress.query.filter_by(course_enrolment_id = enrolment_id, section_id = section_id).first().json()
         for material_id in progress['material']:
             material = Materials.query.filter_by(id = material_id).first()
             progress['material'][material_id] = {
@@ -76,7 +76,7 @@ def getProgress(enrolment_id, section_id):
 @app.route("/completed/<int:progress_id>/<int:material_id>", methods=['PUT'])
 def markCompleted(progress_id, material_id):
     try:
-        progress = db.session.query(ChapterProgress).filter(ChapterProgress.id == progress_id).first()
+        progress = db.session.query(SectionProgress).filter(SectionProgress.id == progress_id).first()
         progress.material[str(material_id)] = True
         db.session.commit()
         return jsonify(

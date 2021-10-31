@@ -7,7 +7,7 @@ from flask import jsonify, request
 from sqlalchemy.sql.expression import all_
 from werkzeug.utils import secure_filename
 from course_section import CourseSection, Materials
-from chapter_progress import ChapterProgress
+from section_progress import SectionProgress
 
 from app import app, db
 
@@ -34,7 +34,7 @@ def uploadFiles():
             )
             db.session.add(material)
             db.session.commit()
-            updateChapterProgress(material)  
+            updateSectionProgress(material)  
             return jsonify(
                 {
                     "code" : 200,
@@ -83,7 +83,7 @@ def uploadVideo():
             )
             db.session.add(material)
             db.session.commit()
-            updateChapterProgress(material)  
+            updateSectionProgress(material)  
             return jsonify(
                 {
                     "code" : 200,
@@ -173,7 +173,7 @@ def updateFile():
             material.title = request.form['title']
             material.url = f"{os.getenv('AWS_DOMAIN')}{filename[1]}"
             db.session.commit()
-            updateChapterProgress(material)  
+            updateSectionProgress(material)  
 
             return jsonify(
                 {
@@ -216,7 +216,7 @@ def deleteMaterial(id):
                 }
             ), 404
         section_id = material.section_id
-        all_progress = ChapterProgress.query.filter_by(section_id = section_id).all()
+        all_progress = SectionProgress.query.filter_by(section_id = section_id).all()
         for progress in all_progress:
             if str(id) in progress.material:
                 del progress.material[str(id)]        
@@ -264,8 +264,8 @@ def upload_file_to_s3(file, acl="public-read"):
         print("Something Happened: ", e)
         return (False, e)
 
-def updateChapterProgress(material):
-    all_progress = ChapterProgress.query.filter_by(section_id = material.section_id).all()
+def updateSectionProgress(material):
+    all_progress = SectionProgress.query.filter_by(section_id = material.section_id).all()
     for progress in all_progress:
         progress.material[str(material.id)] = False
     db.session.commit()  

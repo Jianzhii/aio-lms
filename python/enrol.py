@@ -7,7 +7,7 @@ from app import app, db
 from course import Course
 from user import User
 from group import Group
-from chapter_progress import ChapterProgress, createProgressRecord
+from section_progress import SectionProgress, createProgressRecord
 from datetime import datetime
 from sqlalchemy import and_
 
@@ -111,7 +111,6 @@ def addEnrolment(data=None):
                     db.session.add(result[0])                                  
                     db.session.commit()
                     createProgressRecord(result[0].json())
-                    # have to insert into chapter progress also 
         else: 
             result = processEnrolmentEligibility(data)
             if result[1] != 200: 
@@ -223,7 +222,7 @@ def processEnrolmentEligibility(data):
 def deleteEnrolment(id):
     try:
         enrolment = Enrolment.query.filter_by(id=id).first()
-        progress = ChapterProgress.query.filter_by(course_enrolment_id = id).all()
+        progress = SectionProgress.query.filter_by(course_enrolment_id = id).all()
         for each in progress:
             db.session.delete(each)
         db.session.commit()
