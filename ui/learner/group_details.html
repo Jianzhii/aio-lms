@@ -199,7 +199,6 @@
                       <tr>
                           <th scope="col">Section Number</th>
                           <th scope="col">Description</th>
-                          <th scope="col"></th>
                       </tr>
                     </tbody>
                     <tbody id="tablecontent">
@@ -227,7 +226,6 @@
             var groupid = query[1].slice(8,)
 
             var user_id = sessionStorage.getItem("user_id")
-            var all_enrolments = []
            
             /* retrieve information of group */
             $(async() => { 
@@ -283,50 +281,6 @@
                 }
             })
 
-            /* retrieve all enrolments of user */
-            async function getEnrolment() {
-                var ongoing_api = api_endpoint + "enrolment/user/ongoing/" + user_id
-                var completed_api = api_endpoint + "enrolment/user/completed/" + user_id
- 
-                try {
-                    const response = 
-                        await fetch(
-                            ongoing_api, {
-                                method: 'GET'
-                            }
-                        );
-
-
-                    const response2 = 
-                        await fetch(
-                            completed_api, {
-                                method: 'GET'
-                            }
-                        );
-
-                    const result = await response.json()
-                    const result2 = await response2.json()
-
-                    if (response.status === 200) {
-                        let enrolments = result.data
-                        for (enrolment of enrolments) {
-                            all_enrolments.push(enrolment.group_id)
-                        }
-                    }
-
-                    if (response2.status === 200) {
-                        let enrolments = result2.data
-                        for (enrolment of enrolments) {
-                            all_enrolments.push(enrolment.group_id)
-                        }
-                    }
-
-                } catch(err) {
-                    alert(err)
-                    console.log(err)
-                }
-            }
-
             /* retrieve sections */
             $(async() => {
                 var sections_api = api_endpoint + "all_section/" + groupid
@@ -340,43 +294,22 @@
                         );
 
                     const result = await response.json(); 
-                    await getEnrolment();   
-
                     if (response.status === 200) {
                         $('#loading').hide()
                         let data = result.data
-                        console.log(all_enrolments)
                         if (data.length) {
-                            if (all_enrolments.includes(parseInt(groupid))) { /* learner enrolled in group, disable button based on progress */
-                                for (i=0 ; i<data.length ; i++) {
+                            for (i=0 ; i<data.length ; i++) {
                                 row = `
                                 <tr>
                                     <td>Section ${i+1}</td>
                                     <td>${data[i].description}</td>
-                                    <td><input type="button" value="View Materials" onclick="window.location.href='coursematerials.html?userid=${user_id}&groupid=${groupid}&sectionid=${data[i].id}'"></td>
                                 </tr>`
                                 $("#tablecontent").append(row)
-
-                                /* decide if button should be disabled after checking against learner's progress*/
-                                    
-                                }
-                            } else { /* if learner not enrolled in group, disable all course material buttons */
-                                for (i=0 ; i<data.length ; i++) {
-                                row = `
-                                <tr>
-                                    <td>Section ${i+1}</td>
-                                    <td>${data[i].description}</td>
-                                    <td>
-                                        <input type="button" value="Unavailable" disabled>
-                                        </td>
-                                </tr>`
-                                $("#tablecontent").append(row)
-                                }
                             }
                         } else {
                             row = "<tr><td>There are no sections available</td></tr>"
                             $("#tablecontent").append(row)
-                        }  
+                        }   
                     } 
                 } catch(err) {
                     alert(err)
