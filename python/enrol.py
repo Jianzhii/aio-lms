@@ -72,7 +72,7 @@ def getOngoingEnrolmentByUser(user_id):
         }
     ), 200
 
-# Get ongoing/ upcoming enrolment by user_id
+# Get completed enrolment by user_id
 @app.route("/enrolment/user/completed/<int:user_id>", methods=['GET'])
 def getCompletedEnrolmentByUser(user_id):
     data = getEnrolment(user_id, True)
