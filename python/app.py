@@ -35,7 +35,12 @@ import section_progress
 @app.route("/test", methods=["GET"])
 def test():
 
-    return jsonify({"code": 200, "data": "test"}), 200
+    return jsonify(
+        {
+            "code": 200, 
+            "data": "test"
+        }
+    ), 200
 
 
 os.environ["FLASK_RUN_FROM_CLI"] = "false"

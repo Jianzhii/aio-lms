@@ -1,6 +1,6 @@
 from flask import jsonify, request
 
-from app import app, db
+from app import app
 from user import User, UserRole
 
 
@@ -17,10 +17,9 @@ def login():
             role_id = row["user_role_id"]
             userObj = UserRole.query.filter_by(id=role_id).first().json()
             role_name = userObj["role_name"]
-            return (
-                jsonify(
+            return jsonify(
                     {
-                        "status": 200,
+                        "code": 200,
                         "msg": "Login Success",
                         "data": {
                             "id": f"{row['id']}",
@@ -28,12 +27,20 @@ def login():
                             "role_name": f"{role_name}",
                         },
                     }
-                ),
-                200,
-            )
+                ), 200
         else:
-            return jsonify({"status": 406, "msg": "Invalid Username/password"}), 406
+            return jsonify(
+                {
+                    "code": 406,
+                    "message": "Invalid Username/password"
+                }
+            ), 406
 
     except Exception as e:
         print(e)
-        return jsonify({"status": 404, "msg": f"Error: {e}"}), 404
+        return jsonify(
+            {
+                "code": 406,
+                "message": f"Error: {e}"
+            }
+        ), 406

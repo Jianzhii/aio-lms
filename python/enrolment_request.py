@@ -47,7 +47,13 @@ def getAllRequests():
         enrol_request["course_name"] = course.name
         enrol_request["user_name"] = user.name
         data.append(enrol_request)
-    return jsonify({"code": 200, "data": data}), 200
+    return jsonify(
+        {
+            "code": 200,
+            "data": data,
+            "message": "Successfully retrieved all request"
+        }
+    ), 200
 
 
 # for Learner to view his pending enrolment requests
@@ -71,9 +77,20 @@ def getRequests(userid):
             enrol_request["course_name"] = course.name
             enrol_request["course_description"] = course.description
             data.append(enrol_request)
-        return jsonify({"code": 200, "data": data}), 200
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Successfully retrieved request",
+                "data": data
+            }
+        ), 200
     else:
-        return jsonify({"code": 404, "message": f"Invalid User ${id}"}), 404
+        return jsonify(
+            {
+                "code": 406,
+                "message": f"Invalid User ${id}"
+            }
+        ), 406
 
 
 """
@@ -83,7 +100,6 @@ Sample Request Body:
     "group_id" : 1,
 }
 """
-
 # Add Request
 @app.route("/enrolment_request", methods=["POST"])
 def addRequest():
@@ -103,16 +119,13 @@ def addRequest():
             ).all()
         ]
         if len(list(set(all_groups_under_course) & set(pending_requests))):
-            return (
-                jsonify(
+            return jsonify(
                     {
                         "code": 406,
                         "data": data,
-                        "message": f"{user.name} has submitted a request and it is pending",
+                        "message": f"{user.name} has submitted a request and it is pending"
                     }
-                ),
-                406,
-            )
+                ), 406
 
         # Approval need to check whether it is within start_date and end date  of class
         data["start_date"] = datetime.now()
@@ -131,22 +144,20 @@ def addRequest():
         )
         db.session.add(enrolment_request)
         db.session.commit()
-        return (
-            jsonify(
-                {"code": 200, "message": "Successfully created an enrolment request"}
-            ),
-            200,
-        )
-    except Exception as e:
-        return (
-            jsonify(
+        return jsonify(
                 {
-                    "code": 500,
+                    "code": 200,
+                    "message": "Successfully created an enrolment request",
+                    "data": enrolment_request.json()
+                }
+            ), 200
+    except Exception as e:
+        return jsonify(
+                {
+                    "code": 406,
                     "message": f"An error occurred while creating request: {e}",
                 }
-            ),
-            500,
-        )
+            ), 406
 
 
 def checkEnrolmentPeriod(data):
@@ -155,15 +166,12 @@ def checkEnrolmentPeriod(data):
     enrol_end_date = group.enrol_end_date
     enrol_datetime = data["start_date"]
     if not (enrol_datetime >= enrol_start_date and enrol_datetime <= enrol_end_date):
-        return (
-            jsonify(
+        return jsonify(
                 {
                     "code": 406,
-                    "message": f"Sorry you are not allowed to submit a request outside the enrolment period: {enrol_datetime}",
+                    "message": f"Sorry you are not allowed to submit a request outside the enrolment period: {enrol_datetime}"
                 }
-            ),
-            406,
-        )
+            ), 406
 
 
 """
@@ -192,30 +200,26 @@ def approveRequest(request_id):
                     "id"
                 ]
                 db.session.commit()
-                return (
-                    jsonify(
+                return jsonify(
                         {
                             "code": 200,
                             "message": "Enrolment Request Successfully Approved",
                         }
-                    ),
-                    200,
-                )
+                    ), 200
         except Exception as e:
-            return (
-                jsonify(
+            return jsonify(
                     {
-                        "code": 500,
+                        "code": 406,
                         "message": f"An error occurred while approving request: {e}",
                     }
-                ),
-                500,
-            )
+                ), 406
     else:
-        return (
-            jsonify({"code": 404, "message": f"Invalid Enrolment Request ${id}"}),
-            404,
-        )
+        return jsonify(
+                {
+                    "code": 406,
+                    "message": f"Invalid Enrolment Request ${id}"
+                }
+            ), 406
 
 
 # Delete enrolment
@@ -224,26 +228,25 @@ def deleteEnrolmentRequest(id):
     try:
         enrolment_request = EnrolmentRequest.query.filter_by(id=id).first()
         if not enrolment_request:
-            return (
-                jsonify(
+            return jsonify(
                     {
-                        "code": 404,
+                        "code": 406,
                         "data": {"id": id},
                         "message": "Enrolment Request not found.",
                     }
-                ),
-                404,
-            )
+                ), 406
         db.session.delete(enrolment_request)
         db.session.commit()
-        return (
-            jsonify({"code": 200, "message": "Enrolment Request successfully deleted"}),
-            200,
-        )
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Enrolment Request successfully deleted"
+                }
+            ), 200
     except Exception as e:
         return jsonify(
             {
-                "code": 500,
+                "code": 406,
                 "message": f"An error occurred while deleting enrolment  request: {e}",
             }
-        )
+        ), 406

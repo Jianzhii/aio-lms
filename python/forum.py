@@ -72,17 +72,20 @@ def getSpecificThreadsAndPosts(id):
             thread["created_dt"] = post.created_dt
             thread["updated_dt"] = post.updated_dt
             data.append(thread)
-        return jsonify({"code": 200, "data": data}), 200
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Successfully retrieved forum thread",
+                "data": data
+            }
+        ), 200
     else:
-        return (
-            jsonify(
+        return jsonify(
                 {
-                    "code": 404,
+                    "code": 406,
                     "message": "Sorry, You are not enrolled in any courses yet ",
                 }
-            ),
-            404,
-        )
+            ), 406
 
 
 """
@@ -94,7 +97,6 @@ Sample request body
     "updated_dt" :  "2021-10-15 12:00:00",
     "title" : "Topic 1 : Engineering 101",
     "message" : "In the question it states why mary had a little lamb?"
-    
 }
 """
 # create
@@ -123,22 +125,19 @@ def createThread():
         )
         db.session.add(forumPost)
         db.session.commit()
-        return (
-            jsonify(
-                {"code": 200, "message": "Your Question has Been Successfully Created!"}
-            ),
-            200,
-        )
-    except Exception as e:
-        return (
-            jsonify(
+        return jsonify(
                 {
-                    "code": 500,
+                    "code": 200,
+                    "message": "Your Question has Been Successfully Created!"
+                }
+            ), 200
+    except Exception as e:
+        return jsonify(
+                {
+                    "code": 406,
                     "message": f"An error occurred while creating a forum thread: {e}",
                 }
-            ),
-            500,
-        )
+            ), 406
 
 
 """
@@ -147,7 +146,6 @@ Sample Request Body
     "title": "Engineering for Dummies 101",
     "user_id": 1 
 }
-
 """
 # Edit Thread Title
 @app.route("/forum/thread/<int:id>", methods=["PUT"])
@@ -161,23 +159,25 @@ def updateThread(id):
             forum_thread.update_dt = date.today()
             db.session.commit()
             return jsonify(
-                {"code": 200, "message": "Forum Thread Updated Successfully!"}
+                {
+                    "code": 200,
+                    "message": "Forum Thread Updated Successfully!"
+                }
             )
         except Exception as e:
-            return (
-                jsonify(
+            return jsonify(
                     {
-                        "code": 500,
+                        "code": 406,
                         "message": f"An error occurred while updating forum thread: {e}",
                     }
-                ),
-                500,
-            )
+                ), 406
     else:
-        return (
-            jsonify({"code": 404, "message": f"Invalid User: {data['user_id']}"}),
-            404,
-        )
+        return jsonify(
+            {
+                "code": 406,
+                "message": f"Invalid User: {data['user_id']}"
+            }
+        ), 406
 
 
 # Delete Forum Thread
@@ -186,33 +186,29 @@ def deleteThread(id):
     try:
         forum_thread = ForumThread.query.filter_by(id=id).first()
         if not forum_thread:
-            return (
-                jsonify(
+            return jsonify(
                     {
-                        "code": 404,
+                        "code": 406,
                         "data": {"id": id},
-                        "message": "Forum Thread not found.",
+                        "message": "Forum Thread not found."
                     }
-                ),
-                404,
-            )
+                ), 406
         db.session.query(ForumPost).filter_by(forum_thread_id=id).delete()
         db.session.delete(forum_thread)
         db.session.commit()
-        return (
-            jsonify({"code": 200, "message": "Forum Thread successfully deleted"}),
-            200,
-        )
-    except Exception as e:
-        return (
-            jsonify(
+        return jsonify(
                 {
-                    "code": 500,
-                    "message": f"An error occurred while deleting forum Thread: {e}",
+                    "code": 200,
+                    "message": "Forum Thread successfully deleted"
                 }
-            ),
-            500,
-        )
+            ), 200
+    except Exception as e:
+        return jsonify(
+                {
+                    "code": 406,
+                    "message": f"An error occurred while deleting forum Thread: {e}"
+                }
+            ), 406
 
 
 """
@@ -242,30 +238,26 @@ def updatePost(id):
             forum_post.updated_dt = date.today()
             forum_post.message = data["message"]
             db.session.commit()
-            return (
-                jsonify({"code": 200, "message": "Forum Post Successfuly Updated!"}),
-                200,
-            )
-        except Exception as e:
-            return (
-                jsonify(
+            return jsonify(
                     {
-                        "code": 500,
+                        "code": 200,
+                        "message": "Forum Post Successfuly Updated!"
+                    }
+                ), 200
+        except Exception as e:
+            return jsonify(
+                    {
+                        "code": 406,
                         "message": f"An error occurred while creating a forum post: {e}",
                     }
-                ),
-                500,
-            )
+                ), 406
     else:
-        return (
-            jsonify(
+        return jsonify(
                 {
-                    "code": 404,
+                    "code": 406,
                     "message": "You do not have permission to update the forum post!",
                 }
-            ),
-            404,
-        )
+            ), 406
 
 
 # Delete forum post
@@ -274,26 +266,25 @@ def deletePost(id):
     try:
         forum_post = ForumPost.query.filter_by(id=id).first()
         if not forum_post:
-            return (
-                jsonify(
+            return jsonify(
                     {
-                        "code": 404,
+                        "code": 406,
                         "data": {"id": id},
                         "message": "Forum Post not found.",
                     }
-                ),
-                404,
-            )
+                ), 406
         db.session.delete(forum_post)
         db.session.commit()
-        return jsonify({"code": 200, "message": "Forum Post successfully deleted"}), 200
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Forum Post successfully deleted"
+            }
+        ), 200
     except Exception as e:
-        return (
-            jsonify(
+        return jsonify(
                 {
-                    "code": 500,
+                    "code": 406,
                     "message": f"An error occurred while deleting forum post: {e}",
                 }
-            ),
-            500,
-        )
+        ), 406

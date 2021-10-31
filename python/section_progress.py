@@ -66,26 +66,20 @@ def getProgress(enrolment_id, section_id):
                 "completed": progress["material"][material_id],
             }
 
-        return (
-            jsonify(
+        return jsonify(
                 {
                     "code": 200,
                     "message": "Successfully retrieved section progress.",
                     "data": progress,
                 }
-            ),
-            200,
-        )
+            ), 200
     except Exception as e:
-        return (
-            jsonify(
+        return jsonify(
                 {
-                    "code": 500,
+                    "code": 406,
                     "message": f"An error occurred while retrieving progress: {e}",
                 }
-            ),
-            500,
-        )
+            ), 406
 
 
 #  Mark material as completed
@@ -99,23 +93,17 @@ def markCompleted(progress_id, material_id):
         )
         progress.material[str(material_id)] = True
         db.session.commit()
-        return (
-            jsonify(
+        return jsonify(
                 {
                     "code": 200,
                     "message": "Successfully marked material as completed.",
                     "data": progress.json(),
                 }
-            ),
-            200,
-        )
+            ), 200
     except Exception as e:
-        return (
-            jsonify(
+        return jsonify(
                 {
-                    "code": 500,
+                    "code": 406,
                     "message": f"An error occurred while marking material as complete: {e}",
                 }
-            ),
-            500,
-        )
+            ), 406

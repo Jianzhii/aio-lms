@@ -45,17 +45,13 @@ def getAllSection(group_id):
     course_sections = CourseSection.query.filter(
         CourseSection.group_id == group_id
     ).all()
-    return (
-        jsonify(
+    return jsonify(
             {
                 "code": 200,
                 "message": "Successfully retrieved sections",
                 "data": [course_section.json() for course_section in course_sections],
             }
-        ),
-        200,
-    )
-
+    ), 200
 
 # Get one section
 @app.route("/course_section/<int:id>", methods=["GET"])
@@ -73,21 +69,20 @@ def getOneSection(id):
         course_section_json = course_section.json()
         course_section_json["material_url"] = material_url
         course_section_json["video_url"] = video_url
-        return (
-            jsonify(
+        return jsonify(
                 {
                     "code": 200,
                     "message": "Successfully retrieved sections",
                     "data": course_section_json,
                 }
-            ),
-            200,
-        )
+        ), 200
     else:
-        return (
-            jsonify({"code": 404, "data": {"id": id}, "message": "Section not found."}),
-            404,
-        )
+        return jsonify(
+                {
+                    "code": 406, 
+                    "data": {"id": id}, "message": "Section not found."
+                }
+            ), 406
 
 
 # Add one section
@@ -108,26 +103,20 @@ def addSection():
         for enrolment in all_current_enrolment:
             createProgressRecord(enrolment.json())
 
-        return (
-            jsonify(
+        return jsonify(
                 {
                     "code": 200,
                     "message": "Successfully added section.",
                     "data": course_section.json(),
                 }
-            ),
-            200,
-        )
+        ), 200
     except Exception as e:
-        return (
-            jsonify(
+        return jsonify(
                 {
-                    "code": 500,
+                    "code": 406,
                     "message": f"An error occurred while creating section: {e}",
                 }
-            ),
-            500,
-        )
+            ), 406
 
 
 #  Update Section
@@ -139,29 +128,30 @@ def updateSection():
         course_section = CourseSection.query.filter_by(id=id).first()
         if not course_section:
             return jsonify(
-                {"code": 404, "data": {"id": id}, "message": "Section not found."}
-            )
+                {
+                    "code": 406,
+                    "data": {"id": id}, "message": "Section not found."
+                }
+            ), 406
         course_section.name = data["name"]
         course_section.description = data["description"]
         db.session.commit()
 
-        return (
-            jsonify(
-                {"code": 200, "data": data, "message": "Section successfully updated"}
-            ),
-            200,
-        )
+        return jsonify(
+                {
+                    "code": 200,
+                    "data": data,
+                    "message": "Section successfully updated"
+                }
+        ), 200
 
     except Exception as e:
-        return (
-            jsonify(
+        return jsonify(
                 {
-                    "code": 500,
+                    "code": 406,
                     "message": f"An error occurred while updating section: {e}",
                 }
-            ),
-            500,
-        )
+        ), 406
 
 
 # Delete section
@@ -171,8 +161,12 @@ def deleteSection(id):
         course_section = CourseSection.query.filter_by(id=id).first()
         if not course_section:
             return jsonify(
-                {"code": 404, "data": {"id": id}, "message": "Section not found."}
-            )
+                {
+                    "code": 406,
+                    "data": {"id": id},
+                    "message": "Section not found."
+                }
+            ), 406
 
         from enrol import Enrolment
         from section_progress import SectionProgress
@@ -195,15 +189,17 @@ def deleteSection(id):
         db.session.commit()
         db.session.delete(course_section)
         db.session.commit()
-        return jsonify({"code": 200, "message": "Section successfully deleted"}), 200
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Section successfully deleted"
+            }
+        ), 200
 
     except Exception as e:
-        return (
-            jsonify(
+        return jsonify(
                 {
-                    "code": 500,
+                    "code": 406,
                     "message": f"An error occurred while deleting section: {e}",
                 }
-            ),
-            500,
-        )
+        ), 406

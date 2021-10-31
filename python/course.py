@@ -31,7 +31,11 @@ class Badge(db.Model):
     name = db.Column(db.String(100), nullable=False)
 
     def json(self):
-        return {"id": self.id, "course_id": self.course_id, "name": self.name}
+        return {
+            "id": self.id,
+            "course_id": self.course_id,
+            "name": self.name
+        }
 
 
 class UserBadge(db.Model):
@@ -66,7 +70,13 @@ def getAllCourse():
         else:
             course["prerequisite"] = "-"
         data.append(course)
-    return jsonify({"code": 200, "data": data}), 200
+    return jsonify(
+        {
+            "code": 200,
+            "message": "Courses successfully retrieved",
+            "data": data
+        }
+    ), 200
 
 
 # get course by search
@@ -93,11 +103,28 @@ def searchCourse():
                 course["prerequisite"] = "-"
             data.append(course)
         if courses:
-            return jsonify({"code": 200, "data": data}), 200
+            return jsonify(
+                {
+                    "code": 200,
+                    "message": "Courses successfully retrieved",
+                    "data": data
+                }
+            ), 200
         else:
-            return jsonify({"code": 200, "data": []}), 200
+            return jsonify(
+                {
+                    "code": 200,
+                    "message": "Courses successfully retrieved",
+                    "data": []
+                }
+            ), 200
     except Exception as e:
-        return jsonify({"code": 404, "message": f"Error while searching: {e}."}), 404
+        return jsonify(
+            {
+                "code": 406,
+                "message": f"Error while searching: {e}."
+            }
+        ), 406
 
 
 # Get one course
@@ -114,12 +141,21 @@ def getoneCourse(id):
             course["prerequisite"] = ",<br>".join(prequisites)
         else:
             course["prerequisite"] = "-"
-        return jsonify({"code": 200, "data": course}), 200
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Course successfully retrieved",
+                "data": course
+            }
+        ), 200
     else:
-        return (
-            jsonify({"code": 404, "data": {"id": id}, "message": "Course not found."}),
-            404,
-        )
+        return jsonify(
+            {
+                "code": 406,
+                "data": {"id": id},
+                "message": "Course not found."
+            }
+        ), 406
 
 
 # Add one course
@@ -131,8 +167,6 @@ sample request
     "prerequisite": [1, 2]
 }
 """
-
-
 @app.route("/course", methods=["POST"])
 def addCourse():
     data = request.get_json()
@@ -144,26 +178,20 @@ def addCourse():
         db.session.add(badge)
         db.session.commit()
 
-        return (
-            jsonify(
+        return jsonify(
                 {
                     "code": 200,
                     "message": "Course successfully created!",
-                    "data": course.json(),
+                    "data": course.json()
                 }
-            ),
-            200,
-        )
+            ), 200,
     except Exception as e:
-        return (
-            jsonify(
+        return jsonify(
                 {
-                    "code": 500,
+                    "code": 406,
                     "message": f"An error occurred while creating course: {e}",
                 }
-            ),
-            500,
-        )
+            ), 406
 
 
 #  Update Course
@@ -176,8 +204,6 @@ sample request
     "prerequisite": [1, 2]
 }
 """
-
-
 @app.route("/course", methods=["PUT"])
 def updateCourse():
     try:
@@ -185,34 +211,33 @@ def updateCourse():
         id = data["id"]
         course = Course.query.filter_by(id=id).first()
         if not course:
-            return (
-                jsonify(
-                    {"code": 404, "data": {"id": id}, "message": "Course not found."}
-                ),
-                404,
-            )
+            return jsonify(
+                    {
+                        "code": 406,
+                        "data": {"id": id},
+                        "message": "Course not found."
+                    }
+                ), 406
         course.name = data["name"]
         course.description = data["description"]
         course.prerequisite = data["prerequisite"]
         db.session.commit()
 
-        return (
-            jsonify(
-                {"code": 200, "data": data, "message": "Course successfully updated"}
-            ),
-            200,
-        )
+        return jsonify(
+                {
+                    "code": 200,
+                    "data": data,
+                    "message": "Course successfully updated"
+                }
+            ), 200
 
     except Exception as e:
-        return (
-            jsonify(
+        return jsonify(
                 {
-                    "code": 500,
-                    "message": f"An error occurred while updating course: {e}",
+                    "code": 406,
+                    "message": f"An error occurred while updating course: {e}"
                 }
-            ),
-            500,
-        )
+            ), 406
 
 
 # Delete course
@@ -229,24 +254,22 @@ def deleteCourse(id):
         ).first()
 
         if ongoing_group:
-            return (
-                jsonify(
+            return jsonify(
                     {
-                        "code": 500,
+                        "code": 406,
                         "data": {"id": id},
-                        "message": f"{course.name} still have ongoing classes!",
+                        "message": f"{course.name} still have ongoing classes!"
                     }
-                ),
-                500,
-            )
+            ), 406
 
         if not course:
-            return (
-                jsonify(
-                    {"code": 404, "data": {"id": id}, "message": "Course not found."}
-                ),
-                404,
-            )
+            return jsonify(
+                    {
+                        "code": 406,
+                        "data": {"id": id},
+                        "message": "Course not found."
+                    }
+                ), 406
         all_groups = Group.query.filter(Group.course_id == course.id).all()
 
         if all_groups:
@@ -271,14 +294,22 @@ def deleteCourse(id):
         db.session.delete(course)
         db.session.commit()
 
-        return jsonify({"code": 200, "message": "Course successfully deleted"})
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Course successfully deleted"
+            }
+        ), 200
     except Exception as e:
         return jsonify(
-            {"code": 500, "message": f"An error occurred while deleting course: {e}"}
-        )
+            {
+                "code": 406,
+                "message": f"An error occurred while deleting course: {e}"
+            }
+        ), 406
 
 
-# View completed courses and Bages by user
+# View completed courses and Badges by user
 @app.route("/course/badges/<int:id>", methods=["GET"])
 def viewCompletedCourses(id):
     from enrol import Enrolment
@@ -296,7 +327,13 @@ def viewCompletedCourses(id):
         course["course_name"] = badge.name
         course["group_id"] = enrolment.group_id
         data.append(course)
-    return jsonify({"code": 200, "data": data}), 200
+    return jsonify(
+        {
+            "code": 200,
+            "message": "Enrolment successfully retrieved.",
+            "data": data
+        }
+    ), 200
 
 
 # Get distinct courses assigned to trainer
@@ -313,32 +350,28 @@ def courseAssignedToTrainer(trainer_id):
                 }
                 if info not in data:
                     data.append(info)
-            return (
-                jsonify(
+            return jsonify(
                     {
                         "code": 200,
                         "message": "Successfully retrieved courses",
-                        "data": data,
+                        "data": data
                     }
-                ),
-                200,
-            )
+                ), 200
         else:
-            return (
-                jsonify(
+            return jsonify(
                     {
                         "code": 200,
                         "message": "Successfully retrieved courses",
-                        "data": [],
+                        "data": []
                     }
-                ),
-                200,
-            )
+                ), 200
     except Exception as e:
-        return (
-            jsonify({"code": 404, "message": f"Error while retrieving courses: {e}."}),
-            404,
-        )
+        return jsonify(
+            {
+                "code": 406,
+                "message": f"Error while retrieving courses: {e}."
+            }
+        ), 406
 
 
 def getTrainerAssignment(trainer_id):

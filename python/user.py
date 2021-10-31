@@ -41,7 +41,12 @@ class UserRole(db.Model):
 @app.route("/user", methods=["GET"])
 def getAllUser():
     users = User.query.all()
-    return jsonify({"code": 200, "data": [user.json() for user in users]}), 200
+    return jsonify(
+        {
+            "code": 200,
+            "data": [user.json() for user in users]
+        }
+    ), 200
 
 
 @app.route("/user_role", methods=["GET"])
@@ -56,7 +61,13 @@ def getAllUserWithRole():
         user_info = user.json()
         user_info["role_name"] = user_role.role_name
         data.append(user_info)
-    return jsonify({"code": 200, "data": data}), 200
+    return jsonify(
+        {
+            "code": 200,
+            "message": "Successfully retrieved user roles",
+            "data": data
+        }
+    ), 200
 
 
 @app.route("/all_trainer", methods=["GET"])
@@ -72,7 +83,13 @@ def getAllTrainers():
         user_info = user.json()
         user_info["role_name"] = user_role.role_name
         data.append(user_info)
-    return jsonify({"code": 200, "data": data}), 200
+    return jsonify(
+        {
+            "code": 200,
+            "message": "Successfully retrieved all trainers",
+            "data": data
+        }
+    ), 200
 
 
 @app.route("/all_learner", methods=["GET"])
@@ -90,4 +107,10 @@ def getAllLearners():
         user_info = user.json()
         user_info["role_name"] = user_role.role_name
         data.append(user_info)
-    return jsonify({"code": 200, "data": data}), 200
+    return jsonify(
+        {
+            "code": 200,
+            "message": "Successfully retrieved all learners",
+            "data": data
+        }
+    ), 200

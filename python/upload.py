@@ -1,5 +1,4 @@
 import os
-import re
 
 import boto3
 import botocore
@@ -35,35 +34,30 @@ def uploadFiles():
             db.session.add(material)
             db.session.commit()
             updateSectionProgress(material)
-            return (
-                jsonify(
+            return jsonify(
                     {
                         "code": 200,
                         "message": "File uploaded successfully",
                         "data": material.json(),
                     }
-                ),
-                200,
-            )
+                ), 200
 
-        return (
-            jsonify(
+        return jsonify(
                 {
-                    "code": 500,
+                    "code": 406,
                     "message": f"Error while uploading file: {filename[1]}",
-                    "data": "",
+                    "data": [],
                 }
-            ),
-            500,
-        )
+            ), 406
 
     except Exception as e:
-        return (
-            jsonify(
-                {"code": 500, "message": f"Error while uploading file: {e}", "data": ""}
-            ),
-            500,
-        )
+        return jsonify(
+                {
+                    "code": 406,
+                    "message": f"Error while uploading file: {e}",
+                    "data": []
+                }
+            ), 406
 
 
 # Upload a new video
@@ -90,35 +84,30 @@ def uploadVideo():
             db.session.add(material)
             db.session.commit()
             updateSectionProgress(material)
-            return (
-                jsonify(
+            return jsonify(
                     {
                         "code": 200,
                         "message": "Video uploaded successfully",
                         "data": material.json(),
                     }
-                ),
-                200,
-            )
+                ), 200
 
-        return (
-            jsonify(
+        return jsonify(
                 {
-                    "code": 500,
+                    "code": 406,
                     "message": f"Error while uploading file: {filename[1]}",
-                    "data": "",
+                    "data": [],
                 }
-            ),
-            500,
-        )
+            ), 406
 
     except Exception as e:
-        return (
-            jsonify(
-                {"code": 500, "message": f"Error while uploading file: {e}", "data": ""}
-            ),
-            500,
-        )
+        return jsonify(
+                {
+                    "code": 406,
+                    "message": f"Error while uploading file: {e}",
+                    "data": []
+                }
+            ), 406
 
 
 # Get File
@@ -127,34 +116,29 @@ def getFile(id):
     try:
         material = Materials.query.filter_by(id=id).first()
         if not material:
-            return (
-                jsonify(
-                    {"code": 404, "data": {"id": id}, "message": "Material not found."}
-                ),
-                404,
-            )
+            return jsonify(
+                    {
+                        "code": 406,
+                        "data": {"id": id},
+                        "message": "Material not found."
+                    }
+                ), 406
 
-        return (
-            jsonify(
+        return jsonify(
                 {
                     "code": 200,
                     "data": material.json(),
                     "message": "Material successfully retrieved.",
                 }
-            ),
-            200,
-        )
+            ), 200
     except Exception as e:
-        return (
-            jsonify(
+        return jsonify(
                 {
-                    "code": 500,
+                    "code": 406,
                     "message": f"Error while retrieving file: {e}",
-                    "data": "",
+                    "data": []
                 }
-            ),
-            500,
-        )
+            ), 406
 
 
 # Update file
@@ -170,12 +154,13 @@ def updateFile():
 
         material = Materials.query.filter_by(id=request.form["id"]).first()
         if not material:
-            return (
-                jsonify(
-                    {"code": 404, "data": {"id": id}, "message": "Material not found."}
-                ),
-                404,
-            )
+            return jsonify(
+                    {
+                        "code": 406,
+                        "data": {"id": id},
+                        "message": "Material not found."
+                    }
+                ), 406
 
         file = request.files["file"]
         filename = upload_file_to_s3(file)
@@ -186,35 +171,30 @@ def updateFile():
             db.session.commit()
             updateSectionProgress(material)
 
-            return (
-                jsonify(
+            return jsonify(
                     {
                         "code": 200,
                         "message": "Material updated successfully",
                         "data": material.json(),
                     }
-                ),
-                200,
-            )
+                ), 200
 
-        return (
-            jsonify(
+        return jsonify(
                 {
-                    "code": 500,
+                    "code": 406,
                     "message": f"Error while uploading file: {filename[1]}",
-                    "data": "",
+                    "data": []
                 }
-            ),
-            500,
-        )
+            ), 406
 
     except Exception as e:
-        return (
-            jsonify(
-                {"code": 500, "message": f"Error while updating file: {e}", "data": ""}
-            ),
-            500,
-        )
+        return jsonify(
+                {
+                    "code": 406,
+                    "message": f"Error while updating file: {e}",
+                    "data": []
+                }
+            ), 406
 
 
 # Delete material
@@ -223,12 +203,13 @@ def deleteMaterial(id):
     try:
         material = Materials.query.filter_by(id=id).first()
         if not material:
-            return (
-                jsonify(
-                    {"code": 404, "data": {"id": id}, "message": "Material not found."}
-                ),
-                404,
-            )
+            return jsonify(
+                    {
+                        "code": 406,
+                        "data": {"id": id},
+                        "message": "Material not found."
+                    }
+                ), 406
         section_id = material.section_id
         all_progress = SectionProgress.query.filter_by(section_id=section_id).all()
         for progress in all_progress:
@@ -237,15 +218,21 @@ def deleteMaterial(id):
         db.session.commit()
         db.session.delete(material)
         db.session.commit()
-        return jsonify({"code": 200, "message": "Material successfully deleted"}), 200
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Material successfully deleted"
+            }
+        ), 200
 
     except Exception as e:
-        return (
-            jsonify(
-                {"code": 500, "message": f"Error while deleteing file: {e}", "data": ""}
-            ),
-            500,
-        )
+        return jsonify(
+                {
+                    "code": 406,
+                    "message": f"Error while deleteing file: {e}",
+                    "data": []
+                }
+            ), 406
 
 
 def upload_file_to_s3(file, acl="public-read"):

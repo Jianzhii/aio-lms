@@ -74,17 +74,20 @@ def getAllGroups(id):
             group["course_name"] = course.name
             group["trainer_name"] = user.name
             data.append(group)
-        return jsonify({"code": 200, "data": data}), 200
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Successfully retrieved all groups",
+                "data": data
+            }
+        ), 200
     except Exception as e:
-        return (
-            jsonify(
+        return jsonify(
                 {
-                    "code": 500,
+                    "code": 406,
                     "message": f"An error occurred while retrieving group: {e}",
                 }
-            ),
-            500,
-        )
+            ), 406
 
 
 # Get one group
@@ -109,24 +112,28 @@ def getOneGroup(id):
             group = group.json()
             group["course_name"] = course.name
             group["trainer_name"] = user.name
-            return jsonify({"code": 200, "data": group}), 200
-        else:
-            return (
-                jsonify(
-                    {"code": 404, "data": {"id": id}, "message": "Group not found."}
-                ),
-                404,
-            )
-    except Exception as e:
-        return (
-            jsonify(
+            return jsonify(
                 {
-                    "code": 500,
+                    "code": 200,
+                    "message": "Successfully retrieved group.",
+                    "data": group
+                }
+            ), 200
+        else:
+            return jsonify(
+                    {
+                        "code": 406,
+                        "data": {"id": id},
+                        "message": "Group not found."
+                    }
+                ), 406
+    except Exception as e:
+        return jsonify(
+                {
+                    "code": 406,
                     "message": f"An error occurred while retrieving group: {e}",
                 }
-            ),
-            500,
-        )
+            ), 406
 
 
 # Add one group
@@ -142,8 +149,6 @@ sample request
     "trainer_id": 1
 }
 """
-
-
 @app.route("/group", methods=["POST"])
 def addGroup():
     data = request.get_json()
@@ -183,23 +188,20 @@ def addGroup():
         db.session.add(trainer_assignment)
         db.session.commit()
 
-        return (
-            jsonify(
+        return jsonify(
                 {
                     "code": 200,
                     "message": "Group successfully created! ",
                     "data": group.json(),
                 }
-            ),
-            200,
-        )
+            ), 200
     except Exception as e:
-        return (
-            jsonify(
-                {"code": 500, "message": f"An error occurred while adding groups: {e}"}
-            ),
-            500,
-        )
+        return jsonify(
+                {
+                    "code": 406,
+                    "message": f"An error occurred while adding groups: {e}"
+                }
+            ), 406
 
 
 #  Update Group
@@ -216,8 +218,6 @@ sample request
     "trainer_id": 1
 }
 """
-
-
 @app.route("/group", methods=["PUT"])
 def updateGroup():
     try:
@@ -225,12 +225,13 @@ def updateGroup():
         id = data["id"]
         group = Group.query.filter_by(id=id).first()
         if not group:
-            return (
-                jsonify(
-                    {"code": 404, "data": {"id": id}, "message": "Group not found."}
-                ),
-                404,
-            )
+            return jsonify(
+                    {
+                        "code": 406,
+                        "data": {"id": id},
+                        "message": "Group not found."
+                    }
+            ), 406
         group.course_id = data["course_id"]
         group.start_date = data["start_date"]
         group.end_date = data["end_date"]
@@ -251,20 +252,21 @@ def updateGroup():
             db.session.add(new_assignment)
         db.session.commit()
 
-        return (
-            jsonify(
-                {"code": 200, "data": data, "message": "Group successfully updated"}
-            ),
-            200,
-        )
+        return jsonify(
+                {
+                    "code": 200,
+                    "data": data,
+                    "message": "Group successfully updated"
+                }
+            ), 200
 
     except Exception as e:
-        return (
-            jsonify(
-                {"code": 500, "message": f"An error occurred while updating group: {e}"}
-            ),
-            500,
-        )
+        return jsonify(
+                {
+                    "code": 406,
+                    "message": f"An error occurred while updating group: {e}"
+                }
+            ), 406
 
 
 # Delete group
@@ -276,12 +278,13 @@ def deleteGroup(id):
 
         group = Group.query.filter_by(id=id).first()
         if not group:
-            return (
-                jsonify(
-                    {"code": 404, "data": {"id": id}, "message": "Group not found."}
-                ),
-                404,
-            )
+            return jsonify(
+                    {
+                        "code": 406,
+                        "data": {"id": id},
+                        "message": "Group not found."
+                    }
+                ), 406
         trainer_assignment = TrainerAssignment.query.filter(
             TrainerAssignment.group_id == id
         ).all()
@@ -302,15 +305,19 @@ def deleteGroup(id):
         db.session.commit()
         db.session.delete(group)
         db.session.commit()
-        return jsonify({"code": 200, "message": "Group successfully deleted"}), 200
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Group successfully deleted"
+            }
+        ), 200
     except Exception as e:
-        return (
-            jsonify(
-                {"code": 500, "message": f"An error occurred while deleting group: {e}"}
-            ),
-            500,
-        )
-
+        return jsonify(
+                {
+                    "code": 406,
+                    "message": f"An error occurred while deleting group: {e}"
+                }
+            ), 406
 
 # Get groups assigned to trainer in a course
 @app.route("/group/trainer/<int:trainer_id>/<int:course_id>", methods=["GET"])
@@ -322,34 +329,25 @@ def groupsAssignedToTrainer(trainer_id, course_id):
             for assignment in assignments:
                 if assignment["course_id"] == course_id:
                     data.append(assignment)
-            return (
-                jsonify(
+            return jsonify(
                     {
                         "code": 200,
                         "message": "Successfully retrieved courses",
                         "data": data,
                     }
-                ),
-                200,
-            )
+                ), 200
         else:
-            return (
-                jsonify(
+            return jsonify(
                     {
                         "code": 200,
                         "message": "Successfully retrieved courses",
                         "data": [],
                     }
-                ),
-                200,
-            )
+                ), 200
     except Exception as e:
-        return (
-            jsonify(
+        return jsonify(
                 {
-                    "code": 500,
+                    "code": 406,
                     "message": f"An error occurred while retrieving groups: {e}",
                 }
-            ),
-            500,
-        )
+            ), 406

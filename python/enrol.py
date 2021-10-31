@@ -58,21 +58,39 @@ def getEnrolmentByGroup(group_id):
                     total_completed += 1
         enrolment["completion_status"] = round(total_completed / total_materials, 2)
         data.append(enrolment)
-    return jsonify({"code": 200, "data": data}), 200
+    return jsonify(
+        {
+            "code": 200,
+            "message": "Successfully retrieved enrolment",
+            "data": data
+        }
+    ), 200
 
 
 # Get ongoing/ upcoming enrolment by user_id
 @app.route("/enrolment/user/ongoing/<int:user_id>", methods=["GET"])
 def getOngoingEnrolmentByUser(user_id):
     data = getEnrolment(user_id, False)
-    return jsonify({"code": 200, "data": data}), 200
+    return jsonify(
+        {
+            "code": 200,
+            "message": "Successfully retrieved upcoming/ ongoing enrolment",
+            "data": data
+        }
+    ), 200
 
 
 # Get ongoing/ upcoming enrolment by user_id
 @app.route("/enrolment/user/completed/<int:user_id>", methods=["GET"])
 def getCompletedEnrolmentByUser(user_id):
     data = getEnrolment(user_id, True)
-    return jsonify({"code": 200, "data": data}), 200
+    return jsonify(
+        {
+            "code": 200,
+            "message": "Successfully retrieved completed enrolment",
+            "data": data
+        }
+    ), 200
 
 
 def getEnrolment(user_id, status):
@@ -101,10 +119,8 @@ sample request
     "user_id": 3,
     "group_id": 1
 }
-will have to update course request... so everything 
+will have to update course request... so everything
 """
-
-
 @app.route("/enrolment", methods=["POST"])
 def addEnrolment(data=None):
     if not data:
@@ -131,29 +147,23 @@ def addEnrolment(data=None):
                 db.session.commit()
                 createProgressRecord(result[0].json())
         db.session.commit()
-        return (
-            jsonify(
+        return jsonify(
                 {
                     "code": 200,
                     "data": result[0].json() if result else {},
-                    "message": "Successfully enrolled learners",
+                    "message": "Successfully enrolled learners"
                 }
-            ),
-            200,
-        )
+            ), 200
     except Exception as e:
         enrolment = Enrolment.query.filter_by(id=result[0].json()["id"]).first()
         db.session.delete(enrolment)
         db.session.commit
-        return (
-            jsonify(
+        return jsonify(
                 {
-                    "code": 500,
-                    "message": f"An error occurred while enrolling learner: {e}",
+                    "code": 406,
+                    "message": f"An error occurred while enrolling learner: {e}"
                 }
-            ),
-            500,
-        )
+            ), 406
 
 
 def processEnrolmentEligibility(data):
@@ -164,16 +174,13 @@ def processEnrolmentEligibility(data):
         ).all()
         user = User.query.filter_by(id=data["user_id"]).first()
         if existing_enrolment:
-            return (
-                jsonify(
+            return jsonify(
                     {
                         "code": 406,
                         "data": data,
-                        "message": f"{user.name} has already been enrolled in this group",
+                        "message": f"{user.name} has already been enrolled in this group"
                     }
-                ),
-                406,
-            )
+                ), 406
 
         # check if learner has alr completed course
         group = Group.query.filter_by(id=data["group_id"]).first()
@@ -188,16 +195,13 @@ def processEnrolmentEligibility(data):
             ).all()
         ]
         if len(list(set(all_groups_under_course) & set(user_enrolment))):
-            return (
-                jsonify(
+            return jsonify(
                     {
                         "code": 406,
                         "data": data,
-                        "message": f"{user.name} has already been completed in this course",
+                        "message": f"{user.name} has already been completed in this course"
                     }
-                ),
-                406,
-            )
+                ), 406
 
         # check if learner is alr enrolled in upcoming or ongoing group under same course
         ongoing_groups_under_course = [
@@ -215,32 +219,26 @@ def processEnrolmentEligibility(data):
         if len(
             list(set(ongoing_groups_under_course) & set(incompleted_user_enrolment))
         ):
-            return (
-                jsonify(
+            return jsonify(
                     {
                         "code": 406,
                         "data": data,
-                        "message": f"{user.name} has already been enrolled in an ongoing or upcoming group for this course",
+                        "message": f"{user.name} has already been enrolled in an ongoing or upcoming group for this course"
                     }
-                ),
-                406,
-            )
+                ), 406
 
         # check if group size can accommodate learner
         current_group_size = Enrolment.query.filter_by(
             group_id=data["group_id"]
         ).count()
         if current_group_size == group.size:
-            return (
-                jsonify(
+            return jsonify(
                     {
                         "code": 406,
                         "data": data,
-                        "message": "Group enrollment is already full.",
+                        "message": "Group enrollment is already full."
                     }
-                ),
-                406,
-            )
+                ), 406
 
         # check if learner has alr fulfilled prerequisite
         if course_info.prerequisite:
@@ -260,16 +258,13 @@ def processEnrolmentEligibility(data):
                     prerequisite_course_info = Course.query.filter_by(id=each).first()
                     incomplete.append(prerequisite_course_info.name)
             if len(incomplete):
-                return (
-                    jsonify(
+                return jsonify(
                         {
                             "code": 406,
                             "data": data,
-                            "message": f"{user.name} has yet to complete the following prerequisite course(s): {', '.join(incomplete)}",
+                            "message": f"{user.name} has yet to complete the following prerequisite course(s): {', '.join(incomplete)}"
                         }
-                    ),
-                    406,
-                )
+                    ), 406
         enrol = Enrolment(
             group_id=data["group_id"],
             user_id=data["user_id"],
@@ -293,21 +288,23 @@ def deleteEnrolment(id):
         if not enrolment:
             return jsonify(
                 {
-                    "code": 404,
+                    "code": 406,
                     "data": {"id": id},
-                    "message": "Enrolment details not found.",
+                    "message": "Enrolment details not found."
                 }
-            )
+            ), 406
         db.session.delete(enrolment)
         db.session.commit()
-        return jsonify({"code": 200, "message": "Enrolment successfully deleted"}), 200
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Enrolment successfully deleted"
+            }
+        ), 200
     except Exception as e:
-        return (
-            jsonify(
+        return jsonify(
                 {
-                    "code": 500,
-                    "message": f"An error occurred while deleting enrolment: {e}",
+                    "code": 406,
+                    "message": f"An error occurred while deleting enrolment: {e}"
                 }
-            ),
-            500,
-        )
+            ), 406
