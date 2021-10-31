@@ -92,6 +92,14 @@ def addSection():
     try:
         db.session.add(course_section)
         db.session.commit()
+
+        from section_progress import createProgressRecord
+        from enrol import Enrolment
+                
+        all_current_enrolment = Enrolment.query.filter_by(group_id = data['group_id']).all()
+        for enrolment in all_current_enrolment: 
+            createProgressRecord(enrolment.json())
+        
         return jsonify(
             {
                 "code": 200,
@@ -159,7 +167,17 @@ def deleteSection(id):
                     "message": "Section not found."
                 }
             )
-        all
+
+        from section_progress import SectionProgress
+        from enrol import Enrolment
+                
+        all_current_enrolment = Enrolment.query.filter_by(group_id = course_section.group_id).all()
+        for enrolment in all_current_enrolment: 
+            all_progress = SectionProgress.query.filter_by(course_enrolment_id = enrolment.id, section_id = id).all()
+            for progress in all_progress:
+                db.session.delete(progress)
+        db.session.commit()
+
         materials = Materials.query.filter_by(section_id = id).all()
         if materials: 
             for material in materials: 

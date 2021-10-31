@@ -6,8 +6,8 @@ from sqlalchemy.ext.mutable import MutableDict
 class SectionProgress(db.Model):
     __tablename__ = 'section_progress'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    section_id = db.Column(db.Integer, nullable=False)
-    course_enrolment_id = db.Column(db.Integer, nullable=False)
+    section_id = db.Column(db.Integer, primary_key=True)
+    course_enrolment_id = db.Column(db.Integer, primary_key=True)
     material = db.Column(MutableDict.as_mutable(db.JSON), nullable=False)
     quiz_attempt = db.Column(db.Boolean, nullable=False)
 
