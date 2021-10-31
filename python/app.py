@@ -27,7 +27,7 @@ import enrolment_request
 import forum
 import chat
 import upload
-import chapter_progress 
+import section_progress 
 
 @app.route("/test", methods=['GET'])
 def test():

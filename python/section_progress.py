@@ -1,11 +1,10 @@
 from app import app, db
 from course_section import CourseSection, Materials
 from flask.json import jsonify
-from copy import deepcopy
 from sqlalchemy.ext.mutable import MutableDict
 
 class ChapterProgress(db.Model):
-    __tablename__ = 'chapter_progress'
+    __tablename__ = 'section_progress'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     section_id = db.Column(db.Integer, nullable=False)
     course_enrolment_id = db.Column(db.Integer, nullable=False)
