@@ -34,6 +34,7 @@ def uploadFiles():
             )
             db.session.add(material)
             db.session.commit()
+            updateChapterProgress(material)  
             return jsonify(
                 {
                     "code" : 200,
@@ -82,6 +83,7 @@ def uploadVideo():
             )
             db.session.add(material)
             db.session.commit()
+            updateChapterProgress(material)  
             return jsonify(
                 {
                     "code" : 200,
@@ -171,6 +173,8 @@ def updateFile():
             material.title = request.form['title']
             material.url = f"{os.getenv('AWS_DOMAIN')}{filename[1]}"
             db.session.commit()
+            updateChapterProgress(material)  
+
             return jsonify(
                 {
                     "code" : 200,
@@ -259,3 +263,9 @@ def upload_file_to_s3(file, acl="public-read"):
     except Exception as e:
         print("Something Happened: ", e)
         return (False, e)
+
+def updateChapterProgress(material):
+    all_progress = ChapterProgress.query.filter_by(section_id = material.section_id).all()
+    for progress in all_progress:
+        progress.material[str(material.id)] = False
+    db.session.commit()  
