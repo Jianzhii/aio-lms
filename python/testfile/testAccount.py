@@ -35,10 +35,8 @@
 #         interest_computer_mock=Interest_Rate_Computer()
 #         interest_computer_mock.getRate = MagicMock(interest_computer_mock, return_value =0.02)
 #         self.assertEqual(self.s.interest(interest_computer_mock), self.s.balance()*0.02)
-    
+
 #     def tearDown(self):
 #         self.s =None
 #         self.s1 = None
 #         self.s2 = None
-
-

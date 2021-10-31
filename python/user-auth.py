@@ -1,12 +1,9 @@
-from app import app, db
 from flask import jsonify
 
-@app.route("/login", methods=['POST'])
+from app import app, db
+
+
+@app.route("/login", methods=["POST"])
 def test():
 
-    return jsonify(
-        {
-            "code": 200,
-            "data": "test"
-        }
-    ), 200
+    return jsonify({"code": 200, "data": "test"}), 200
