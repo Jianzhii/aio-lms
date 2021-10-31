@@ -9,7 +9,6 @@ from user import User
 from group import Group
 from datetime import datetime
 from sqlalchemy import and_
-import pytz
 
 
 class Enrolment(db.Model):
@@ -28,8 +27,6 @@ class Enrolment(db.Model):
             'enrolled_dt': self.enrolled_dt.strftime("%d/%m/%Y, %H:%M:%S"),
             'completed': self.completed
         }
-
-
 
 # Get enrolment within a group
 @app.route("/enrolment/group/<int:group_id>", methods=['GET'])
@@ -73,7 +70,6 @@ def getCompletedEnrolmentByUser(user_id):
         }
     ), 200
 
-
 def getEnrolment(user_id, status):
     groups = db.session.query(Enrolment, Group, User, Course).filter(User.id == user_id, Enrolment.completed == status)\
             .outerjoin(Group, Group.id == Enrolment.group_id)\
@@ -87,19 +83,6 @@ def getEnrolment(user_id, status):
         enrolment['course_id'] = course.id
         data.append(enrolment)
     return data
-
-
-@app.route("/date", methods=['GET'])
-def getdate():
-    sgt = pytz.timezone('Asia/Singapore')    
-    time = datetime.now()
-    d_aware = sgt.localize(time)
-    return jsonify(
-        {
-            "code": 200,
-            "time": time
-        }
-    ), 200
 
 # Enrol learner
 '''
