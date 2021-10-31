@@ -22,7 +22,7 @@ class ChapterProgress(db.Model):
         }
 
 
-# create records after enrolmet 
+# Create records in chapter progress table
 def createProgressRecord(data):
     try:
         sections = CourseSection.query.filter_by(group_id = data['group_id']).all()
@@ -39,8 +39,6 @@ def createProgressRecord(data):
             )
             db.session.add(progress)
         db.session.commit()
-
-
     except Exception as e:
         raise e
 
@@ -58,7 +56,6 @@ def getProgress(enrolment_id, section_id):
                 "url": material.url,
                 "completed": progress['material'][material_id]
             }
-            print(material)
 
         return jsonify(
             {
@@ -76,7 +73,7 @@ def getProgress(enrolment_id, section_id):
         ), 500
 
 
-#  marked as completed
+#  Mark material as completed
 @app.route("/completed/<int:progress_id>/<int:material_id>", methods=['PUT'])
 def markCompleted(progress_id, material_id):
     try:

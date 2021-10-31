@@ -4,8 +4,10 @@ import re
 import boto3
 import botocore
 from flask import jsonify, request
+from sqlalchemy.sql.expression import all_
 from werkzeug.utils import secure_filename
 from course_section import CourseSection, Materials
+from chapter_progress import ChapterProgress
 
 from app import app, db
 
@@ -209,7 +211,12 @@ def deleteMaterial(id):
                     "message": "Material not found."
                 }
             ), 404
-
+        section_id = material.section_id
+        all_progress = ChapterProgress.query.filter_by(section_id = section_id).all()
+        for progress in all_progress:
+            if str(id) in progress.material:
+                del progress.material[str(id)]        
+        db.session.commit()
         db.session.delete(material)
         db.session.commit()
         return jsonify(
