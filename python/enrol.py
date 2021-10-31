@@ -7,9 +7,9 @@ from app import app, db
 from course import Course
 from user import User
 from group import Group
+from section_progress import SectionProgress, createProgressRecord
 from datetime import datetime
 from sqlalchemy import and_
-import pytz
 
 
 class Enrolment(db.Model):
@@ -29,8 +29,6 @@ class Enrolment(db.Model):
             'completed': self.completed
         }
 
-
-
 # Get enrolment within a group
 @app.route("/enrolment/group/<int:group_id>", methods=['GET'])
 def getEnrolmentByGroup(group_id):
@@ -43,6 +41,18 @@ def getEnrolmentByGroup(group_id):
         enrolment = enrolment.json()
         enrolment['learner_name'] = user.name
         enrolment['course_name'] = course.name
+        all_section_progress = SectionProgress.query.filter_by(course_enrolment_id = enrolment['id']).all()
+        total_materials = 0
+        total_completed = 0
+        for section_progress in all_section_progress:
+            total_materials += 1
+            if section_progress.quiz_attempt and section_progress.is_quiz_pass:
+                total_completed += 1
+            for material in section_progress.material:
+                total_materials += 1
+                if section_progress.material[material]:
+                    total_completed += 1
+        enrolment['completion_status'] = round(total_completed/total_materials,2)
         data.append(enrolment)
     return jsonify(
         {
@@ -73,7 +83,6 @@ def getCompletedEnrolmentByUser(user_id):
         }
     ), 200
 
-
 def getEnrolment(user_id, status):
     groups = db.session.query(Enrolment, Group, User, Course).filter(User.id == user_id, Enrolment.completed == status)\
             .outerjoin(Group, Group.id == Enrolment.group_id)\
@@ -88,25 +97,12 @@ def getEnrolment(user_id, status):
         data.append(enrolment)
     return data
 
-
-@app.route("/date", methods=['GET'])
-def getdate():
-    sgt = pytz.timezone('Asia/Singapore')    
-    time = datetime.now()
-    d_aware = sgt.localize(time)
-    return jsonify(
-        {
-            "code": 200,
-            "time": time
-        }
-    ), 200
-
 # Enrol learner
 '''
 sample request
 {
     "user_id": 3,
-    "group_id": 1,
+    "group_id": 1
 }
 will have to update course request... so everything 
 '''
@@ -124,14 +120,17 @@ def addEnrolment(data=None):
                 if result[1] != 200: 
                     return result
                 else: 
-                    db.session.add(result[0])
-                    # have to insert into chapter progress also 
+                    db.session.add(result[0])                                  
+                    db.session.commit()
+                    createProgressRecord(result[0].json())
         else: 
             result = processEnrolmentEligibility(data)
             if result[1] != 200: 
                 return result
             else: 
-                db.session.add(result[0])
+                db.session.add(result[0])               
+                db.session.commit()
+                createProgressRecord(result[0].json())
         db.session.commit()
         return jsonify(
             {
@@ -141,6 +140,9 @@ def addEnrolment(data=None):
             }
         ), 200
     except Exception as e:
+        enrolment = Enrolment.query.filter_by(id =result[0].json()['id']).first()
+        db.session.delete(enrolment)
+        db.session.commit
         return jsonify(
             {
                 "code":500,
@@ -232,6 +234,10 @@ def processEnrolmentEligibility(data):
 def deleteEnrolment(id):
     try:
         enrolment = Enrolment.query.filter_by(id=id).first()
+        all_progress = SectionProgress.query.filter_by(course_enrolment_id = id).all()
+        for progress in all_progress:
+            db.session.delete(progress)
+        db.session.commit()
         if not enrolment:
             return jsonify(
                 {
@@ -256,7 +262,7 @@ def deleteEnrolment(id):
                 "code":500,
                 "message": f"An error occurred while deleting enrolment: {e}"
             }
-        )
+        ), 500
 
 
 

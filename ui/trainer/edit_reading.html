@@ -162,8 +162,8 @@
     </body>
 
     <script>
-        // const api_endpoint = "http://52.55.242.44:8000/"
-        const api_endpoint = "http://localhost:8000/"
+        const api_endpoint = "http://52.55.242.44:8000/"
+        // const api_endpoint = "http://localhost:8000/"
         
         let course_id = sessionStorage.getItem("course_id")
         let course_name = sessionStorage.getItem("course_name")
@@ -187,6 +187,7 @@
                 const result = await response.json();                
                 $('#loadingModal').modal('hide');
                 if (response.status === 200) {                    
+                
                     $('#reading_title').val(result.data.title)
                     
                 } else { 

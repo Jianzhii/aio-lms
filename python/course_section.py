@@ -2,7 +2,6 @@ from app import app, db
 from flask import jsonify, request
 from group import Group
 from course import Course
-from enrol import Enrolment
 from user import User
 
 
@@ -85,31 +84,6 @@ def getOneSection(id):
             }
         ), 404
 
-
-#Get All sections for the courses registered under learner
-@app.route("/course_section/user/<int:user_id>", methods = ['GET'])
-def getAllSectionsForUser(user_id):
-
-    sections = db.session.query(CourseSection,Course,Enrolment,Group).filter(Enrolment.user_id==user_id)\
-                .outerjoin(Enrolment, Enrolment.group_id == CourseSection.group_id)\
-                .outerjoin(Group,CourseSection.group_id == Group.id)\
-                .outerjoin(Course, Course.id == Group.course_id).all()
-
-    data = []
-    for section, course, enrolment,group in sections:
-        section = section.json()
-        section['user_id'] = enrolment.user_id
-        section['group_id'] = group.id
-        section['course_name'] = course.name
-        print(section)
-        data.append(section)
-    return jsonify(
-        {
-            "code": 200,
-            "data": data
-        }
-    ), 200
-
 # Add one section
 @app.route("/course_section", methods=['POST'])
 def addSection():
@@ -118,6 +92,14 @@ def addSection():
     try:
         db.session.add(course_section)
         db.session.commit()
+
+        from section_progress import createProgressRecord
+        from enrol import Enrolment
+                
+        all_current_enrolment = Enrolment.query.filter_by(group_id = data['group_id']).all()
+        for enrolment in all_current_enrolment: 
+            createProgressRecord(enrolment.json())
+        
         return jsonify(
             {
                 "code": 200,
@@ -185,10 +167,22 @@ def deleteSection(id):
                     "message": "Section not found."
                 }
             )
+
+        from section_progress import SectionProgress
+        from enrol import Enrolment
+                
+        all_current_enrolment = Enrolment.query.filter_by(group_id = course_section.group_id).all()
+        for enrolment in all_current_enrolment: 
+            all_progress = SectionProgress.query.filter_by(course_enrolment_id = enrolment.id, section_id = id).all()
+            for progress in all_progress:
+                db.session.delete(progress)
+        db.session.commit()
+
         materials = Materials.query.filter_by(section_id = id).all()
         if materials: 
             for material in materials: 
-                db.session.delete(material)        
+                db.session.delete(material)                        
+        db.session.commit()
         db.session.delete(course_section)
         db.session.commit()
         return jsonify(

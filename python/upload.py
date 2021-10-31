@@ -4,8 +4,10 @@ import re
 import boto3
 import botocore
 from flask import jsonify, request
+from sqlalchemy.sql.expression import all_
 from werkzeug.utils import secure_filename
 from course_section import CourseSection, Materials
+from section_progress import SectionProgress
 
 from app import app, db
 
@@ -32,6 +34,7 @@ def uploadFiles():
             )
             db.session.add(material)
             db.session.commit()
+            updateSectionProgress(material)  
             return jsonify(
                 {
                     "code" : 200,
@@ -80,6 +83,7 @@ def uploadVideo():
             )
             db.session.add(material)
             db.session.commit()
+            updateSectionProgress(material)  
             return jsonify(
                 {
                     "code" : 200,
@@ -169,6 +173,8 @@ def updateFile():
             material.title = request.form['title']
             material.url = f"{os.getenv('AWS_DOMAIN')}{filename[1]}"
             db.session.commit()
+            updateSectionProgress(material)  
+
             return jsonify(
                 {
                     "code" : 200,
@@ -209,7 +215,12 @@ def deleteMaterial(id):
                     "message": "Material not found."
                 }
             ), 404
-
+        section_id = material.section_id
+        all_progress = SectionProgress.query.filter_by(section_id = section_id).all()
+        for progress in all_progress:
+            if str(id) in progress.material:
+                del progress.material[str(id)]        
+        db.session.commit()
         db.session.delete(material)
         db.session.commit()
         return jsonify(
@@ -252,3 +263,9 @@ def upload_file_to_s3(file, acl="public-read"):
     except Exception as e:
         print("Something Happened: ", e)
         return (False, e)
+
+def updateSectionProgress(material):
+    all_progress = SectionProgress.query.filter_by(section_id = material.section_id).all()
+    for progress in all_progress:
+        progress.material[str(material.id)] = False
+    db.session.commit()  
