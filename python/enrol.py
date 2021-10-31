@@ -7,6 +7,7 @@ from app import app, db
 from course import Course
 from user import User
 from group import Group
+from chapter_progress import ChapterProgress, createProgressRecord
 from datetime import datetime
 from sqlalchemy import and_
 
@@ -89,7 +90,7 @@ def getEnrolment(user_id, status):
 sample request
 {
     "user_id": 3,
-    "group_id": 1,
+    "group_id": 1
 }
 will have to update course request... so everything 
 '''
@@ -107,14 +108,18 @@ def addEnrolment(data=None):
                 if result[1] != 200: 
                     return result
                 else: 
-                    db.session.add(result[0])
+                    db.session.add(result[0])                                  
+                    db.session.commit()
+                    createProgressRecord(result[0].json())
                     # have to insert into chapter progress also 
         else: 
             result = processEnrolmentEligibility(data)
             if result[1] != 200: 
                 return result
             else: 
-                db.session.add(result[0])
+                db.session.add(result[0])               
+                db.session.commit()
+                createProgressRecord(result[0].json())
         db.session.commit()
         return jsonify(
             {
@@ -124,6 +129,9 @@ def addEnrolment(data=None):
             }
         ), 200
     except Exception as e:
+        enrolment = Enrolment.query.filter_by(id =result[0].json()['id']).first()
+        db.session.delete(enrolment)
+        db.session.commit
         return jsonify(
             {
                 "code":500,
@@ -215,6 +223,10 @@ def processEnrolmentEligibility(data):
 def deleteEnrolment(id):
     try:
         enrolment = Enrolment.query.filter_by(id=id).first()
+        progress = ChapterProgress.query.filter_by(course_enrolment_id = id).all()
+        for each in progress:
+            db.session.delete(each)
+        db.session.commit()
         if not enrolment:
             return jsonify(
                 {
@@ -239,7 +251,7 @@ def deleteEnrolment(id):
                 "code":500,
                 "message": f"An error occurred while deleting enrolment: {e}"
             }
-        )
+        ), 500
 
 
 

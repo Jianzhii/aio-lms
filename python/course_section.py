@@ -2,7 +2,7 @@ from app import app, db
 from flask import jsonify, request
 from group import Group
 from course import Course
-from enrol import Enrolment
+# from enrol import Enrolment
 from user import User
 
 
@@ -86,29 +86,29 @@ def getOneSection(id):
         ), 404
 
 
-#Get All sections for the courses registered under learner
-@app.route("/course_section/user/<int:user_id>", methods = ['GET'])
-def getAllSectionsForUser(user_id):
+# #Get All sections for the courses registered under learner
+# @app.route("/course_section/user/<int:user_id>", methods = ['GET'])
+# def getAllSectionsForUser(user_id):
 
-    sections = db.session.query(CourseSection,Course,Enrolment,Group).filter(Enrolment.user_id==user_id)\
-                .outerjoin(Enrolment, Enrolment.group_id == CourseSection.group_id)\
-                .outerjoin(Group,CourseSection.group_id == Group.id)\
-                .outerjoin(Course, Course.id == Group.course_id).all()
+#     sections = db.session.query(CourseSection,Course,Enrolment,Group).filter(Enrolment.user_id==user_id)\
+#                 .outerjoin(Enrolment, Enrolment.group_id == CourseSection.group_id)\
+#                 .outerjoin(Group,CourseSection.group_id == Group.id)\
+#                 .outerjoin(Course, Course.id == Group.course_id).all()
 
-    data = []
-    for section, course, enrolment,group in sections:
-        section = section.json()
-        section['user_id'] = enrolment.user_id
-        section['group_id'] = group.id
-        section['course_name'] = course.name
-        print(section)
-        data.append(section)
-    return jsonify(
-        {
-            "code": 200,
-            "data": data
-        }
-    ), 200
+#     data = []
+#     for section, course, enrolment,group in sections:
+#         section = section.json()
+#         section['user_id'] = enrolment.user_id
+#         section['group_id'] = group.id
+#         section['course_name'] = course.name
+#         print(section)
+#         data.append(section)
+#     return jsonify(
+#         {
+#             "code": 200,
+#             "data": data
+#         }
+#     ), 200
 
 # Add one section
 @app.route("/course_section", methods=['POST'])
