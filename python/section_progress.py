@@ -10,6 +10,7 @@ class SectionProgress(db.Model):
     course_enrolment_id = db.Column(db.Integer, primary_key=True)
     material = db.Column(MutableDict.as_mutable(db.JSON), nullable=False)
     quiz_attempt = db.Column(db.Boolean, nullable=False)
+    is_quiz_pass = db.Column(db.Boolean, nullable=False)
 
     def json(self):
         return {
@@ -18,6 +19,7 @@ class SectionProgress(db.Model):
             'course_enrolment_id': self.course_enrolment_id,
             'material' : self.material,
             'quiz_attempt': self.quiz_attempt,
+            'is_quiz_pass': self.is_quiz_pass
         }
 
 

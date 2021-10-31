@@ -41,6 +41,18 @@ def getEnrolmentByGroup(group_id):
         enrolment = enrolment.json()
         enrolment['learner_name'] = user.name
         enrolment['course_name'] = course.name
+        all_section_progress = SectionProgress.query.filter_by(course_enrolment_id = enrolment['id']).all()
+        total_materials = 0
+        total_completed = 0
+        for section_progress in all_section_progress:
+            total_materials += 1
+            if section_progress.quiz_attempt and section_progress.is_quiz_pass:
+                total_completed += 1
+            for material in section_progress.material:
+                total_materials += 1
+                if section_progress.material[material]:
+                    total_completed += 1
+        enrolment['completion_status'] = round(total_completed/total_materials,2)
         data.append(enrolment)
     return jsonify(
         {
