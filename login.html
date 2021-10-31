@@ -100,7 +100,7 @@
               }
           );
       let userObj = await response.json();
-      if(userObj.status == 200){
+      if(userObj.code == 200){
         user_id = userObj.data.id
         role_name = userObj.data.role_name.toLowerCase();
         sessionStorage.setItem('user_id', userObj.data.id)
