@@ -2,8 +2,8 @@
 <html lang="en">
     <head>
 
-        <title>View All Courses</title>
-        <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
+        <title class="sname"></title>
+        <link rel="icon" href="../../static/imgs/All-In-One 1.png" type="image/icon type">
 
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -138,12 +138,42 @@
         </style>
     </head>
 
-    <body>    
+    <body> 
+        <div class="container" id="sidebar">
+            <div class="sidenav">
+                <div>
+                    <img id="logo" src="../../static/imgs/All-In-One 1.png" width="270px" height="125px">
+                </div>
+                <h3 id="coursegroup"></h3>
+                <ul id="groups"></ul>
+                <ul>
+                    <li>
+                        <b><a href="">Final Quiz</a></b>
+                    </li>
+                </ul>
+            </div>
+        </div>
         <div class="container" id="content">
 
-            <h2 id="cname"></h2>
-            <h3 id="snumber"></h3>
+            <div class="row">
+                <div class="col">
+                    <h2 class="sname"></h2>
+                </div>
+                <div class="col-2" style="padding-top: 65px ;">
+                    <input type="button" value="Log Out" id="logout" onclick="logout()">
+                </div>
+            </div>
 
+            <!-- details about section -->
+            <div class="row">
+                <div class="col">
+                    <h3 id="sdes"></h3>
+                </div>
+                <div class="col-2">
+                    <input type="button" value="Attempt Quiz" id="uquiz">
+                </div>
+            </div>
+                
             <!-- course materials table -->
             <div id="table">
                 <table class="table">
@@ -153,10 +183,11 @@
                           <th scope="col">File Name</th>
                           <th scope="col">File Type</th>
                           <th scope="col">Actions</th>
+                          <th scope="col"></th>
                       </tr>
                     </tbody>
                     <tbody id="tablecontent">
-                        <!-- populate rows of groups -->
+                        <!-- populate rows of course materials -->
                     </tbody>
                 </table>
             </div>
@@ -168,6 +199,51 @@
             
             let query = window.location.search.substring(1).split('=') ;
             var sectionid = query[1]  
+            var groupid = 1
+
+            /* populate sidebar */
+            $(async() => {
+                var group_api = api_endpoint + "group/" + groupid
+                var all_sections_api = api_endpoint + "all_section/" + groupid
+
+                try {
+                    
+                    const response = 
+                        await fetch(
+                            group_api, {
+                                method: 'GET'
+                            }
+                        );
+
+                    const response2 = 
+                        await fetch(
+                            all_sections_api, {
+                                method: 'GET'
+                            }
+                        );
+
+                    const result = await response.json();
+                    if (response.status === 200) {
+                        let data = result.data
+                        $("#coursegroup").append(data.course_name + " Group " + groupid)
+                    }
+                    
+                    const result2 = await response2.json();
+                    if (response2.status === 200) {
+                        let data = result2.data
+                        $("#sectiondetails").append(data.name)
+                        for (i = 0 ; i < data.length ; i++) {
+                            let sectionid= data[i].id
+                            list = `<li><a href="coursematerials.html?id=${data[i].id}">${data[i].name}</a></li>`
+                            $("#groups").append(list)
+                        }
+                    }
+                } catch(err) {
+                    alert(err)
+                    console.log(err)
+                }
+            })
+
 
             /* retrieve all the materials */
             $(async() => {
@@ -184,15 +260,59 @@
                     const result = await response.json();
                     if (response.status === 200) {
                         let data = result.data
-                        for (i = 0 ; i < data.length ; i++) {
-                            console.log(data[i])
+                        let i = 1
+                        $(".sname").append(data.name)
+                        $("#sdes").append(data.description)
+                        let materials = data.material_url
+                        for (let material of materials) {
+                            row = `<tr>
+                                        <td>${i}</td>
+                                        <td> ${material.title} </td>
+                                        <td> ${material.material_type} </td>
+                                        <td>
+                                            <!-- download -->
+                                            <a href="${material.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
+                                            <!-- check progress -->
+                                            <a href="#" class="icon complete" title="Mark as Completed" onclick="markCompleted(${material.id})"><i id="${material.id}" data-feather="circle"></i></a>
+                                        </td>
+                                        <td>
+                                            <!-- view -->
+                                            <iframe src="https://docs.google.com/gview?url=${material.url}&embedded=true"><class="icon" title="View File"><i data-feather="eye"></iframe></i>
+                                        </td>
+                                    <tr>`
+                            $("#tablecontent").append(row)
+                            i++
                         }
+                        let videos = data.video_url
+                        console.log(videos)
+                        for (let video of videos) {
+                            row = `<tr>
+                                        <td>${i}</td>
+                                        <td>${video.title}</td>
+                                        <td> ${video.material_type} </td>
+                                        <td>
+                                            <!-- download -->
+                                            <a href="${video.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
+                                            <!-- check progress -->
+                                            <a href="#" class="icon complete" title="Mark as Completed" onclick="markCompleted(${video.id})"><i id="${video.id}" data-feather="circle"></i></a>
+                                        </td><td></td>
+                                    <tr>`
+                            $("#tablecontent").append(row)
+                            i++
+                        }
+                    feather.replace()
                     }
                 } catch(err) {
                     alert(err)
                     console.log(err)
                 }
             })
+
+            /* mark material as completed */
+            async function markCompleted(materialid) {
+                $(`#${materialid}`).replaceWith(`<i id="${materialid}" data-feather="check-circle"></i>`) /* when empty circle icon is clicked, it is replaced with ticked circle icon */
+                feather.replace()
+            }
         </script>   
     </body>
 </html>
