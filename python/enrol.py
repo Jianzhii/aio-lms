@@ -222,9 +222,9 @@ def processEnrolmentEligibility(data):
 def deleteEnrolment(id):
     try:
         enrolment = Enrolment.query.filter_by(id=id).first()
-        progress = SectionProgress.query.filter_by(course_enrolment_id = id).all()
-        for each in progress:
-            db.session.delete(each)
+        all_progress = SectionProgress.query.filter_by(course_enrolment_id = id).all()
+        for progress in all_progress:
+            db.session.delete(progress)
         db.session.commit()
         if not enrolment:
             return jsonify(
