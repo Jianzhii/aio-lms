@@ -73,7 +73,7 @@ def getProgress(enrolment_id, section_id):
                 "url": material.url,
                 "completed": progress["material"][material_id],
             }
-        progress['completion_status'] = round(total_completed/total_material , 2)
+        progress['completion_status'] = round(total_completed / total_material, 2)
         progress['is_completed'] = (total_completed == total_material)
 
         return jsonify(

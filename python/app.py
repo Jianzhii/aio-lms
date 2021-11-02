@@ -37,7 +37,7 @@ def test():
 
     return jsonify(
         {
-            "code": 200, 
+            "code": 200,
             "data": "test"
         }
     ), 200

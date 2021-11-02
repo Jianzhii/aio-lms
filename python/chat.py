@@ -15,7 +15,7 @@ class Chat(db.Model):
         return {
             "id": self.id,
             "user_id_1": self.user_id_1,
-            "user_id_1": self.user_id_2,
+            "user_id_2": self.user_id_2,
             "created_dt": self.created_dt.strftime("%d/%m/%Y, %H:%M:%S"),
         }
 
@@ -208,7 +208,7 @@ def deleteChat(id):
                     {
                         "code": 406,
                         "data": {"id": id},
-                        "message": f"Chat not found."}
+                        "message": "Chat not found."}
                 ), 406
         db.session.query(ChatMessages).filter_by(chat_id=id).delete()
         db.session.delete(chat)
@@ -254,4 +254,4 @@ def deleteMessage(id):
                     "code": 406,
                     "message": f"An error occurred while deleting Chat : {e}"
                 }
-        ),  406
+        ), 406

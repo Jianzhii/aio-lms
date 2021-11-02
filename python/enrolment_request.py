@@ -241,8 +241,8 @@ def deleteEnrolmentRequest(id):
             {
                 "code": 200,
                 "message": "Enrolment Request successfully deleted"
-                }
-            ), 200
+            }
+        ), 200
     except Exception as e:
         return jsonify(
             {
