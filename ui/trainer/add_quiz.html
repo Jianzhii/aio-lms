@@ -352,29 +352,29 @@ const api_endpoint = "http://localhost:8000/"
 
 async function add_Quiz(){
     $('#loadingModal').modal("show");
+    data = []
     for (let count = 1; count<=i; count++ ){
         if ($("#TF1_" + count).val()) {
-            data = {
+            data.append({
                 section_id: $("#chapter_no").val(),
                 question_choice: [$("#TF1_" + count).val(), $("#TF2_" + count).val()],
                 answer: $('#ans' + count).val() 
-            }
+            })
         }
         else {
-            data = {
+            data.append({
                 section_id: $("#chapter_no").val(),
                 question_choice: [$("#FQ1_" + count).val(), $("#FQ2_" + count).val(), $("#FQ3_" + count).val(), $("#FQ4_" + count).val()],
                 answer: $('#ans' + count).val() 
-            }
+            })
         }
     }
-    console.log(JSON.stringify(data));
     const create_course_api = api_endpoint + "add_quiz"
-    console.log()
         try {
             const response = await fetch(
                 create_course_api, {
                     method: 'POST',
+                    headers: {"Content-Type":"application/json"},
                     body: JSON.stringify(data)
                 }
             );
