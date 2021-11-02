@@ -2,8 +2,8 @@
 <html lang="en">
     <head>
 
-        <title id="cname_title"></title>
-        <link rel="icon" href="/static/imgs/All-In-One 1.png" type="image/icon type">
+        <title>View All Courses</title>
+        <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
 
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -25,9 +25,7 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 
         <!-- common js functions -->
-
         <script src="../js/common.js"></script>
-
 
         <style>
 
@@ -47,9 +45,8 @@
                 border-right: solid lightgrey 2px ; 
             }
 
-            h2 {
+            h2, h4 {
                 padding-top: 45px ;
-                padding-left: 5px ;
                 color: #FF922D ;
             }
 
@@ -87,12 +84,14 @@
                 margin-left: 20% ;
             }
 
-            #header {
-                padding: 12px ;
+            #table {
+                width: 90% ;
+                margin-left: auto ;
+                margin-right: auto ;
             }
 
-            #table {
-                padding: 30px ; 
+            #header, h4 {
+                padding: 12px ;
             }
 
             input[type=button] {
@@ -111,18 +110,21 @@
                 border-radius: 3px ; 
                 padding: 5px ;
                 width: 100px ;
-                
             }
 
             #tableheader{
                 background-color: #FF922D ;
                 color: white ;
+                padding-left: 35px ;
+            }
+
+            #tablecontent {
+                padding-left: 35px ; 
             }
 
             .icon {
                 color: #FF922D ;
                 padding: 2px ;
-                cursor: pointer ;
             }
 
             #loading {
@@ -143,8 +145,8 @@
 
             }
 
-            .row {
-                padding: 20px ; 
+            .gdetails, #section {
+                padding: 15px ; 
             }
 
         </style>
@@ -161,32 +163,42 @@
                 <div class="col">
                     <h2 id="cname"></h2>
                 </div>
-                <div class="col-2" style="padding-top: 65px ;">
+                <div class="col-2" style="padding-top: 55px ;">
                     <input type="button" value="Log Out" id="logout" onclick='logout()'>
                 </div>
             </div>
 
-            <!-- details about course -->
-            <div class="row">
+            <!-- details about group -->
+            <div class="row gdetails">
                 <div class="col" style="font-weight: bold">Course Description</div>
                 <div class="col" id="cdes"></div>
                 <div class="col" style="font-weight: bold">Pre-Requisite Course(s)</div>
                 <div class="col" id="preq"></div>
             </div>
+            <div class="row gdetails">
+                <div class="col" style="font-weight: bold">Group Size</div>
+                <div class="col" id="gsize"></div>
+                <div class="col" style="font-weight: bold">Trainer Assigned</div>
+                <div class="col" id="trainer"></div>
+            </div>
+            <div class="row gdetails">
+                <div class="col" style="font-weight: bold">Enrolment Period</div>
+                <div class="col" id="eperiod"></div>
+                <div class="col" style="font-weight: bold">Group Period</div>
+                <div class="col" id="gperiod"></div>
+            </div>
 
-            <!-- groups available in each course -->
+            <!-- retrieve list of learners -->
             <div class="row" id="table">
                 <table class="table">
                     <tbody id="tableheader"> 
                       <tr>
-                          <th scope="col">Group Number</th>
-                          <th scope="col">Enrollment Period</th>
-                          <th scope="col">Group Period</th>
+                          <th scope="col">Learner Name</th>
                           <th scope="col"></th>
                       </tr>
                     </tbody>
                     <tbody id="tablecontent">
-                        <!-- populate rows of groups -->
+                        <!-- populate row of learners -->
                     </tbody>
                 </table>
             </div>
@@ -195,62 +207,24 @@
             <div id="loading">
                 <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
             </div>
-
-            <div id="modals"></div>
         </div>
 
         <script>
 
-            /* load admin_nav.html */
+            /* load learner_nav.html */
             $(function(){
                 $("#sidebar").load("admin_nav.html");
-                $("#modals").load("admin_modals.html");
             });
 
             const api_endpoint = "http://52.55.242.44:8000/" 
 
-            let query = window.location.search.substring(1).split('=') ;
-            console.log(query)
-            var courseid = query[1] 
-
-            var user_id = sessionStorage.getItem("user_id")
-            var all_requests = [] 
-
-            /* load course details */
-            $(async() => {
-
-                var course_api = api_endpoint + "course/" + courseid
-
-                try {
-                    const response =
-                        await fetch(
-                            course_api, {
-                                method: 'GET'
-                            }
-                        );
-                    
-                    const result = await response.json() ;
-                    if (response.status === 200) {
-                        let data = result.data
-                        $('#cname_title').append(data.name)
-                        $('#cname').append(data.name + ` <a href="add_group.html?id=${courseid}" class="icon" title="Add Group" id="addIcon"><i data-feather="plus"></i></a>`)
-                        $('#cdes').append(data.description)
-                        $('#loading').hide()
-                    }
-                } catch(err) {
-                    alert(err)
-                    console.log(err)
-                }
-
-                document.getElementById("addIcon").addEventListener("click", function() {
-                window.location.href = "add_group.html?id=" + courseid
-                })
-
-            })
-
-            /* load groups in course */
-            $(async() => {
-                var coursegroup_api = api_endpoint + "all_group/" + courseid
+            let query = window.location.search.substring(1).split('&') ;
+            var courseid = query[0].slice(3,) 
+            var groupid = query[1].slice(8,)
+           
+            /* retrieve information of group */
+            $(async() => { 
+                var coursegroup_api = api_endpoint + "group/" + groupid
 
                 try {
                     const response =
@@ -259,89 +233,48 @@
                                 method: 'GET'
                             }
                         );
-                        
+                    
                     const result = await response.json() ;
                     if (response.status === 200) {
                         let data = result.data
                         console.log(data)
-                        if (data.length) {
-                            for (i=0 ; i < data.length ; i++) {
-                                row = `
-                                <tr>
-                                    <td>Group ${data[i].id}</td>
-                                    <td>${data[i].enrol_start_date} - ${data[i].enrol_end_date}</td>
-                                    <td>${data[i].start_date} - ${data[i].end_date}</td>
-                                    <td>
-                                    <!-- view -->
-                                    <a href="./groupdetails.html?id=${courseid}&groupID=${data[i].id}" class="icon" title="View Group"><i data-feather="eye"></i></a>
-
-                                    <!-- edit -->
-                                    <a href="./update_group.html?courseID=${courseid}&groupID=${data[i].id}" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
-
-                                    <!-- delete/retire -->
-                                    <a href="#deletemodal" class="trigger-btn icon" data-id="${data[i].id}" data-toggle="modal" title="Retire Course"><i data-feather="trash-2"></i></a>
-                                    </td>
-                                </tr>`
-                                $('#tablecontent').append(row)
-                            }
-                        } else {
-                            row = `
-                            <tr>
-                                <td>No Groups Available</td>
-                            </tr>`
-                            $('#tablecontent').append(row)
-                        }
+                        var cname = data.course_name + " - Group " + groupid
+                        $('#cname').append(cname)
+                        $('#gsize').append(data.size)
+                        $('#trainer').append(data.trainer_name)
+                        $('#eperiod').append(data.enrol_start_date.slice(0,data.enrol_start_date.length - 3) + " - " + data.enrol_end_date.slice(0,data.enrol_end_date.length - 3) )
+                        $('#gperiod').append(data.start_date.slice(0,data.start_date.length - 3) + " - " + data.end_date.slice(0,data.end_date.length - 3))
                     }
                 } catch(err) {
                     alert(err)
                     console.log(err)
                 }
 
-                $('#loading').hide();
-                feather.replace()
             })
 
-            $(document).on("click", ".trigger-btn", function () {
-                var group_id = $(this).data('id');
-                $("#deleteId").val(group_id);
-                $("#deleteConfirmation").text("Delete Group " + group_id +"?");
-            });
+            /* retrieve information of course */
+            $(async() => {
+                var coursegroup_api = api_endpoint + "course/" + courseid
 
-            async function deleteCourse(id) {
-                
-                $('#deletemodal').modal('hide');
-                $("#loadingModal").modal('show');
-                var delete_api = api_endpoint + "group/" + id
                 try {
                     const response =
                         await fetch(
-                            delete_api, {
-                            method: 'DELETE'
-                        }
-                    );
-
-                    const result = await response.json();
+                            coursegroup_api, {
+                                method: 'GET'
+                            }
+                        );
                     
-                    $("#loadingModal").modal('hide');
-                    if (response.status === 200 && result.code === 200) {
-                        $("#successMessage").text(result.message)
-                        $('#successModal').modal('show');
-                        document.getElementById("success").addEventListener("click",function() {location.reload(true)})
-                    } else { 
-                        $("#failureMessage").text(result.message)
-                        $('#failureModal').modal('show');
+                    const result = await response.json() ;
+                    if (response.status === 200) {
+                        let data = result.data
+                        $('#cdes').append(data.description)
+                        $('#preq').append(data.prerequisite)
                     }
-
                 } catch(err) {
-                    $("#failureMessage").text(result.message)
-                    $('#failureModal').modal('show');
-                    console.log(err);
+                    alert(err)
+                    console.log(err)
                 }
-                
-                feather.replace();
-            }
-
-            
+            })
         </script>   
     </body>
 </html>
