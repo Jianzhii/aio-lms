@@ -57,7 +57,15 @@ def getProgress(enrolment_id, section_id):
             .first()
             .json()
         )
+        if not progress:
+            raise Exception('Cannot find section progress.')
+        total_material = 0
+        total_completed = 0
         for material_id in progress["material"]:
+            total_material += 1
+            if progress['material'][material_id]:
+                total_completed += 1
+
             material = Materials.query.filter_by(id=material_id).first()
             progress["material"][material_id] = {
                 "title": material.title,
@@ -65,6 +73,8 @@ def getProgress(enrolment_id, section_id):
                 "url": material.url,
                 "completed": progress["material"][material_id],
             }
+        progress['completion_status'] = round(total_completed/total_material , 2)
+        progress['is_completed'] = (total_completed == total_material)
 
         return jsonify(
                 {
