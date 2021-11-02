@@ -347,49 +347,53 @@ function resetElements(){
     document.getElementById('myForm').innerHTML = '';
 }
 
-const api_endpoint = "http://52.55.242.44:8000/"
+// const api_endpoint = "http://52.55.242.44:8000/"
+const api_endpoint = "http://localhost:8000/"
 
 async function add_Quiz(){
     $('#loadingModal').modal("show");
     for (let count = 1; count<=i; count++ ){
-        if ($("#TF1_" + count).val() != NaN)(
+        if ($("#TF1_" + count).val()) {
             data = {
                 section_id: $("#chapter_no").val(),
-                question_choice: ($("#TF1_" + count).val(),$("#TF2_" + count).val()),
-                answer: $('#ans' + count).val() 
-        })
-        else(
-            data = {
-                section_id: $("#chapter_no").val(),
-                question_choice: ($("#FQ1_" + count).val(),$("#FQ2_" + count).val(),$("#FQ3_" + count).val(),$("#FQ4_" + count).val()),
+                question_choice: [$("#TF1_" + count).val(), $("#TF2_" + count).val()],
                 answer: $('#ans' + count).val() 
             }
-        )
+        }
+        else {
+            data = {
+                section_id: $("#chapter_no").val(),
+                question_choice: [$("#FQ1_" + count).val(), $("#FQ2_" + count).val(), $("#FQ3_" + count).val(), $("#FQ4_" + count).val()],
+                answer: $('#ans' + count).val() 
+            }
+        }
     }
-    const create_course_api = api_endpoint + "quiz"
-                try {
-                    const response = await fetch(
-                        create_course_api, {
-                            method: 'POST',
-                            headers: { "Content-Type":"application/json"},
-                            body: JSON.stringify(data)
-                        }
-                    );
-
-                    const result = await response.json();
-                    $("#loadingModal").modal("hide");
-                    if (response.status === 200) {
-                        $("#successMessage").text(result.message)
-                        $("#successModal").modal("show");
-                    } else { 
-                        $("#failureMessage").text(result.message)
-                        $("#failureModal").modal("show");
-                    }
-                } catch (err) {
-                    $("#failureMessage").text(result.message)
-                    $("#failureModal").modal("show");
-                    console.log(err)
+    console.log(JSON.stringify(data));
+    const create_course_api = api_endpoint + "add_quiz"
+    console.log()
+        try {
+            const response = await fetch(
+                create_course_api, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
                 }
+            );
+
+            const result = await response.json();
+            console.log(result)
+            $("#loadingModal").modal("hide");
+            if (response.status === 200) {
+                $("#successMessage").text(result.message)
+                $("#successModal").modal("show");
+            } else { 
+                $("#failureMessage").text(result.message)
+                $("#failureModal").modal("show");
+            }
+        } catch (err) {
+            $("#failureMessage").text(result.message)
+            $("#failureModal").modal("show");
+            console.log(err)
+        }
     }
 
     
