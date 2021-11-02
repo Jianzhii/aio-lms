@@ -45,3 +45,7 @@ def addQuiz():
                 "message": f"An error occurred while creating Quiz: {e}"
             }
         ), 500
+
+#  Get all quiz stuff under section
+
+# Update quiz (delete from section and readd again)
