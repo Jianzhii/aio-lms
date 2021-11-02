@@ -55,7 +55,7 @@ def getAllGroups(id):
     try:
         groups = (
             db.session.query(Group, TrainerAssignment, User, Course)
-            .filter(Group.course_id == id)
+            .filter(Group.course_id == id, Group.end_date > datetime.now())
             .outerjoin(
                 TrainerAssignment,
                 and_(
@@ -67,7 +67,6 @@ def getAllGroups(id):
             .outerjoin(Course, Group.course_id == Course.id)
             .all()
         )
-        print(groups)
         data = []
         for group, trainer_assignment, user, course in groups:
             group = group.json()
