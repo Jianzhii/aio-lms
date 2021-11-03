@@ -60,26 +60,359 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-6">
-            <!-- Start of Form  -->
-            <form action="uploadCM.html" class="form" id="myForm">
-                <!-- Start of Title Field -->
-                <div class="mb-3">
-                    <label for="formGroupExampleInput" class="form-label">Title</label>
-                    <input type="text" id="reading_title"/>
-                </div>
-                <!-- End of Title Field -->
-        </div>
+    <div class="form-control">
+        <label for="chapter-no" id="chapter-no">
+            Chapter
+        </label>
 
-        <div class="col-5">
-                <!-- Start of Add Button  -->
-                <input type="submit" class="addbutton" value="Add"/>
-                <!-- End of Add Button  -->
-                </form>
-                <!-- End of Form  -->
+        <!-- Input Type Text -->
+        <input type="chapter_no"
+               id="chapter_no"
+               placeholder="Enter the chapter number" />
+    </div>
+
+    <div class="form-control">
+        <label for="CN" id="CCN">
+            Chapter Name
+        </label>
+
+        <!-- Input Type Chapter Name-->
+        <input type="chapter_name"
+               id="chapter_name"
+               placeholder="Enter the Chapter Name" />
+    </div>
+    
+    <div class="three">
+        <div id="" class="two">
+            <p>Questions Input</p>
+            <button onclick="four_Question()">4MultipleChoices</button>
+            <button onclick="TFQuestion()">TrueFalseQuestions</button>
         </div>
+        <h2>Your Dynamic Form!</h2>
+        <form action="" id="form" method="POST" name="form">
+            <span id="myForm"></span>
+            <div class="row" style="padding-top: 43px ; padding-left: 15px" >
+                <input type="button" value="Submit" onclick="add_Quiz()"> 
+            </div>
+            <div class="row" style="padding-top: 43px ; padding-left: 15px" >
+                <input type="button" value="Reset" onclick="resetElements()"> 
+            </div>
+        </form>
+    </div>
+
+    <!-- Success modal -->
+    <div id="successModal" class="modal fade">
+        <div class="modal-dialog modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header flex-column">
+                    <div class="icon">
+                        <i data-feather="check-circle"></i>
+                    </div>						
+                    <h4 class="modal-title w-100">Success!</h4>	
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p id='successMessage'></p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="window.location='./admin_home.html'">Okay</button>
+                </div>
+            </div>
+        </div>
+    </div> 
+
+    <!-- failure modal -->
+    <div id="failureModal" class="modal fade">
+        <div class="modal-dialog modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header flex-column">
+                    <div class="icon">
+                        <i data-feather="alert-triangle"></i>
+                    </div>						
+                    <h4 class="modal-title w-100">Error!</h4>	
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p id='failureMessage'></p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Okay</button>
+                </div>
+            </div>
+        </div>
+    </div> 
+
+    <!-- loading modal -->
+    <div id="loadingModal" class="modal fade">
+        <div class="modal-dialog modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header flex-column">				
+                    <h4 class="modal-title w-100">Loading.....</h4>	
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="modalloading">
+                        <img id="loading-image" src="static/imgs/loading.gif" alt="Loading..." />
+                    </div>  
+                </div>
+            </div>
+        </div>
+    </div> 
+
+
+
+
+</div>
     </div>
 
 </body>
 </html>
+
+<script>
+    var i = 0; /* Set Global Variable i */
+    function increment(){
+        i += 1; /* Function for automatic increment of field's "Name" attribute. */
+    }
+
+/*
+---------------------------------------------
+
+Function to Remove Form Elements Dynamically
+---------------------------------------------
+*/
+function removeElement(parentDiv, childDiv){
+    if (childDiv == parentDiv){
+        alert("The parent div cannot be removed.");
+    }
+    else if (document.getElementById(childDiv)){
+        var child = document.getElementById(childDiv);
+        var parent = document.getElementById(parentDiv);
+        parent.removeChild(child);
+
+        let q_no = +childDiv.substring(1);
+        for (let q = q_no; q < i; q++) {
+            document.getElementById(`Q${q+1}`).setAttribute('id', `Q${q}`);            
+            document.getElementById(`ans${q+1}`).setAttribute("id", `ans${q}`);
+            document.getElementById(`del${q+1}`).setAttribute("onclick", "removeElement('myForm','Q" + q + "')");            
+            document.getElementById(`del${q+1}`).setAttribute("id", `del${q}`);
+        }
+        i--;
+    }
+    else{
+        alert("Child div has already been removed or does not exist.");
+        return false;
+    }
+}
+
+/*
+----------------------------------------------------------------------------
+
+Functions that will be called upon, when user click on the Name text field.
+
+----------------------------------------------------------------------------
+*/
+
+function TFQuestion(){
+
+    increment();
+    
+    var QN = document.createElement('span');
+    var QN_in = document.createElement("INPUT");
+    var first = document.createElement('span');
+    var first_in = document.createElement("INPUT");
+    var second = document.createElement('span');
+    var second_in = document.createElement("INPUT");
+    var answer = document.createElement('span');
+    var answer_in = document.createElement('INPUT');
+
+    QN_in.setAttribute("type", "text");
+    QN_in.setAttribute("placeholder", "TFQuestion");
+    first_in.setAttribute("type", "text");
+    first_in.setAttribute("placeholder", "FirstQn");
+    second_in.setAttribute("type", "text");
+    second_in.setAttribute("placeholder", "SecondQn");
+    answer_in.setAttribute("type", "text")
+    answer_in.setAttribute("placeholder", "Answer")
+
+    var g = document.createElement("IMG");
+    g.setAttribute("id","del" + i)
+    g.setAttribute("src", "delete.png");
+
+    var q_div = document.createElement('div')     
+    q_div.setAttribute("id", "Q" + i);
+    q_div.setAttribute("style", "padding-bottom: 20px");
+    document.getElementById("myForm").appendChild(q_div);
+
+    QN_in.setAttribute("id", "QN_in" + i);
+    QN.appendChild(QN_in);
+    QN.setAttribute("id", "id_" + i);
+    document.getElementById("Q" + i).appendChild(QN);
+
+    first_in.setAttribute("id", "TF1_" + i);
+    first.appendChild(first_in);
+    first.setAttribute("id", "id_" + i);
+    document.getElementById("Q" + i).appendChild(first);
+
+    second_in.setAttribute("id", "TF2_" + i);
+    second.appendChild(second_in);
+    second.setAttribute("id", "id_" + i);
+    document.getElementById("Q" + i).appendChild(second);
+
+    answer_in.setAttribute("id", "ans" + i);
+    answer.appendChild(answer_in);
+    answer.setAttribute("id", "id_" + i);
+    answer.appendChild(g);
+    g.setAttribute("onclick", "removeElement('myForm','Q" + i + "')");
+    document.getElementById("Q" + i).appendChild(answer)
+}
+
+function four_Question(){
+        
+    increment();
+
+    var QN = document.createElement('span');
+    var QN_in = document.createElement("INPUT");
+    var first = document.createElement('span');
+    var first_in = document.createElement("INPUT");
+    var second = document.createElement('span');
+    var second_in = document.createElement("INPUT");
+    var third = document.createElement('span');
+    var third_in = document.createElement("INPUT");
+    var fourth = document.createElement('span');
+    var fourth_in = document.createElement("INPUT");
+    var answer = document.createElement('span');
+    var answer_in = document.createElement('INPUT');
+
+    QN_in.setAttribute("type", "text");
+    QN_in.setAttribute("placeholder", "FourQuestion");
+    first_in.setAttribute("type", "text");
+    first_in.setAttribute("placeholder", "FirstQn");
+    second_in.setAttribute("type", "text");
+    second_in.setAttribute("placeholder", "SecondQn");
+    third_in.setAttribute("type", "text");
+    third_in.setAttribute("placeholder", "ThirdQn");
+    fourth_in.setAttribute("type", "text");
+    fourth_in.setAttribute("placeholder", "FourthQn");
+    answer_in.setAttribute("type", "text")
+    answer_in.setAttribute("placeholder", "Answer")
+
+    var g = document.createElement("IMG");    
+    g.setAttribute("id","del" + i)
+    g.setAttribute("src", "delete.png");
+
+    var q_div = document.createElement('div')     
+    q_div.setAttribute("id", "Q" + i);
+    q_div.setAttribute("style", "padding-bottom: 20px");
+    document.getElementById("myForm").appendChild(q_div);
+
+
+    QN_in.setAttribute("id", "QN_in" + i);
+    QN.appendChild(QN_in);
+    QN.setAttribute("id", "id_" + i);
+    document.getElementById("Q" + i).appendChild(QN);
+
+    first_in.setAttribute("id", "FQ1_" + i);
+    first.appendChild(first_in);
+    first.setAttribute("id", "id_" + i);
+    document.getElementById("Q" + i).appendChild(first);
+
+    second_in.setAttribute("id", "FQ2_" + i);
+    second.appendChild(second_in);
+    second.setAttribute("id", "id_" + i);
+    document.getElementById( "Q" + i).appendChild(second);
+
+    third_in.setAttribute("id", "FQ3_" + i);
+    third.appendChild(third_in);
+    third.setAttribute("id", "id_" + i);
+    document.getElementById("Q" + i).appendChild(third);
+
+    fourth_in.setAttribute("id", "FQ4_" + i);
+    fourth.appendChild(fourth_in);
+    fourth.setAttribute("id", "id_" + i);
+    document.getElementById("Q" + i).appendChild(fourth);
+
+    answer_in.setAttribute("id", "ans" + i);
+    answer.appendChild(answer_in);
+    answer.setAttribute("id", "id_" + i);
+    g.setAttribute("onclick", "removeElement('myForm','Q" + i + "')");
+    answer.appendChild(g);
+    document.getElementById("Q" + i).appendChild(answer);
+    
+}
+
+
+
+// async function addQuiz(){   
+//     $("$loadingModal").modal("show");
+//     data = {
+//         for i in document.getElementById("id_" + i){
+            
+//         }
+//     }
+// }        
+/*
+
+-----------------------------------------------------------------------------
+
+Functions that will be called upon, when user click on the Reset Button.
+
+------------------------------------------------------------------------------
+*/
+function resetElements(){
+    document.getElementById('myForm').innerHTML = '';
+}
+
+// const api_endpoint = "http://52.55.242.44:8000/"
+const api_endpoint = "http://localhost:8000/"
+
+async function add_Quiz(){
+    $('#loadingModal').modal("show");
+    data = []
+    for (let count = 1; count<=i; count++ ){
+        if ($("#TF1_" + count).val()) {
+            data.append({
+                section_id: $("#chapter_no").val(),
+                question_choice: [$("#TF1_" + count).val(), $("#TF2_" + count).val()],
+                answer: $('#ans' + count).val() 
+            })
+        }
+        else {
+            data.append({
+                section_id: $("#chapter_no").val(),
+                question_choice: [$("#FQ1_" + count).val(), $("#FQ2_" + count).val(), $("#FQ3_" + count).val(), $("#FQ4_" + count).val()],
+                answer: $('#ans' + count).val() 
+            })
+        }
+    }
+    const create_course_api = api_endpoint + "add_quiz"
+        try {
+            const response = await fetch(
+                create_course_api, {
+                    method: 'POST',
+                    headers: {"Content-Type":"application/json"},
+                    body: JSON.stringify(data)
+                }
+            );
+
+            const result = await response.json();
+            console.log(result)
+            $("#loadingModal").modal("hide");
+            if (response.status === 200) {
+                $("#successMessage").text(result.message)
+                $("#successModal").modal("show");
+            } else { 
+                $("#failureMessage").text(result.message)
+                $("#failureModal").modal("show");
+            }
+        } catch (err) {
+            $("#failureMessage").text(result.message)
+            $("#failureModal").modal("show");
+            console.log(err)
+        }
+    }
+
+    
+
+
+
+</script>
