@@ -57,8 +57,20 @@
             margin-left: 30px;
         }
 
+        .Thread{
+            font-size: 20px;
+            font-weight: 800;
+            margin-left: 30px;
+        }
+
+        .Answer{
+            font-size: 20px;
+            font-weight: 600;
+            margin-left: 30px;
+        }
+
         .dropdown{
-            padding-left: 220px;
+            margin-left: 650px;
         }
 
         .forum_post{
@@ -166,7 +178,7 @@
     <!-- Start of a forum post -->
     <div class="forum_post">
         <div class="Question">
-            How do you make lemonade? Do you mix it first or chop it first? 
+            How do you make use of Engineering tools to enhance printing? 
         </div>
         <div class="Name">
             Posted by: John Doe
@@ -206,19 +218,69 @@
     <!-- Start of a forum post -->
     <div class="forum_post">
         <div class="Question">
-            How do you make lemonade? Do you mix it first or chop it first? 
+            How do you make use of Engineering tools in real-world scenarios? 
         </div>
         <div class="Name">
-            Posted by: John Doe
+            Posted by: Jane Doe
         </div>
 
         <!-- Start of Answer Button  -->
-        <div class= "ansqnbtn">
-            <a class="btn btn-success" href="forumpost_add.html" role="button">Answer</a>
+        <div class="ansqnbtn">
+            <button class="btn btn-success" onclick="openForm()">Answer</button>
         </div>
+        
+        <div class="form-popup" id="myForm">
+            <div class="form-container">
+                <h1>Forum Answer</h1>
+        
+                <label for="text"><b>Answer</b></label>
+                <input type="text" placeholder="Enter Answer" name="answer" required>
+        
+                <a class="btn btn-success" href="forumpost_view.html" role="button">Submit</a>
+                <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+            </div>
+        </div>
+        
+        <script>
+        function openForm() {
+            document.getElementById("myForm").style.display = "block";
+        }
+        
+        function closeForm() {
+            document.getElementById("myForm").style.display = "none";
+        }
+        </script>
         <!-- End of Answer Button  -->
     </div>   
-    <!-- End of a forum post --> 
+
+        <br>
+        <!-- Start of Answer -->
+            <div class="forum_post">
+                <div class="Thread">
+                    Answer Threads
+                </div>    
+        
+                <div class="Answer">
+                    Great Question! You do it by applying the skills taught during the lesson while analyzing what is happening around you.
+                </div>
+        
+                <div class="Name">
+                    Posted by: Lester Chin
+                </div>
+                <!-- Start of dropdown button -->
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Actions
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" href="forumanswer_edit.html">Edit</a>
+                        <a class="dropdown-item" href="#">Delete</a>
+                    </div>
+                </div>
+                <!-- End of dropdown button -->
+            </div>   
+        <!-- End of Answer -->
+
         
         <!-- Modal for loading -->
         <div id="loadingModal" class="modal fade" aria-hidden="true" style="display: none;">
