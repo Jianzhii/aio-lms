@@ -79,7 +79,7 @@ def getOneSection(id):
     else:
         return jsonify(
                 {
-                    "code": 406, 
+                    "code": 406,
                     "data": {"id": id}, "message": "Section not found."
                 }
             ), 406

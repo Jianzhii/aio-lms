@@ -30,15 +30,6 @@ body{
     height: 1000px;
 }
 
-.btn{
-    font-family: 'Montserrat';
-    font-size: 1em;
-    font-weight: bolder;
-    color:white;
-    background-color: #FF922D;
-    margin-left: 450px;
-}
-
 #SectionNo{
     padding-top: 20px;
 }

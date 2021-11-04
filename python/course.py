@@ -1,5 +1,4 @@
 from datetime import datetime
-from operator import and_
 
 from flask import jsonify, request
 from sqlalchemy.sql.expression import and_

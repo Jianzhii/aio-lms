@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+    <title>Courses</title>
+    <link rel="icon" href="../../static/imgs/All-In-One 1.png" type="image/icon type">
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <!-- Bootstrap/ CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+    <!-- common js functions -->
+    <script src="../js/common.js"></script>
+
+    <style> 
+        .ansqnbtn{
+            padding: 8px 15px;
+            margin-left: 630px;
+        }
+
+        input[type=button] {
+            background: #FF922D ;
+            color: white ; 
+            border: none ;
+            border-radius: 3px ; 
+            padding-left: 5px ;
+            margin-left: 500px;
+            width: 100px ;
+        }
+
+        #ContentName, #GroupName{
+            padding-left: 30px;
+        }
+
+        .Name{
+            font-size: 15px;
+            margin-left: 30px;
+        }
+
+        .Question{
+            font-size: 20px;
+            font-weight: 600;
+            margin-left: 30px;
+        }
+
+        .Thread{
+            font-size: 20px;
+            font-weight: 800;
+            margin-left: 30px;
+        }
+
+        .Answer{
+            font-size: 20px;
+            font-weight: 600;
+            margin-left: 30px;
+        }
+
+        .dropdown{
+            margin-left: 650px;
+        }
+
+        .forum_post{
+            padding-left: 200px;
+        }
+
+        #loadingModal {
+            display: block;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            text-align: center;
+            opacity: 0.7;
+            background-color: #fff;
+            z-index: 99;
+        }
+
+        #loading-image {
+            margin-top: 50px;
+            z-index: 100;
+        }   
+        
+        /* The popup form - hidden by default */
+        .form-popup {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            right: 15px;
+            border: 3px solid #f1f1f1;
+            z-index: 9;
+        }
+
+        /* Add styles to the form container */
+        .form-container {
+            max-width: 300px;
+            padding: 10px;
+            background-color: white;
+        }
+
+        /* Full-width input fields */
+        .form-container input[type=text], .form-container input[type=password] {
+            width: 100%;
+            padding: 15px 20px;
+            margin: 5px 0 22px 0;
+            border: none;
+            background: #f1f1f1;
+        }
+
+        /* When the inputs get focus, do something */
+        .form-container input[type=text]:focus, .form-container input[type=password]:focus {
+            background-color: #ddd;
+            outline: none;
+        }
+
+        /* Set a style for the submit/login button */
+        .form-container .btn {
+            background-color: rgb(56, 155, 89);
+            color: white;
+            padding: 16px 20px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom:10px;
+            opacity: 0.8;
+        }
+
+        /* Add a red background color to the cancel button */
+        .form-container .cancel {
+            background-color: rgb(209, 60, 49);
+        }
+
+        /* Add some hover effects to buttons */
+        .form-container .btn:hover, .open-button:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="row">
+        <div class="col-4">
+            <!-- Start of Main Page Icon  -->
+            <div class="col-xs-12 col-s-12 col-md-1 mx-0  ">
+                <img src="../../static/imgs/All-In-One 1.png" width="270px" height="125px"/>
+            </div>
+            <!-- End of Main Page Icon  -->
+            <h5 id="ContentName"><u>Engineering Basics 101</u></h5>
+            <h6 id="GroupName">Group 3</h6>
+            <br>
+        </div>
+
+        <div class="col-8">
+            <!-- Start of NavBar -->
+            <div class="col-2" style="padding-top: 65px ;">
+                <input type="button" value="Log Out" id="logout" onclick='logout()'>
+            </div>
+            <!-- End of NavBar -->
+            <br>
+            <h4 id="MaterialName" style="padding-left: 60px;">Forum Discussion</h4>
+        </div>
+    </div>
+
+    <br>
+
+    <!-- Start of a forum post -->
+    <div class="forum_post">
+        <div class="Question">
+            How do you make use of Engineering tools to enhance printing? 
+        </div>
+        <div class="Name">
+            Posted by: John Doe
+        </div>
+
+        <!-- Start of Answer Button  -->
+        <div class="ansqnbtn">
+            <button class="btn btn-success" onclick="openForm()">Answer</button>
+        </div>
+        
+        <div class="form-popup" id="myForm">
+            <div class="form-container">
+                <h1>Forum Answer</h1>
+        
+                <label for="text"><b>Answer</b></label>
+                <input type="text" placeholder="Enter Answer" name="answer" required>
+        
+                <a class="btn btn-success" href="forumpost_view.html" role="button">Submit</a>
+                <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+            </div>
+        </div>
+        
+        <script>
+        function openForm() {
+            document.getElementById("myForm").style.display = "block";
+        }
+        
+        function closeForm() {
+            document.getElementById("myForm").style.display = "none";
+        }
+        </script>
+        <!-- End of Answer Button  -->
+
+    </div>   
+    <!-- End of a forum post --> 
+
+    <!-- Start of a forum post -->
+    <div class="forum_post">
+        <div class="Question">
+            How do you make use of Engineering tools in real-world scenarios? 
+        </div>
+        <div class="Name">
+            Posted by: Jane Doe
+        </div>
+
+        <!-- Start of Answer Button  -->
+        <div class="ansqnbtn">
+            <button class="btn btn-success" onclick="openForm()">Answer</button>
+        </div>
+        
+        <div class="form-popup" id="myForm">
+            <div class="form-container">
+                <h1>Forum Answer</h1>
+        
+                <label for="text"><b>Answer</b></label>
+                <input type="text" placeholder="Enter Answer" name="answer" required>
+        
+                <a class="btn btn-success" href="forumpost_view.html" role="button">Submit</a>
+                <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+            </div>
+        </div>
+        
+        <script>
+        function openForm() {
+            document.getElementById("myForm").style.display = "block";
+        }
+        
+        function closeForm() {
+            document.getElementById("myForm").style.display = "none";
+        }
+        </script>
+        <!-- End of Answer Button  -->
+    </div>   
+
+        <br>
+        <!-- Start of Answer -->
+            <div class="forum_post">
+                <div class="Thread">
+                    Answer Threads
+                </div>    
+        
+                <div class="Answer">
+                    Great Question! You do it by applying the skills taught during the lesson while analyzing what is happening around you.
+                </div>
+        
+                <div class="Name">
+                    Posted by: Lester Chin
+                </div>
+                <!-- Start of dropdown button -->
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Actions
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" href="forumanswer_edit.html">Edit</a>
+                        <a class="dropdown-item" href="#">Delete</a>
+                    </div>
+                </div>
+                <!-- End of dropdown button -->
+            </div>   
+        <!-- End of Answer -->
+
+        
+        <!-- Modal for loading -->
+        <div id="loadingModal" class="modal fade" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-confirm">
+                <div class="modal-content">
+                    <div class="modal-header flex-column">				
+                        <h4 class="modal-title w-100">Loading.....</h4>	
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="modalloading">
+                            <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
+                        </div>  
+                    </div>
+                </div>
+            </div>
+        </div> 
+
+            
+        <!-- failure modal -->
+        <div id="failureModal" class="modal fade" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-confirm">
+                <div class="modal-content">
+                    <div class="modal-header flex-column">
+                        <div class="icon">
+                            <i data-feather="alert-triangle"></i>
+                        </div>						
+                        <h4 class="modal-title w-100">Error!</h4>	
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p id='failureMessage'></p>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Okay</button>
+                    </div>
+                </div>
+            </div>
+        </div> 
