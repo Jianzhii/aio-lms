@@ -275,6 +275,39 @@
                     console.log(err)
                 }
             })
+
+            /* retrieve learners enrolled in group*/
+            $(async() => {
+                var learnerlist_api = api_endpoint + "enrolment/group/" + groupid
+
+                try {
+                    const response =
+                        await fetch(
+                            learnerlist_api, {
+                                method: 'GET'
+                            }
+                        );
+                    
+                    const result = await response.json() ;
+                    if (response.status === 200) {
+                        let data = result.data
+                        console.log(data)
+                        let i = 1
+                        if (data.length) {
+                            row = `
+                                <tr>
+                                    <td>${i}</td>
+                                    <td>${data.learner_name}</td>
+                                </td>`
+                            ('#tablecontent').append(row)
+                            i++
+                        }
+                    }
+                } catch(err) {
+                    alert(err)
+                    console.log(err)
+                }
+            })
         </script>   
     </body>
 </html>
