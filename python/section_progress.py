@@ -1,4 +1,4 @@
-from flask.json import jsonify
+from flask import jsonify, request
 from sqlalchemy.ext.mutable import MutableDict
 
 from app import app, db
@@ -13,6 +13,7 @@ class SectionProgress(db.Model):
     material = db.Column(MutableDict.as_mutable(db.JSON), nullable=False)
     quiz_attempt = db.Column(db.Boolean, nullable=False)
     is_quiz_pass = db.Column(db.Boolean, nullable=False)
+    is_access = db.Column(db.Boolean, nullable=False)
 
     def json(self):
         return {
@@ -22,25 +23,31 @@ class SectionProgress(db.Model):
             "material": self.material,
             "quiz_attempt": self.quiz_attempt,
             "is_quiz_pass": self.is_quiz_pass,
+            "is_access": self.is_access,
         }
 
 
-# Create records in section progress table
+# Create records in section progress tables
 def createProgressRecord(data):
     try:
         sections = CourseSection.query.filter_by(group_id=data["group_id"]).all()
+        first_section = min([section.id for section in sections])
         for section in sections:
-            section_material = {}
-            materials = Materials.query.filter_by(section_id=section.id).all()
-            for material in materials:
-                section_material[material.id] = False
-            progress = SectionProgress(
-                section_id=section.id,
-                course_enrolment_id=data["id"],
-                material=section_material,
-                quiz_attempt=False,
-            )
-            db.session.add(progress)
+            progress_check = SectionProgress.query.filter_by(course_enrolment_id=data['id'], section_id=section.id).first()
+            if not progress_check:
+                section_material = {}
+                materials = Materials.query.filter_by(section_id=section.id).all()
+                for material in materials:
+                    section_material[material.id] = False
+                progress = SectionProgress(
+                    section_id = section.id,
+                    course_enrolment_id = data["id"],
+                    material = section_material,
+                    quiz_attempt = False,
+                    is_quiz_pass = False,
+                    is_access = True if section.id == first_section else False
+                )
+                db.session.add(progress)
         db.session.commit()
     except Exception as e:
         raise e
@@ -102,6 +109,20 @@ def markCompleted(progress_id, material_id):
             .first()
         )
         progress.material[str(material_id)] = True
+        # check all complete, dhen mark second true
+        check_all_complete = True
+        for material_id in progress.material: 
+            if not progress.material[material_id]:
+                check_all_complete = False
+                break
+        if not progress.quiz_attempt: 
+            check_all_complete = False
+
+        if check_all_complete:
+            next = db.session.query(SectionProgress).filter(SectionProgress.id > progress_id, SectionProgress.course_enrolment_id == progress.course_enrolment_id).first()
+            if next:
+                next.is_access = True
+
         db.session.commit()
         return jsonify(
                 {
@@ -117,3 +138,40 @@ def markCompleted(progress_id, material_id):
                     "message": f"An error occurred while marking material as complete: {e}",
                 }
             ), 406
+
+
+#  Get all section under learner
+@app.route("/section_progress/all_section/<int:enrolment_id>", methods=["GET"])
+def getAllSectionUnderEnrolment(enrolment_id):
+    try:
+        all_section = ( db.session.query(SectionProgress, CourseSection)
+            .filter(SectionProgress.course_enrolment_id == enrolment_id)
+            .outerjoin(
+                CourseSection,
+                    CourseSection.id == SectionProgress.section_id,
+            )
+            .all()
+        )
+        data = []
+        for section_progress, section in all_section:
+            section_progress = section_progress.json()
+            section_progress["section_name"] = section.name
+            section_progress["section_description"] = section.description
+            del section_progress['material']
+            del section_progress['quiz_attempt']
+            del section_progress['is_quiz_pass']
+            data.append(section_progress)
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Successfully retrieved all sections.",
+                "data": data,
+            }
+        ), 200
+    except Exception as e: 
+        return jsonify(
+            {
+                "code": 406,
+                "message": f"An error occurred while retrieving sections: {e}",
+            }
+        ), 406

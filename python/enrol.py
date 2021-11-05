@@ -56,7 +56,10 @@ def getEnrolmentByGroup(group_id):
                 total_materials += 1
                 if section_progress.material[material]:
                     total_completed += 1
-        enrolment["completion_status"] = round(total_completed / total_materials, 2)
+        if total_materials and total_completed:
+            enrolment["completion_status"] = round(total_completed / total_materials, 2)
+        else:
+            enrolment["completion_status"] = 0
         data.append(enrolment)
     return jsonify(
         {
@@ -79,9 +82,8 @@ def getOngoingEnrolmentByUser(user_id):
         }
     ), 200
 
-
-# Get ongoing/ upcoming enrolment by user_id
-@app.route("/enrolment/user/completed/<int:user_id>", methods=["GET"])
+# Get completed enrolment by user_id
+@app.route("/enrolment/user/completed/<int:user_id>", methods=['GET'])
 def getCompletedEnrolmentByUser(user_id):
     data = getEnrolment(user_id, True)
     return jsonify(

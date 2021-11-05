@@ -103,6 +103,15 @@
                 width: 100px ;
             }
 
+            input[type=button]:disabled {
+                background: lightgrey ;
+                color: black ; 
+                border: none ;
+                border-radius: 3px ; 
+                padding: 5px ;
+                width: 100px ;
+            }
+
             #tableheader{
                 background-color: #FF922D ;
                 color: white ;
@@ -181,7 +190,7 @@
 
             <!-- Sections  -->
             <div class="row" id="section">
-                <h4>Sections</h4>
+                <h4>Sections</h4><br>   
             </div> 
 
             <div class="row" id="table">
@@ -190,7 +199,6 @@
                       <tr>
                           <th scope="col">Section Number</th>
                           <th scope="col">Description</th>
-                          <th scope="col"></th>
                       </tr>
                     </tbody>
                     <tbody id="tablecontent">
@@ -216,8 +224,8 @@
             let query = window.location.search.substring(1).split('&') ;
             var courseid = query[0].slice(3,) 
             var groupid = query[1].slice(8,)
-            console.log("course id: " + courseid)
-            console.log("group id: " + groupid)
+
+            var user_id = sessionStorage.getItem("user_id")
            
             /* retrieve information of group */
             $(async() => { 
@@ -241,7 +249,6 @@
                         $('#trainer').append(data.trainer_name)
                         $('#eperiod').append(data.enrol_start_date.slice(0,data.enrol_start_date.length - 3) + " - " + data.enrol_end_date.slice(0,data.enrol_end_date.length - 3) )
                         $('#gperiod').append(data.start_date.slice(0,data.start_date.length - 3) + " - " + data.end_date.slice(0,data.end_date.length - 3))
-                        $('#loading').hide()
                     }
                 } catch(err) {
                     alert(err)
@@ -267,7 +274,6 @@
                         let data = result.data
                         $('#cdes').append(data.description)
                         $('#preq').append(data.prerequisite)
-                        $('#loading').hide()
                     }
                 } catch(err) {
                     alert(err)
@@ -278,9 +284,7 @@
             /* retrieve sections */
             $(async() => {
                 var sections_api = api_endpoint + "all_section/" + groupid
-
-                console.log(sections_api)
-
+                
                 try {
                     const response = 
                         await fetch(
@@ -288,8 +292,10 @@
                                 method: 'GET'
                             }
                         );
+
                     const result = await response.json(); 
                     if (response.status === 200) {
+                        $('#loading').hide()
                         let data = result.data
                         if (data.length) {
                             for (i=0 ; i<data.length ; i++) {
@@ -297,23 +303,19 @@
                                 <tr>
                                     <td>Section ${i+1}</td>
                                     <td>${data[i].description}</td>
-                                    <td><input type="button" value="View Materials" onclick="window.location.href='coursematerials.html?id=' + ${data[i].id}"></td>
                                 </tr>`
-
                                 $("#tablecontent").append(row)
                             }
                         } else {
                             row = "<tr><td>There are no sections available</td></tr>"
                             $("#tablecontent").append(row)
-                        }
-                        
-                    }
+                        }   
+                    } 
                 } catch(err) {
                     alert(err)
                     console.log(err)
                 }
             })
-        
         </script>   
     </body>
 </html>

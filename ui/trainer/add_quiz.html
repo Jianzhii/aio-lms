@@ -170,9 +170,9 @@
 
 <script>
     var i = 0; /* Set Global Variable i */
-function increment(){
-i += 1; /* Function for automatic increment of field's "Name" attribute. */
-}
+    function increment(){
+        i += 1; /* Function for automatic increment of field's "Name" attribute. */
+    }
 
 /*
 ---------------------------------------------
@@ -188,6 +188,15 @@ function removeElement(parentDiv, childDiv){
         var child = document.getElementById(childDiv);
         var parent = document.getElementById(parentDiv);
         parent.removeChild(child);
+
+        let q_no = +childDiv.substring(1);
+        for (let q = q_no; q < i; q++) {
+            document.getElementById(`Q${q+1}`).setAttribute('id', `Q${q}`);            
+            document.getElementById(`ans${q+1}`).setAttribute("id", `ans${q}`);
+            document.getElementById(`del${q+1}`).setAttribute("onclick", "removeElement('myForm','Q" + q + "')");            
+            document.getElementById(`del${q+1}`).setAttribute("id", `del${q}`);
+        }
+        i--;
     }
     else{
         alert("Child div has already been removed or does not exist.");
@@ -205,6 +214,8 @@ Functions that will be called upon, when user click on the Name text field.
 
 function TFQuestion(){
 
+    increment();
+    
     var QN = document.createElement('span');
     var QN_in = document.createElement("INPUT");
     var first = document.createElement('span');
@@ -224,39 +235,40 @@ function TFQuestion(){
     answer_in.setAttribute("placeholder", "Answer")
 
     var g = document.createElement("IMG");
-    console.log("del" + i)
     g.setAttribute("id","del" + i)
     g.setAttribute("src", "delete.png");
-    increment();
+
+    var q_div = document.createElement('div')     
+    q_div.setAttribute("id", "Q" + i);
+    q_div.setAttribute("style", "padding-bottom: 20px");
+    document.getElementById("myForm").appendChild(q_div);
 
     QN_in.setAttribute("id", "QN_in" + i);
     QN.appendChild(QN_in);
     QN.setAttribute("id", "id_" + i);
-    document.getElementById("myForm").appendChild(QN);
+    document.getElementById("Q" + i).appendChild(QN);
 
     first_in.setAttribute("id", "TF1_" + i);
     first.appendChild(first_in);
     first.setAttribute("id", "id_" + i);
-    document.getElementById("myForm").appendChild(first);
+    document.getElementById("Q" + i).appendChild(first);
 
     second_in.setAttribute("id", "TF2_" + i);
     second.appendChild(second_in);
     second.setAttribute("id", "id_" + i);
-    document.getElementById("myForm").appendChild(second);
+    document.getElementById("Q" + i).appendChild(second);
 
     answer_in.setAttribute("id", "ans" + i);
     answer.appendChild(answer_in);
     answer.setAttribute("id", "id_" + i);
     answer.appendChild(g);
-    g.setAttribute("onclick", "removeElement('myForm','id_" + i + "')");
-    document.getElementById("myForm").appendChild(answer);
-
-    
-    linebreak = document.createElement("br");
-    myForm.appendChild(linebreak);
+    g.setAttribute("onclick", "removeElement('myForm','Q" + i + "')");
+    document.getElementById("Q" + i).appendChild(answer)
 }
 
 function four_Question(){
+        
+    increment();
 
     var QN = document.createElement('span');
     var QN_in = document.createElement("INPUT");
@@ -271,7 +283,6 @@ function four_Question(){
     var answer = document.createElement('span');
     var answer_in = document.createElement('INPUT');
 
-
     QN_in.setAttribute("type", "text");
     QN_in.setAttribute("placeholder", "FourQuestion");
     first_in.setAttribute("type", "text");
@@ -285,44 +296,48 @@ function four_Question(){
     answer_in.setAttribute("type", "text")
     answer_in.setAttribute("placeholder", "Answer")
 
-    var g = document.createElement("IMG");
+    var g = document.createElement("IMG");    
+    g.setAttribute("id","del" + i)
     g.setAttribute("src", "delete.png");
-    increment();
+
+    var q_div = document.createElement('div')     
+    q_div.setAttribute("id", "Q" + i);
+    q_div.setAttribute("style", "padding-bottom: 20px");
+    document.getElementById("myForm").appendChild(q_div);
+
 
     QN_in.setAttribute("id", "QN_in" + i);
     QN.appendChild(QN_in);
     QN.setAttribute("id", "id_" + i);
-    document.getElementById("myForm").appendChild(QN);
+    document.getElementById("Q" + i).appendChild(QN);
 
     first_in.setAttribute("id", "FQ1_" + i);
     first.appendChild(first_in);
     first.setAttribute("id", "id_" + i);
-    document.getElementById("myForm").appendChild(first);
+    document.getElementById("Q" + i).appendChild(first);
 
     second_in.setAttribute("id", "FQ2_" + i);
     second.appendChild(second_in);
     second.setAttribute("id", "id_" + i);
-    document.getElementById("myForm").appendChild(second);
+    document.getElementById( "Q" + i).appendChild(second);
 
     third_in.setAttribute("id", "FQ3_" + i);
     third.appendChild(third_in);
     third.setAttribute("id", "id_" + i);
-    document.getElementById("myForm").appendChild(third);
+    document.getElementById("Q" + i).appendChild(third);
 
     fourth_in.setAttribute("id", "FQ4_" + i);
     fourth.appendChild(fourth_in);
     fourth.setAttribute("id", "id_" + i);
-    document.getElementById("myForm").appendChild(fourth);
+    document.getElementById("Q" + i).appendChild(fourth);
 
     answer_in.setAttribute("id", "ans" + i);
     answer.appendChild(answer_in);
     answer.setAttribute("id", "id_" + i);
-    g.setAttribute("onclick", "removeElement('myForm','id_" + i + "')");
+    g.setAttribute("onclick", "removeElement('myForm','Q" + i + "')");
     answer.appendChild(g);
-    document.getElementById("myForm").appendChild(answer);
+    document.getElementById("Q" + i).appendChild(answer);
     
-    linebreak = document.createElement("br");
-    myForm.appendChild(linebreak);
 }
 
 
