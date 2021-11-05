@@ -56,16 +56,7 @@ def addQuiz():
 def getQuiz(section_id):
     try:
         quiz_question = Quiz.query.filter_by(section_id = section_id).order_by(Quiz.question_no.asc()).all()
-        data = []
-        for question in quiz_question:
-            question = question.json()
-            data.append(
-                {   
-                    "question_no": question['question_no'],
-                    "question": question['question'],
-                    "choice": question['choice']
-                }
-            )
+        data = [question.json() for question in quiz_question]
         return jsonify(
             {
                 "code": 200,
@@ -81,18 +72,40 @@ def getQuiz(section_id):
             }
         ), 406
 
+
 # Update quiz for section 
+# (delete all questions from section and re-add again)
 
 
-# (delete from section and readd again)
 
-
-# validate quiz answer
+# Validate quiz answer
+"""
+sample request
+{   
+    "section_id": 3,
+    answers: [
+       {
+           "question_no": 1,
+            "answer": "True"
+        },
+        {
+            "question_no": 2,
+            "answer": "asd"
+        }
+    ]
+}
+will have to update course request... so everything
+"""
 @app.route('/validate_quiz', methods=["POST"])
 def validateQuiz():
     data = request.get_json()
     try:
-        print('asd')
+        section_id = data['section_id']
+        for answer in data['answer']:
+            quiz_answer = Quiz.query.filter_by(section_id = section_id, question_no = answer['question_no']).first()
+            if not quiz_answer:
+                raise Exception('Unable to find question in database')
+            
 
         return jsonify(
             {

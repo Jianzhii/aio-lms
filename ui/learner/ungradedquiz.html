@@ -152,16 +152,16 @@
                 <form id="questions" action="">
                   
                 </form>
-            </div>
+            </div>            
+
+            <div id="loading">
+                <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..."/>
+            </div>   
 
             <hr>
             <div class='text-center'> 
                 <input type="button" value="Submit" id="submit" onclick="validateQuiz()">
             </div>
-
-            <div id="loading">
-                <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..."/>
-            </div>   
         </div>
 
         <script>
@@ -195,14 +195,16 @@
                             $('#loading').hide();
                             let data = result.data                
                             for (let question of data) {
-                                row = `<p> Q${question.question_no}.  ${question.question}</p>`;
+                                row = `<div> <p> Q${question.question_no}.  ${question.question}</p>`;
+
                                 for (let i = 1; i <= question.choice.length; i++) {
                                     row += `
-                                        <input type="radio" id="q${question.question_no}c${i}" name="question_1" value="${question.choice[i-1]}">
+                                        <input type="radio" id="q${question.question_no}c${i}" name="question_${question.question_no}" value="${question.choice[i-1]}">
                                         <label for="q${question.question_no}c${i}">${question.choice[i-1]}</label><br>
                                     `; 
-                                }                                
-                                row += "<br>"
+                                }                
+
+                                row += "</div><br>"
                                 $('#questions').append(row)                    
                             }
                         }
@@ -215,7 +217,16 @@
             });
 
             function validateQuiz() {
-
+                let questions = $("#questions").children("div");
+                data = []
+                for (let i = 0; i < questions.length; i++) {
+                    answer = {
+                        question_no: i+1,
+                        answer: $(`input[name="question_${i+1}"]:checked`).val()
+                    };
+                    data.push (answer)
+                }
+                console.log(data)
             }
         </script>   
     </body>
