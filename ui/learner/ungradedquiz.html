@@ -137,33 +137,26 @@
         <div class="container" id="content">
             <div class="row" id="header">
                 <div class="col">
-                    <h2>Include section name or something for quiz</h2>
+                    <h2 id="courseTitle"></h2>
+                    <br>
+                    <h3 id="sectionTitle"></h3>
                 </div>
                 <div class="col-2" style="padding-top: 65px ;">
                     <input type="button" value="Log Out" id="logout" onclick='logout()'>
                 </div>
             </div>
-                
+            
+            <hr>
             <!-- show list of questions for quiz -->
-            <div class="row" id="questions">
-                <form action="/action_page.php">
-                    <p>Select True or False</p>
-                    <input type="radio" id="true" name="question_1" value="true">
-                    <label for="true">True</label><br>
-                    <input type="radio" id="false" name="question_1" value="false">
-                    <label for="false">False</label><br>
+            <div class="row">
+                <form id="questions" action="">
                   
-                    <br>
-                  
-                    <p>Please select your age:</p>
-                    <input type="radio" id="age1" name="question_2" value="30">
-                    <label for="age1">0 - 30</label><br>
-                    <input type="radio" id="age2" name="question_2" value="60">
-                    <label for="age2">31 - 60</label><br>  
-                    <input type="radio" id="age3" name="question_2" value="100">
-                    <label for="age3">61 - 100</label><br><br>
-                    <input type="submit" value="Submit">
-                  </form>
+                </form>
+            </div>
+
+            <hr>
+            <div class='text-center'> 
+                <input type="button" value="Submit" id="submit" onclick="validateQuiz()">
             </div>
 
             <div id="loading">
@@ -172,17 +165,58 @@
         </div>
 
         <script>
+            
+            const section_id = sessionStorage.getItem("section_id") || 3;
+            const course_title = sessionStorage.getItem("course_title") || "Some course";
+            const section_title = sessionStorage.getItem("section_title") || "help";
 
-            /* load learner_nav.html */
-            $(function(){
-                $("#sidebar").load("learner_nav.html");
-            });
-
-            const api_endpoint = "http://52.55.242.44:8000/" 
-            // const api_endpoint = "http://localhost:8000/"
+            // const api_endpoint = "http://52.55.242.44:8000/" 
+            const api_endpoint = "http://localhost:8000/"
 
             /* retrieve list of questions */
+            $(async () => {
+                
+                $("#courseTitle").text(course_title);
+                $("#sectionTitle").text(`${section_title} (Ungraded Quiz)`);
 
+                // API Endpoint
+                var get_quiz = api_endpoint + `/quiz/${section_id}`
+
+                    try {
+                        const response =
+                            await fetch(
+                                get_quiz, {
+                                method: 'GET'
+                            }
+                        );
+
+                        const result = await response.json();
+                        if (response.status === 200) {
+                            $('#loading').hide();
+                            let data = result.data                
+                            for (let question of data) {
+                                row = `<p> Q${question.question_no}.  ${question.question}</p>`;
+                                for (let i = 1; i <= question.choice.length; i++) {
+                                    row += `
+                                        <input type="radio" id="q${question.question_no}c${i}" name="question_1" value="${question.choice[i-1]}">
+                                        <label for="q${question.question_no}c${i}">${question.choice[i-1]}</label><br>
+                                    `; 
+                                }                                
+                                row += "<br>"
+                                $('#questions').append(row)                    
+                            }
+                        }
+                    } catch(err) {
+                        alert(err)
+                        console.log(err)
+                    }
+
+                feather.replace()
+            });
+
+            function validateQuiz() {
+
+            }
         </script>   
     </body>
 </html>
