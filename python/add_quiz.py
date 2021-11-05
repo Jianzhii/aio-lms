@@ -1,6 +1,6 @@
 from app import app, db
 from flask import jsonify, request
-
+from section_progress import SectionProgress
 
 
 class Quiz(db.Model):
@@ -99,17 +99,16 @@ sample request
 def validateQuiz():
     data = request.get_json()
     try:
-        print(data)
         section_id = data['section_id']
         total_correct = 0
-        total_questions = len(data['answers'])
+        total_questions = len(data['answer'])
         for answer in data['answer']:
             quiz_answer = Quiz.query.filter_by(section_id = section_id, question_no = answer['question_no']).first()
             if not quiz_answer:
                 raise Exception('Unable to find question in database')
                 
-            answer['is_correct'] = False
-            if answer['selected'] and (answer['selected'] == quiz_answer.answer):
+            answer['is_correct'] = False            
+            if ('selected' in answer) and (str(answer['selected']) == quiz_answer.answer.replace('"', '')):
                 answer['is_correct'] = True
                 total_correct += 1
             answer['answer'] = quiz_answer.answer
