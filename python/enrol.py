@@ -56,7 +56,10 @@ def getEnrolmentByGroup(group_id):
                 total_materials += 1
                 if section_progress.material[material]:
                     total_completed += 1
-        enrolment["completion_status"] = round(total_completed / total_materials, 2)
+        if total_materials and total_completed:
+            enrolment["completion_status"] = round(total_completed / total_materials, 2)
+        else:
+            enrolment["completion_status"] = 0
         data.append(enrolment)
     return jsonify(
         {

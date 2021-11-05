@@ -46,6 +46,29 @@ def addQuiz():
             }
         ), 500
 
-#  Get all quiz stuff under section
+
+#  Get all quiz questions under section 
+@app.route('/quiz/<int:section_id>', methods=["GET"])
+def getQuiz(section_id):
+    try:
+        quiz_question = Quiz.query.filter_by(section_id = section_id).all()
+        data = []
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Quiz successfully retrieved!",
+                "data": data
+            }
+        ), 200
+    except Exception as e: 
+        return jsonify(
+            {
+                "code":406,
+                "message": f"An error occurred while retrieving Quiz: {e}"
+            }
+        ), 406
 
 # Update quiz (delete from section and readd again)
+
+
+# validate quiz answer
