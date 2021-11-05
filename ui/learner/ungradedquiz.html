@@ -160,7 +160,10 @@
 
             <hr>
             <div class='text-center'> 
-                <input type="button" value="Submit" id="submit" onclick="validateQuiz()">
+                <input type="button" value="Submit" id="submit" onclick="validateQuiz()">       
+
+                <!-- TODO: add in redirection back to view section materials -->
+                <input type="button" value="Back to Section" id="return" onclick=""> 
             </div>
         </div>
 
@@ -175,12 +178,12 @@
 
             /* retrieve list of questions */
             $(async () => {
-                
+                $("#return").hide();
                 $("#courseTitle").text(course_title);
                 $("#sectionTitle").text(`${section_title} (Ungraded Quiz)`);
 
                 // API Endpoint
-                var get_quiz = api_endpoint + `/quiz/${section_id}`
+                var get_quiz = api_endpoint + `quiz/${section_id}`
 
                     try {
                         const response =
@@ -195,13 +198,12 @@
                             $('#loading').hide();
                             let data = result.data                
                             for (let question of data) {
-                                row = `<div> <p> Q${question.question_no}.  ${question.question}</p>`;
+                                row = `<div id="q${question.question_no}_div"> <p> Q${question.question_no}.  ${question.question}</p>`;
 
                                 for (let i = 1; i <= question.choice.length; i++) {
                                     row += `
                                         <input type="radio" id="q${question.question_no}c${i}" name="question_${question.question_no}" value="${question.choice[i-1]}">
-                                        <label for="q${question.question_no}c${i}">${question.choice[i-1]}</label><br>
-                                    `; 
+                                        <label for="q${question.question_no}c${i}">${question.choice[i-1]}</label><br>`; 
                                 }                
 
                                 row += "</div><br>"
@@ -212,21 +214,66 @@
                         alert(err)
                         console.log(err)
                     }
-
-                feather.replace()
+                // feather.replace()
             });
 
-            function validateQuiz() {
+            async function validateQuiz() {
+                $("#questions").hide();
+                $('#loading').show();
+                $('#submit').hide();
                 let questions = $("#questions").children("div");
                 data = []
                 for (let i = 0; i < questions.length; i++) {
                     answer = {
                         question_no: i+1,
-                        answer: $(`input[name="question_${i+1}"]:checked`).val()
+                        selected: $(`input[name="question_${i+1}"]:checked`).val()
                     };
                     data.push (answer)
                 }
-                console.log(data)
+                let body = {
+                    section_id: section_id,
+                    answer: data
+                }
+
+                // API Endpoint
+                var get_quiz = api_endpoint + `validate_quiz`
+
+                try {
+                    const response =
+                        await fetch(
+                            get_quiz, {
+                            method: 'POST',
+                            body: JSON.stringify(body)
+                        }
+                    );
+
+                    const result = await response.json();
+                    if (response.status === 200) {
+                        // $('#loading').hide();
+                        let data = result.data       
+                        console.log(data)         
+                        // for (let question of data) {
+                        //     row = `<div id="q${question.question_no}_div"> <p> Q${question.question_no}.  ${question.question}</p>`;
+
+                        //     for (let i = 1; i <= question.choice.length; i++) {
+                        //         row += `
+                        //             <input type="radio" id="q${question.question_no}c${i}" name="question_${question.question_no}" value="${question.choice[i-1]}">
+                        //             <label for="q${question.question_no}c${i}">${question.choice[i-1]}</label><br>`; 
+                        //     }                
+
+                        //     row += "</div><br>"
+                        //     $('#questions').append(row)                    
+                        // }
+                    } else { 
+                        console.log("no go")
+                    }
+                } catch(err) {
+                    alert(err)
+                    console.log(err)
+                }
+                
+                $('#loading').hide();
+                $('#return').show();
             }
         </script>   
     </body>
