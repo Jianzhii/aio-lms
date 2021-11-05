@@ -125,6 +125,16 @@
 
             }
 
+            #correct {
+                color: green;
+                font-weight: bold;
+            }
+
+            #incorrect {
+                color: red;
+                font-weight: bold;
+            }
+
         </style>
     </head>
 
@@ -153,6 +163,8 @@
                   
                 </form>
             </div>            
+            
+            <div id='result'></div>
 
             <div id="loading">
                 <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..."/>
@@ -172,9 +184,10 @@
             const section_id = sessionStorage.getItem("section_id") || 3;
             const course_title = sessionStorage.getItem("course_title") || "Some course";
             const section_title = sessionStorage.getItem("section_title") || "help";
+            const enrolment_id = sessionStorage.getItem("enrolment_id") || 12;
 
-            // const api_endpoint = "http://52.55.242.44:8000/" 
-            const api_endpoint = "http://localhost:8000/"
+            const api_endpoint = "http://52.55.242.44:8000/" 
+            // const api_endpoint = "http://localhost:8000/"
 
             /* retrieve list of questions */
             $(async () => {
@@ -231,47 +244,49 @@
                     data.push (answer)
                 }
                 let body = {
+                    enrolment_id: enrolment_id,
                     section_id: section_id,
                     answer: data
                 }
 
                 // API Endpoint
-                var get_quiz = api_endpoint + `validate_quiz`
-
+                var validate_quiz = api_endpoint + `validate_quiz`
                 try {
                     const response =
                         await fetch(
-                            get_quiz, {
+                            validate_quiz, {
                             method: 'POST',
+                            headers: {"Content-Type":"application/json"},
                             body: JSON.stringify(body)
                         }
                     );
 
                     const result = await response.json();
                     if (response.status === 200) {
-                        // $('#loading').hide();
-                        let data = result.data       
-                        console.log(data)         
-                        // for (let question of data) {
-                        //     row = `<div id="q${question.question_no}_div"> <p> Q${question.question_no}.  ${question.question}</p>`;
-
-                        //     for (let i = 1; i <= question.choice.length; i++) {
-                        //         row += `
-                        //             <input type="radio" id="q${question.question_no}c${i}" name="question_${question.question_no}" value="${question.choice[i-1]}">
-                        //             <label for="q${question.question_no}c${i}">${question.choice[i-1]}</label><br>`; 
-                        //     }                
-
-                        //     row += "</div><br>"
-                        //     $('#questions').append(row)                    
-                        // }
+                        $('#loading').hide();
+                        const data = result.data       
+                        // console.log(data)         
+                        for (let question of data.answer) {
+                            let question_result;
+                            if (question.is_correct) {
+                                question_result = `<br> <p id='correct'> CORRECT! </p>`
+                            } else {
+                                question_result = `<br> <p id='incorrect'> INCORRECT! </p>
+                                <p>The correct answer is: ${question.answer}</p>`
+                            }
+                            $(`#q${question.question_no}_div`).append(question_result)
+                        }
+                        $("#result").text(`Quiz Result: ${data.result} (Ungraded)`)
                     } else { 
                         console.log("no go")
+                        throw new Error(data.message)
                     }
                 } catch(err) {
                     alert(err)
                     console.log(err)
                 }
-                
+
+                $("#questions").show();
                 $('#loading').hide();
                 $('#return').show();
             }
