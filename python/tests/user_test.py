@@ -14,8 +14,8 @@ def test_get_role():
         print(response)
         assert response.status_code == 200
 
-def test_gesponst_trainer():
+def test_get_trainer():
     with app.test_client() as test_client:
         response = test_client.get('/all_trainer')
         print(response)
-        assert ree.status_code == 200
+        assert response.status_code == 200
