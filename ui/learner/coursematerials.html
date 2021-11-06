@@ -201,6 +201,11 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- loading GIF -->
+            <div id="loading">
+                <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
+            </div>    
         </div>
 
         <script>
@@ -208,7 +213,8 @@
             const api_endpoint = "http://52.55.242.44:8000/"
             
             let query = window.location.search.substring(1).split('=') ;
-            var sectionid = query[1]  
+            var sectionid = query[0]
+            console.log(sectionid)
             var groupid = 1
 
             /* populate sidebar */
@@ -253,7 +259,6 @@
                     console.log(err)
                 }
             })
-
 
             /* retrieve all the materials */
             $(async() => {
@@ -311,6 +316,7 @@
                             i++
                         }
                     feather.replace()
+                    $("#loading").modal('hide');
                     }
                 } catch(err) {
                     alert(err)

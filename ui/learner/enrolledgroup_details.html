@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <title>View All Courses</title>
+        <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+        <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+
+        <!-- Icons -->
+        <script src="https://unpkg.com/feather-icons"></script>
+
+        <!-- Bootstrap/ CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
+
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+        <!-- common js functions -->
+        <script src="../js/common.js"></script>
+
+        <style>
+
+            body {
+                font-family: 'Montserrat' ;
+                font-size: 12px ;
+            }
+
+            .sidenav {
+                height: 100% ;
+                width: 20% ;
+                position: fixed ;
+                top: 0 ;
+                left: 0 ;
+                z-index: 1 ;
+                overflow-x: hidden ;
+                border-right: solid lightgrey 2px ; 
+            }
+
+            h2, h4 {
+                padding-top: 45px ;
+                color: #FF922D ;
+            }
+
+            h3 {
+                text-indent: 34px ;
+                font-size: 13px ;
+                font-weight: bold ;
+            }
+
+            .sidenav a {
+                color: black ;
+                padding: 16px ;
+                display: block ;
+            }
+
+            a {
+                text-decoration: none ;
+            }
+
+            ul {
+                list-style-type: none ;
+            }
+
+            #logo {
+                height: 150px ;
+                width: 200px ;
+            }
+
+            #sidebar {
+                width: 30% ;
+            }
+
+            #content {
+                width: 80% ;
+                margin-left: 20% ;
+            }
+
+            #table {
+                width: 90% ;
+                margin-left: auto ;
+                margin-right: auto ;
+            }
+
+            #header, h4 {
+                padding: 12px ;
+            }
+
+            input[type=button] {
+                background: #FF922D ;
+                color: white ; 
+                border: none ;
+                border-radius: 3px ; 
+                padding: 5px ;
+                width: 100px ;
+            }
+
+            input[type=button]:disabled {
+                background: lightgrey ;
+                color: black ; 
+                border: none ;
+                border-radius: 3px ; 
+                padding: 5px ;
+                width: 100px ;
+            }
+
+            #tableheader{
+                background-color: #FF922D ;
+                color: white ;
+                padding-left: 35px ;
+            }
+
+            #tablecontent {
+                padding-left: 35px ; 
+            }
+
+            .icon {
+                color: #FF922D ;
+                padding: 2px ;
+            }
+
+            #loading {
+                display: block;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                text-align: center;
+                opacity: 0.7;
+                background-color: #fff;
+                z-index: 99;
+            }
+
+            #loading-image {
+                margin-top: 50px;
+                z-index: 100;
+
+            }
+
+            .gdetails, #section {
+                padding: 15px ; 
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <!-- start of side bar -->
+        <div class="container" id="sidebar">
+        </div>
+        <!-- end of side bar -->
+    
+        <div class="container" id="content">
+            <div class="row" id="header">
+                <div class="col">
+                    <h2 id="cname"></h2>
+                </div>
+                <div class="col-2" style="padding-top: 55px ;">
+                    <input type="button" value="Log Out" id="logout" onclick='logout()'>
+                </div>
+            </div>
+
+            <!-- details about group -->
+            <div class="row gdetails">
+                <div class="col" style="font-weight: bold">Course Description</div>
+                <div class="col" id="cdes"></div>
+                <div class="col" style="font-weight: bold">Pre-Requisite Course(s)</div>
+                <div class="col" id="preq"></div>
+            </div>
+            <div class="row gdetails">
+                <div class="col" style="font-weight: bold">Group Size</div>
+                <div class="col" id="gsize"></div>
+                <div class="col" style="font-weight: bold">Trainer Assigned</div>
+                <div class="col" id="trainer"></div>
+            </div>
+            <div class="row gdetails">
+                <div class="col" style="font-weight: bold">Enrolment Period</div>
+                <div class="col" id="eperiod"></div>
+                <div class="col" style="font-weight: bold">Group Period</div>
+                <div class="col" id="gperiod"></div>
+            </div>
+
+            <!-- Sections  -->
+            <div class="row" id="section">
+                <h4>Sections</h4><br>   
+            </div> 
+
+            <div class="row" id="table">
+                <table class="table">
+                    <tbody id="tableheader"> 
+                      <tr>
+                          <th scope="col">Section Number</th>
+                          <th scope="col">Description</th>
+                          <th scope="col"></th>
+                      </tr>
+                    </tbody>
+                    <tbody id="tablecontent">
+                        <!-- populate rows of sections -->
+                    </tbody>
+                </table>
+
+            <!-- loading -->
+            <div id="loading">
+                <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
+            </div>
+        </div>
+
+        <script>
+
+            /* load learner_nav.html */
+            $(function(){
+                $("#sidebar").load("learner_nav.html");
+            });
+
+            const api_endpoint = "http://52.55.242.44:8000/" 
+
+            let query = window.location.search.substring(1).split('&') ;
+            var courseid = query[0].slice(3,) 
+            var groupid = query[1].slice(8,)
+            var enrollmentid = query[2].slice(8,)
+
+            var user_id = sessionStorage.getItem("user_id")
+
+            /* retrieve information of group */
+            $(async() => { 
+                var coursegroup_api = api_endpoint + "group/" + groupid
+
+                try {
+                    const response =
+                        await fetch(
+                            coursegroup_api, {
+                                method: 'GET'
+                            }
+                        );
+                    
+                    const result = await response.json() ;
+                    if (response.status === 200) {
+                        let data = result.data
+                        console.log(data)
+                        var cname = data.course_name + " - Group " + groupid
+                        $('#cname').append(cname)
+                        $('#gsize').append(data.size)
+                        $('#trainer').append(data.trainer_name)
+                        $('#eperiod').append(data.enrol_start_date.slice(0,data.enrol_start_date.length - 3) + " - " + data.enrol_end_date.slice(0,data.enrol_end_date.length - 3) )
+                        $('#gperiod').append(data.start_date.slice(0,data.start_date.length - 3) + " - " + data.end_date.slice(0,data.end_date.length - 3))
+                    }
+                } catch(err) {
+                    alert(err)
+                    console.log(err)
+                }
+
+            })
+
+            /* retrieve information of course */
+            $(async() => {
+                var coursegroup_api = api_endpoint + "course/" + courseid
+
+                try {
+                    const response =
+                        await fetch(
+                            coursegroup_api, {
+                                method: 'GET'
+                            }
+                        );
+                    
+                    const result = await response.json() ;
+                    if (response.status === 200) {
+                        let data = result.data
+                        $('#cdes').append(data.description)
+                        $('#preq').append(data.prerequisite)
+                    }
+                } catch(err) {
+                    alert(err)
+                    console.log(err)
+                }
+            })
+
+            /* retrieve all the sections */
+            /* check if section has been unlocked */
+            $(async() => {
+                
+                var all_sections_api = api_endpoint + "all_section/" + groupid
+                var section_progress_api = api_endpoint + "section_progress/all_section/" + enrollmentid
+
+                try {
+                    const response = 
+                        await fetch(
+                            all_sections_api, {
+                                method: 'GET'
+                            }
+                        );
+
+                    const response2 = 
+                        await fetch(
+                            section_progress_api, {
+                                method: 'GET'
+                            }
+                        );
+
+                    const result = await response.json() ;
+                    const result2 = await response2.json() ;
+                    $('#loading').hide()
+                    if (response.status === 200 && response2.status === 200) {
+                        let sections = result.data
+                        let section_progress = result2.data
+                        console.log(sections)
+                        console.log(section_progress)
+                        if (sections.length) {
+                            firstrow = `<tr>
+                                            <td>Section 1</td>
+                                            <td>${sections[0].description}</td>
+                                            <td><input type="button" value="View Materials" onclick="window.location.href='coursematerials.html?id=${sections[0].id}'"></td>
+                                        </tr>`
+                            $('#tablecontent').append(firstrow)
+
+                            for (i = 1 ; i < sections.length ; i++ ) {
+                                row = `<tr>
+                                        <td>Section ${i+1}</td>
+                                        <td>${section.description}</td>`
+
+                                for (j = 0 ; j < section_progress.length ; j++ ) {
+                                    if (section_progress[j].section_id == sections[i].id && section_progress[j].is_access == true) {
+                                        row += `<td><input type="button" value="View Materials" onclick="window.location.href='coursematerials.html?id=' + ${sections[i].id} + '"></td>`
+                                    } 
+                                    
+                                    if (section_progress[j].section_id == sections[i].id && section_progress[j].is_access == false) {
+                                        row += `<td><input type="button" value="View Materials" disabled></td>`
+                                    }
+                                }
+                                $('#tablecontent').append(row)
+                            }
+                        } else {
+                            row = `<tr>
+                                <td>Trainer has yet to upload sections</td>
+                                </tr>`
+                            $("#tablecontent").append(row)
+                        }
+                    }
+                } catch(err) {
+                    console.log(err)
+                    alert(err)
+                }
+            })
+        </script>   
+    </body>
+</html>

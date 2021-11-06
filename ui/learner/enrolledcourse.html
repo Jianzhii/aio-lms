@@ -198,7 +198,6 @@
 
                 // API endpoint
                 var enrolled_courses_api = api_endpoint + "enrolment/user/ongoing/" + user_id
-
                 console.log(enrolled_courses_api)
 
                 try {
@@ -210,6 +209,7 @@
                     ); 
 
                     const result = await response.json(); 
+                    var ongoing_id = []
                     if (response.status === 200) {
                         console.log(result.data)
                         $('#loading').hide() ;
@@ -222,7 +222,7 @@
                                     <td>${data[i].course_name}</td>
                                     <td>Group ${data[i].group_id}</td>
                                     <td>${data[i].enrolled_dt}</td>
-                                    <td><input type="button" value="View Details" onclick="window.location.href='group_details.html?id=' + ${data[i].course_id} + '&groupId=' + ${data[i].group_id}"></td>   
+                                    <td><input type="button" value="View Details" onclick="window.location.href='enrolledgroup_details.html?id=' + ${data[i].course_id} + '&groupId=' + ${data[i].group_id} + '&enrolID=' + ${data[i].id}"></td>   
                                 </tr>`
                                 $('#tablecontent').append(row)
                             }
@@ -239,11 +239,6 @@
                     console.log(err)
                 }
             });
-
-            // function to direct to individual group pages
-            function coursegroupdetails(courseid, groupid) {
-                location.href = "./group_details.html?id=" + courseid + "&groupId=" + groupid
-            }
 
             // function for search bar
             var search = document.getElementById("search");
