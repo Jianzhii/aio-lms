@@ -317,7 +317,7 @@
                             firstrow = `<tr>
                                             <td>Section 1</td>
                                             <td>${sections[0].description}</td>
-                                            <td><input type="button" value="View Materials" onclick="window.location.href='coursematerials.html?id=${sections[0].id}'"></td>
+                                            <td><input type="button" value="View Materials" onclick="window.location.href='coursematerials.html?groupid=${groupid}&sectionid=${sections[0].id}&enrolid=${enrollmentid}'"></td>
                                         </tr>`
                             $('#tablecontent').append(firstrow)
 

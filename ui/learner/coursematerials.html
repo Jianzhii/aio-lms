@@ -158,7 +158,7 @@
                 <ul id="groups"></ul>
                 <ul>
                     <li>
-                        <b><a href="">Final Quiz</a></b>
+                        <b><a href="ungradedquiz.html">Final Quiz</a></b>
                     </li>
                 </ul>
             </div>
@@ -180,7 +180,7 @@
                     <h5 id="sdes"></h5>
                 </div>
                 <div class="col-2">
-                    <input type="button" value="Attempt Quiz" id="uquiz">
+                    <input type="button" value="Attempt Quiz" id="uquiz" onclick="window.location.href='ungradedquiz.html'">
                 </div>
             </div>
                 
@@ -212,10 +212,10 @@
 
             const api_endpoint = "http://52.55.242.44:8000/"
             
-            let query = window.location.search.substring(1).split('=') ;
-            var sectionid = query[0]
-            console.log(sectionid)
-            var groupid = 1
+            let query = window.location.search.substring(1).split('&') ;
+            var groupid = query[0].slice(8,)
+            var sectionid = query[1].slice(10,)
+            var enrolid = query[2].slice(7,)
 
             /* populate sidebar */
             $(async() => {
@@ -249,8 +249,7 @@
                         let data = result2.data
                         $("#sectiondetails").append(data.name)
                         for (i = 0 ; i < data.length ; i++) {
-                            let sectionid= data[i].id
-                            list = `<li><a href="coursematerials.html?id=${data[i].id}">${data[i].name}</a></li>`
+                            list = `<li><a href="coursematerials.html?groupid=${groupid}&sectionid=${data[i].id}">${data[i].name}</a></li>`
                             $("#groups").append(list)
                         }
                     }
@@ -260,7 +259,7 @@
                 }
             })
 
-            /* retrieve all the materials */
+            /* retrieve all the materials for each section */
             $(async() => {
                 var section_materials_api = api_endpoint + "course_section/" + sectionid
 
@@ -273,6 +272,7 @@
                         );
 
                     const result = await response.json();
+                    $('#loading').hide()
                     if (response.status === 200) {
                         let data = result.data
                         let i = 1
@@ -287,7 +287,7 @@
                                         <td>
                                             <!-- download -->
                                             <a href="${material.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
-                                            <!-- check progress -->
+
                                             <a href="#" class="icon complete" title="Mark as Completed" onclick="markCompleted(${material.id})"><i id="${material.id}" data-feather="circle"></i></a>
                                         </td>
                                         <td>
@@ -308,7 +308,7 @@
                                         <td>
                                             <!-- download -->
                                             <a href="${video.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
-                                            <!-- check progress -->
+
                                             <a href="#" class="icon complete" title="Mark as Completed" onclick="markCompleted(${video.id})"><i id="${video.id}" data-feather="circle"></i></a>
                                         </td><td></td>
                                     <tr>`
@@ -316,12 +316,17 @@
                             i++
                         }
                     feather.replace()
-                    $("#loading").modal('hide');
                     }
                 } catch(err) {
                     alert(err)
                     console.log(err)
                 }
+            })
+
+            /* retrieve section progress */
+            $(async() => {
+                var section_progress_api = api_endpoint + "/section_progress/" + enrolid + "/" + sectionid
+                console.log(section_progress_api)
             })
 
             /* mark material as completed */
