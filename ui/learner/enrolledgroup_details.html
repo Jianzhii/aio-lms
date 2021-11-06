@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
 
-        <title class="coursegroup"></title>
+        <title>View All Courses</title>
         <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
 
         <meta charset="utf-8">
@@ -145,7 +145,7 @@
 
             }
 
-            .gdetails, #classlist {
+            .gdetails, #section {
                 padding: 15px ; 
             }
 
@@ -161,7 +161,7 @@
         <div class="container" id="content">
             <div class="row" id="header">
                 <div class="col">
-                    <h2 class="coursegroup"></h2>
+                    <h2 id="cname"></h2>
                 </div>
                 <div class="col-2" style="padding-top: 55px ;">
                     <input type="button" value="Log Out" id="logout" onclick='logout()'>
@@ -189,20 +189,21 @@
             </div>
 
             <!-- Sections  -->
-            <div class="row" id="classlist">
-                <h4>Classlist</h4><br>   
+            <div class="row" id="section">
+                <h4>Sections</h4><br>   
             </div> 
 
             <div class="row" id="table">
                 <table class="table">
                     <tbody id="tableheader"> 
                       <tr>
-                          <th scope="col">S/N</th>
-                          <th scope="col">Learner Name</th>
+                          <th scope="col">Section Number</th>
+                          <th scope="col">Description</th>
+                          <th scope="col"></th>
                       </tr>
                     </tbody>
                     <tbody id="tablecontent">
-                        <!-- populate rows of learners -->
+                        <!-- populate rows of sections -->
                     </tbody>
                 </table>
 
@@ -214,9 +215,9 @@
 
         <script>
 
-            /* load admin_nav.html */
+            /* load learner_nav.html */
             $(function(){
-                $("#sidebar").load("admin_nav.html");
+                $("#sidebar").load("learner_nav.html");
             });
 
             const api_endpoint = "http://52.55.242.44:8000/" 
@@ -224,7 +225,10 @@
             let query = window.location.search.substring(1).split('&') ;
             var courseid = query[0].slice(3,) 
             var groupid = query[1].slice(8,)
-           
+            var enrollmentid = query[2].slice(8,)
+
+            var user_id = sessionStorage.getItem("user_id")
+
             /* retrieve information of group */
             $(async() => { 
                 var coursegroup_api = api_endpoint + "group/" + groupid
@@ -242,7 +246,7 @@
                         let data = result.data
                         console.log(data)
                         var cname = data.course_name + " - Group " + groupid
-                        $('.coursegroup').append(cname)
+                        $('#cname').append(cname)
                         $('#gsize').append(data.size)
                         $('#trainer').append(data.trainer_name)
                         $('#eperiod').append(data.enrol_start_date.slice(0,data.enrol_start_date.length - 3) + " - " + data.enrol_end_date.slice(0,data.enrol_end_date.length - 3) )
@@ -279,39 +283,70 @@
                 }
             })
 
-            /* retrieve classlist */
+            /* retrieve all the sections */
+            /* check if section has been unlocked */
             $(async() => {
-                var classlist_api = api_endpoint + "enrolment/group/" + groupid
                 
+                var all_sections_api = api_endpoint + "all_section/" + groupid
+                var section_progress_api = api_endpoint + "section_progress/all_section/" + enrollmentid
+
                 try {
                     const response = 
                         await fetch(
-                            classlist_api, {
+                            all_sections_api, {
                                 method: 'GET'
                             }
                         );
 
-                    const result = await response.json(); 
-                    if (response.status === 200) {
-                        $('#loading').hide()
-                        let data = result.data
-                        if (data.length) {
-                            for (i=0 ; i<data.length ; i++) {
-                                row = `
-                                <tr>
-                                    <td>${i+1}</td>
-                                    <td>${data[i].learner_name}</td>
-                                </tr>`
-                                $("#tablecontent").append(row)
+                    const response2 = 
+                        await fetch(
+                            section_progress_api, {
+                                method: 'GET'
+                            }
+                        );
+
+                    const result = await response.json() ;
+                    const result2 = await response2.json() ;
+                    $('#loading').hide()
+                    if (response.status === 200 && response2.status === 200) {
+                        let sections = result.data
+                        let section_progress = result2.data
+                        console.log(sections)
+                        console.log(section_progress)
+                        if (sections.length) {
+                            firstrow = `<tr>
+                                            <td>Section 1</td>
+                                            <td>${sections[0].description}</td>
+                                            <td><input type="button" value="View Materials" onclick="window.location.href='coursematerials.html?groupid=${groupid}&sectionid=${sections[0].id}&enrolid=${enrollmentid}'"></td>
+                                        </tr>`
+                            $('#tablecontent').append(firstrow)
+
+                            for (i = 1 ; i < sections.length ; i++ ) {
+                                row = `<tr>
+                                        <td>Section ${i+1}</td>
+                                        <td>${section.description}</td>`
+
+                                for (j = 0 ; j < section_progress.length ; j++ ) {
+                                    if (section_progress[j].section_id == sections[i].id && section_progress[j].is_access == true) {
+                                        row += `<td><input type="button" value="View Materials" onclick="window.location.href='coursematerials.html?id=' + ${sections[i].id} + '"></td>`
+                                    } 
+                                    
+                                    if (section_progress[j].section_id == sections[i].id && section_progress[j].is_access == false) {
+                                        row += `<td><input type="button" value="View Materials" disabled></td>`
+                                    }
+                                }
+                                $('#tablecontent').append(row)
                             }
                         } else {
-                            row = "<tr><td>There are no learners enrolled currently</td></tr>"
+                            row = `<tr>
+                                <td>Trainer has yet to upload sections</td>
+                                </tr>`
                             $("#tablecontent").append(row)
-                        }   
-                    } 
+                        }
+                    }
                 } catch(err) {
-                    alert(err)
                     console.log(err)
+                    alert(err)
                 }
             })
         </script>   
