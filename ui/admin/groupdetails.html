@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
 
-        <title>View All Courses</title>
+        <title class="coursegroup"></title>
         <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
 
         <meta charset="utf-8">
@@ -145,7 +145,7 @@
 
             }
 
-            .gdetails, #section {
+            .gdetails, #classlist {
                 padding: 15px ; 
             }
 
@@ -161,7 +161,7 @@
         <div class="container" id="content">
             <div class="row" id="header">
                 <div class="col">
-                    <h2 id="cname"></h2>
+                    <h2 class="coursegroup"></h2>
                 </div>
                 <div class="col-2" style="padding-top: 55px ;">
                     <input type="button" value="Log Out" id="logout" onclick='logout()'>
@@ -188,20 +188,23 @@
                 <div class="col" id="gperiod"></div>
             </div>
 
-            <!-- retrieve list of learners -->
+            <!-- Sections  -->
+            <div class="row" id="classlist">
+                <h4>Classlist</h4><br>   
+            </div> 
+
             <div class="row" id="table">
                 <table class="table">
                     <tbody id="tableheader"> 
                       <tr>
+                          <th scope="col">S/N</th>
                           <th scope="col">Learner Name</th>
-                          <th scope="col"></th>
                       </tr>
                     </tbody>
                     <tbody id="tablecontent">
-                        <!-- populate row of learners -->
+                        <!-- populate rows of learners -->
                     </tbody>
                 </table>
-            </div>
 
             <!-- loading -->
             <div id="loading">
@@ -211,7 +214,7 @@
 
         <script>
 
-            /* load learner_nav.html */
+            /* load admin_nav.html */
             $(function(){
                 $("#sidebar").load("admin_nav.html");
             });
@@ -239,7 +242,7 @@
                         let data = result.data
                         console.log(data)
                         var cname = data.course_name + " - Group " + groupid
-                        $('#cname').append(cname)
+                        $('.coursegroup').append(cname)
                         $('#gsize').append(data.size)
                         $('#trainer').append(data.trainer_name)
                         $('#eperiod').append(data.enrol_start_date.slice(0,data.enrol_start_date.length - 3) + " - " + data.enrol_end_date.slice(0,data.enrol_end_date.length - 3) )
@@ -276,33 +279,36 @@
                 }
             })
 
-            /* retrieve learners enrolled in group*/
+            /* retrieve classlist */
             $(async() => {
-                var learnerlist_api = api_endpoint + "enrolment/group/" + groupid
-
+                var classlist_api = api_endpoint + "enrolment/group/" + groupid
+                
                 try {
-                    const response =
+                    const response = 
                         await fetch(
-                            learnerlist_api, {
+                            classlist_api, {
                                 method: 'GET'
                             }
                         );
-                    
-                    const result = await response.json() ;
+
+                    const result = await response.json(); 
                     if (response.status === 200) {
+                        $('#loading').hide()
                         let data = result.data
-                        console.log(data)
-                        let i = 1
                         if (data.length) {
-                            row = `
+                            for (i=0 ; i<data.length ; i++) {
+                                row = `
                                 <tr>
-                                    <td>${i}</td>
-                                    <td>${data.learner_name}</td>
-                                </td>`
-                            ('#tablecontent').append(row)
-                            i++
-                        }
-                    }
+                                    <td>${i+1}</td>
+                                    <td>${data[i].learner_name}</td>
+                                </tr>`
+                                $("#tablecontent").append(row)
+                            }
+                        } else {
+                            row = "<tr><td>There are no learners enrolled currently</td></tr>"
+                            $("#tablecontent").append(row)
+                        }   
+                    } 
                 } catch(err) {
                     alert(err)
                     console.log(err)
