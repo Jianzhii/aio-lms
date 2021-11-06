@@ -17,5 +17,6 @@ setup(
         "werkzeug",
         "boto3",
         "pytz",
+        "pytest"
     ],
 )
