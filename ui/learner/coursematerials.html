@@ -210,8 +210,8 @@
 
         <script>
 
-            // const api_endpoint = "http://52.55.242.44:8000/"
-            const api_endpoint = "http://localhost:8000/"
+            const api_endpoint = "http://52.55.242.44:8000/"
+            // const api_endpoint = "http://localhost:8000/"
             
             let query = window.location.search.substring(1).split('&') ;
             var groupid = query[0].slice(8,)
@@ -268,7 +268,7 @@
 
             /* retrieve all the materials for each section */
             $(async() => {
-                var section_materials_api = api_endpoint + `/section_progress/${enrolid}/${sectionid}`
+                var section_materials_api = api_endpoint + `section_progress/${enrolid}/${sectionid}`
                 
 
                 try {
@@ -300,7 +300,7 @@
                                                 <!-- download -->
                                                 <a href="${material.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
 
-                                                <a href="#" class="icon complete" title="Mark as Completed" onclick="markCompleted(${material.id})"><i id="${material.id}" data-feather="circle"></i></a>
+                                                <a href="#" class="icon complete" title="Mark as Completed" onclick="markCompleted(${data.id}, ${material.id})"><i id="${material.id}" data-feather=${material.completed ? "check-circle" : "circle"}></i></a>
                                             </td>
                                             <td>
                                                 <!-- view -->
@@ -321,7 +321,7 @@
                                                 <!-- download -->
                                                 <a href="${video.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
 
-                                                <a href="#" class="icon complete" title="Mark as Completed" onclick="markCompleted(${video.id})"><i id="${video.id}" data-feather="${video.completed ? "check-circle" : "circle"}"></i></a>
+                                                <a href="#" class="icon complete" title="Mark as Completed" onclick="markCompleted(${data.id}, ${video.id})"><i id="${video.id}" data-feather="${video.completed ? "check-circle" : "circle"}"></i></a>
                                             </td><td></td>
                                         <tr>`
                                 $("#tablecontent").append(row)
@@ -343,9 +343,36 @@
             })
 
             /* mark material as completed */
-            async function markCompleted(materialid) {
+            async function markCompleted(progress_id, materialid) {
+                $("#tablecontent").hide()
+                $("#loading").show()
                 $(`#${materialid}`).replaceWith(`<i id="${materialid}" data-feather="check-circle"></i>`) /* when empty circle icon is clicked, it is replaced with ticked circle icon */
                 feather.replace()
+
+                var mark_complete = api_endpoint + `completed/${progress_id}/${materialid}`
+                
+                try {
+                    
+                    const response = 
+                        await fetch(
+                            mark_complete, {
+                                method: 'PUT',
+                                headers: {"Content-Type":"application/json"},
+                                body: ""
+                            }
+                        );
+
+                    const result = await response.json();
+                    $("#tablecontent").show()
+                    $("#loading").hide()
+                    if (response.status !== 200) {
+                        alert(err)
+                        console.log(err)
+                    }
+                } catch(err) {
+                    alert(err)
+                    console.log(err)
+                }
             }
         </script>   
     </body>
