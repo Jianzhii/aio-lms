@@ -47,7 +47,7 @@ def getEnrolmentByGroup(group_id):
         all_section_progress = SectionProgress.query.filter_by(
             course_enrolment_id=enrolment["id"]
         ).all()
-        total_materials = 0
+        total_materials = 1
         total_completed = 0
         for section_progress in all_section_progress:
             total_materials += 1
@@ -57,6 +57,7 @@ def getEnrolmentByGroup(group_id):
                 total_materials += 1
                 if section_progress.material[material]:
                     total_completed += 1
+            # TODO to add in check for final quiz??
         if total_materials and total_completed:
             enrolment["completion_status"] = round(total_completed / total_materials, 2)
         else:

@@ -12,6 +12,7 @@ class Quiz(db.Model):
     question = db.Column(db.Text, nullable=False)
     choice = db.Column(db.JSON, nullable=False)
     answer = db.Column(db.Text, nullable=True)
+    duration = db.Column(db.Integer, nullable=False)
 
     def json(self):
         return {
@@ -20,7 +21,8 @@ class Quiz(db.Model):
             'question_no': self.question_no,
             'question': self.question,
             'choice': self.choice,
-            'answer': self.answer
+            'answer': self.answer,
+            'duration': self.duration
         }
 
 

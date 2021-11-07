@@ -387,6 +387,7 @@ def getTrainerAssignment(trainer_id):
             )
             .outerjoin(Group, Group.id == TrainerAssignment.group_id)
             .outerjoin(Course, Course.id == Group.course_id)
+            .order_by(Course.id.asc(), Group.id.asc())
             .all()
         )
 
