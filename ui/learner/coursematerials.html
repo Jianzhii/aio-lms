@@ -210,14 +210,14 @@
 
         <script>
 
-            const api_endpoint = "http://52.55.242.44:8000/"
+            // const api_endpoint = "http://52.55.242.44:8000/"
+            const api_endpoint = "http://localhost:8000/"
             
             let query = window.location.search.substring(1).split('&') ;
             var groupid = query[0].slice(8,)
             var sectionid = query[1].slice(10,)
             var enrolid = query[2].slice(8,)
             var url = sessionStorage.getItem('url');
-            sessionStorage.removeItem('url')
 
             sessionStorage.setItem("section_id", sectionid);
             sessionStorage.setItem("enrolment_id", enrolid);
@@ -268,7 +268,8 @@
 
             /* retrieve all the materials for each section */
             $(async() => {
-                var section_materials_api = api_endpoint + "course_section/" + sectionid
+                var section_materials_api = api_endpoint + `/section_progress/${enrolid}/${sectionid}`
+                
 
                 try {
                     const response = 
@@ -283,59 +284,62 @@
                     if (response.status === 200) {
                         let data = result.data
                         let i = 1
-                        $(".sname").append(data.name)
+                        $(".sname").append(data.section_name)
                         
-                        sessionStorage.setItem("section_title",data.name);
+                        sessionStorage.setItem("section_title",data.section_name);
                         $("#sdes").append(data.description)
-                        let materials = data.material_url
-                        for (let material of materials) {
-                            row = `<tr>
-                                        <td>${i}</td>
-                                        <td> ${material.title} </td>
-                                        <td> ${material.material_type} </td>
-                                        <td>
-                                            <!-- download -->
-                                            <a href="${material.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
 
-                                            <a href="#" class="icon complete" title="Mark as Completed" onclick="markCompleted(${material.id})"><i id="${material.id}" data-feather="circle"></i></a>
-                                        </td>
-                                        <td>
-                                            <!-- view -->
-                                            <iframe src="https://docs.google.com/gview?url=${material.url}&embedded=true"><class="icon" title="View File"><i data-feather="eye"></iframe></i>
-                                        </td>
+                        if (data.is_access) {
+                            let materials = data.material_url
+                            for (let material of materials) {
+                                row = `<tr>
+                                            <td>${i}</td>
+                                            <td> ${material.title} </td>
+                                            <td> ${material.material_type} </td>
+                                            <td>
+                                                <!-- download -->
+                                                <a href="${material.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
+
+                                                <a href="#" class="icon complete" title="Mark as Completed" onclick="markCompleted(${material.id})"><i id="${material.id}" data-feather="circle"></i></a>
+                                            </td>
+                                            <td>
+                                                <!-- view -->
+                                                <iframe src="https://docs.google.com/gview?url=${material.url}&embedded=true"><class="icon" title="View File"><i data-feather="eye"></iframe></i>
+                                            </td>
+                                        <tr>`
+                                $("#tablecontent").append(row)
+                                i++
+                            }
+                            let videos = data.video_url
+                            // console.log(videos)
+                            for (let video of videos) {
+                                row = `<tr>
+                                            <td>${i}</td>
+                                            <td>${video.title}</td>
+                                            <td> ${video.material_type} </td>
+                                            <td>
+                                                <!-- download -->
+                                                <a href="${video.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
+
+                                                <a href="#" class="icon complete" title="Mark as Completed" onclick="markCompleted(${video.id})"><i id="${video.id}" data-feather="${video.completed ? "check-circle" : "circle"}"></i></a>
+                                            </td><td></td>
+                                        <tr>`
+                                $("#tablecontent").append(row)
+                                i++
+                            }
+                        } else  { 
+                            row = `<tr>
+                                        <td> You do not have access materials in this section yet. Please complete the previous sections. </td>
                                     <tr>`
                             $("#tablecontent").append(row)
-                            i++
                         }
-                        let videos = data.video_url
-                        // console.log(videos)
-                        for (let video of videos) {
-                            row = `<tr>
-                                        <td>${i}</td>
-                                        <td>${video.title}</td>
-                                        <td> ${video.material_type} </td>
-                                        <td>
-                                            <!-- download -->
-                                            <a href="${video.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
 
-                                            <a href="#" class="icon complete" title="Mark as Completed" onclick="markCompleted(${video.id})"><i id="${video.id}" data-feather="circle"></i></a>
-                                        </td><td></td>
-                                    <tr>`
-                            $("#tablecontent").append(row)
-                            i++
-                        }
                     feather.replace()
                     }
                 } catch(err) {
                     alert(err)
                     console.log(err)
                 }
-            })
-
-            /* retrieve section progress */
-            $(async() => {
-                var section_progress_api = api_endpoint + "/section_progress/" + enrolid + "/" + sectionid
-                console.log(section_progress_api)
             })
 
             /* mark material as completed */
