@@ -356,7 +356,7 @@
 
             let learners = $("#learners").val();
 
-            console.log(data)
+            // console.log(data)
 
             const create_group_api = api_endpoint + "group"
             try {
@@ -372,7 +372,8 @@
                 if (response.status === 200) {
                     enrolment_body = {
                         user_id: learners,
-                        group_id: groupid
+                        group_id: groupid,
+                        update: true
                     }
                     let enrolment_result = await enrolLearners(enrolment_body);
                     $("#loadingModal").modal("hide");
