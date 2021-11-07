@@ -6,6 +6,7 @@ from app import app, db
 from course import Course
 from group import Group
 from section_progress import SectionProgress, createProgressRecord
+from sqlalchemy.sql.expression import false
 from user import User
 
 
@@ -128,18 +129,23 @@ def addEnrolment(data=None):
     if not data:
         data = request.get_json()
     result = None
+    update = False
+    if 'update' in data and data['update']:
+        update = True
     try:
         if type(data["user_id"]) == list:
             for user in data["user_id"]:
                 result = processEnrolmentEligibility(
                     {"user_id": user, "group_id": data["group_id"]}
                 )
-                if result[1] != 200:
-                    return result
-                else:
+                if result[1] == 200:
                     db.session.add(result[0])
                     db.session.commit()
                     createProgressRecord(result[0].json())
+                elif not update: 
+                    return result
+                elif update and result[1] != 407:
+                    return result
         else:
             result = processEnrolmentEligibility(data)
             if result[1] != 200:
@@ -148,14 +154,23 @@ def addEnrolment(data=None):
                 db.session.add(result[0])
                 db.session.commit()
                 createProgressRecord(result[0].json())
+
         db.session.commit()
+        if update and result[1] == 407:
+            return jsonify(
+                {
+                    "code": 200,
+                    "data": {},
+                    "message": "Learner has already been enrolled."
+                }
+            ), 200
         return jsonify(
                 {
                     "code": 200,
                     "data": result[0].json() if result else {},
                     "message": "Successfully enrolled learners"
                 }
-            ), 200
+        ), 200
     except Exception as e:
         enrolment = Enrolment.query.filter_by(id=result[0].json()["id"]).first()
         db.session.delete(enrolment)
@@ -178,11 +193,11 @@ def processEnrolmentEligibility(data):
         if existing_enrolment:
             return jsonify(
                     {
-                        "code": 406,
+                        "code": 407,
                         "data": data,
                         "message": f"{user.name} has already been enrolled in this group"
                     }
-                ), 406
+                ), 407
 
         # check if learner has alr completed course
         group = Group.query.filter_by(id=data["group_id"]).first()
