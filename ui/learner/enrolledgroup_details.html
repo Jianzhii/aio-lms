@@ -244,7 +244,7 @@
                     const result = await response.json() ;
                     if (response.status === 200) {
                         let data = result.data
-                        console.log(data)
+                        // console.log(data)
                         var cname = data.course_name + " - Group " + groupid
                         $('#cname').append(cname)
                         $('#gsize').append(data.size)
@@ -293,48 +293,28 @@
                 try {
                     const response = 
                         await fetch(
-                            all_sections_api, {
-                                method: 'GET'
-                            }
-                        );
-
-                    const response2 = 
-                        await fetch(
                             section_progress_api, {
                                 method: 'GET'
                             }
                         );
 
                     const result = await response.json() ;
-                    const result2 = await response2.json() ;
                     $('#loading').hide()
-                    if (response.status === 200 && response2.status === 200) {
-                        let sections = result.data
-                        let section_progress = result2.data
-                        console.log(sections)
-                        console.log(section_progress)
-                        if (sections.length) {
-                            firstrow = `<tr>
-                                            <td>Section 1</td>
-                                            <td>${sections[0].description}</td>
-                                            <td><input type="button" value="View Materials" onclick="window.location.href='coursematerials.html?groupid=${groupid}&sectionid=${sections[0].id}&enrolid=${enrollmentid}'"></td>
-                                        </tr>`
-                            $('#tablecontent').append(firstrow)
+                    if (response.status === 200) {
+                        let section_progress = result.data
+                        // console.log(section_progress)
+                        if (section_progress.length) {
 
-                            for (i = 1 ; i < sections.length ; i++ ) {
+                            for (i = 0 ; i < section_progress.length ; i++ ) {
                                 row = `<tr>
                                         <td>Section ${i+1}</td>
-                                        <td>${section.description}</td>`
-
-                                for (j = 0 ; j < section_progress.length ; j++ ) {
-                                    if (section_progress[j].section_id == sections[i].id && section_progress[j].is_access == true) {
-                                        row += `<td><input type="button" value="View Materials" onclick="window.location.href='coursematerials.html?id=' + ${sections[i].id} + '"></td>`
-                                    } 
-                                    
-                                    if (section_progress[j].section_id == sections[i].id && section_progress[j].is_access == false) {
+                                        <td>${section_progress[i].section_description}</td>`
+                                    if (section_progress[i].is_access == true) {
+                                        row += `<td><input type="button" value="View Materials" onclick="window.location.href='coursematerials.html?groupid=${groupid}&sectionid=${section_progress[0].section_id}&enrolid=${enrollmentid}'"></td>`
+                                    } else {
                                         row += `<td><input type="button" value="View Materials" disabled></td>`
                                     }
-                                }
+
                                 $('#tablecontent').append(row)
                             }
                         } else {
