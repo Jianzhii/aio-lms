@@ -105,7 +105,7 @@
                 margin-left: 10px;
             }
 
-            #loadingModal {
+            #loading {
                 display: block;
                 width: 100%;
                 height: 100%;
@@ -162,22 +162,9 @@
                 </div>
             </div>
 
-
-            <div id="loadingModal" class="modal fade" aria-hidden="true" style="display: none;">
-                <div class="modal-dialog modal-confirm">
-                    <div class="modal-content">
-                        <div class="modal-header flex-column">				
-                            <h4 class="modal-title w-100">Loading.....</h4>	
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div id="modalloading">
-                                <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
-                            </div>  
-                        </div>
-                    </div>
-                </div>
-            </div> 
+            <div id="loading">
+                <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
+            </div>    
         </div> 
         
     </body>
@@ -188,7 +175,7 @@
             var user_id = sessionStorage.getItem("user_id")
             // retrieve all courses
             $(async () => {
-                $("#loadingModal").modal('show');
+                $("#loading").show();
                 const courseAssignment = api_endpoint + `/course/trainer/${user_id}`
 
                 try {
@@ -217,7 +204,7 @@
                     alert(err);
                     console.log(err);
                 }
-                $("#loadingModal").modal('hide');
+                $("#loading").hide();
             });
 
     </script>
