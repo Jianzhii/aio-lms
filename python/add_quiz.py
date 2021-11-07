@@ -26,7 +26,7 @@ class Quiz(db.Model):
         }
 
 
-#Add one Quiz for section
+# Add one Quiz for section
 @app.route('/add_quiz', methods=["POST"])
 def addQuiz():
     data = request.get_json()
@@ -45,13 +45,13 @@ def addQuiz():
     except Exception as e:
         return jsonify(
             {
-                "code":500,
+                "code": 406,
                 "message": f"An error occurred while creating Quiz: {e}"
             }
-        ), 500
+        ), 406
 
 
-#  Get all quiz questions under section 
+#  Get all quiz questions under section
 @app.route('/quiz/<int:section_id>', methods=["GET"])
 def getQuiz(section_id):
     try:
@@ -64,24 +64,23 @@ def getQuiz(section_id):
                 "data": data
             }
         ), 200
-    except Exception as e: 
+    except Exception as e:
         return jsonify(
             {
-                "code":406,
+                "code": 406,
                 "message": f"An error occurred while retrieving Quiz: {e}"
             }
         ), 406
 
 
-# Update quiz for section 
+# Update quiz for section
 # (delete all questions from section and re-add again)
-
 
 
 # Validate quiz answer
 """
 sample request
-{   
+{
     "section_id": 3,
     "enrolment_id": 3,
     answers: [
@@ -107,8 +106,8 @@ def validateQuiz():
             quiz_answer = Quiz.query.filter_by(section_id = section_id, question_no = answer['question_no']).first()
             if not quiz_answer:
                 raise Exception('Unable to find question in database')
-                
-            answer['is_correct'] = False            
+
+            answer['is_correct'] = False
             if ('selected' in answer) and (str(answer['selected']) == quiz_answer.answer.replace('"', '')):
                 answer['is_correct'] = True
                 total_correct += 1
@@ -117,12 +116,12 @@ def validateQuiz():
 
         section_progress = SectionProgress.query.filter_by(section_id = section_id, course_enrolment_id = data['enrolment_id']).first()
         section_progress.quiz_attempt = 1
-        if not section_progress.is_quiz_pass and (total_correct/total_questions) >= 0.8:
+        if not section_progress.is_quiz_pass and (total_correct / total_questions) >= 0.8:
             section_progress.is_quiz_pass = 1
-            
+
         checkCompletionOfSection(section_progress)
         db.session.commit()
-        
+
         return jsonify(
             {
                 "code": 200,
@@ -130,10 +129,10 @@ def validateQuiz():
                 "data": data
             }
         ), 200
-    except Exception as e: 
+    except Exception as e:
         return jsonify(
             {
-                "code":406,
+                "code": 406,
                 "message": f"An error occurred while validating Quiz: {e}"
             }
         ), 406

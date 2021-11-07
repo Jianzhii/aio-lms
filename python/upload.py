@@ -236,7 +236,7 @@ def deleteMaterial(id):
 
 
 def upload_file_to_s3(file, acl="public-read"):
-    filename = secure_filename(file.filename)
+    # filename = secure_filename(file.filename)
     try:
         s3 = boto3.client(
             "s3",

@@ -81,13 +81,13 @@ def getProgress(enrolment_id, section_id):
             material = Materials.query.filter_by(id=material_id).first()
             if material.material_type == "Video":
                 video = material.json()
-                video['completed'] = progress["material"][material_id]      
+                video['completed'] = progress["material"][material_id]
                 video_url.append(video)
             else:
                 material = material.json()
-                material['completed'] = progress["material"][material_id]      
+                material['completed'] = progress["material"][material_id]
                 material_url.append(material)
-                
+
         del progress['material']
         progress["material_url"] = material_url
         progress['video_url'] = video_url
@@ -142,11 +142,11 @@ def checkCompletionOfSection(section_progress):
     try:
         # check all complete, dhen mark second true
         check_all_complete = True
-        for material_id in section_progress.material: 
+        for material_id in section_progress.material:
             if not section_progress.material[material_id]:
                 check_all_complete = False
                 break
-        if not section_progress.quiz_attempt: 
+        if not section_progress.quiz_attempt:
             check_all_complete = False
 
         if check_all_complete:
@@ -160,12 +160,9 @@ def checkCompletionOfSection(section_progress):
 @app.route("/section_progress/all_section/<int:enrolment_id>", methods=["GET"])
 def getAllSectionUnderEnrolment(enrolment_id):
     try:
-        all_section = ( db.session.query(SectionProgress, CourseSection)
+        all_section = (db.session.query(SectionProgress, CourseSection)
             .filter(SectionProgress.course_enrolment_id == enrolment_id)
-            .outerjoin(
-                CourseSection,
-                    CourseSection.id == SectionProgress.section_id,
-            )
+            .outerjoin(CourseSection, CourseSection.id == SectionProgress.section_id)
             .all()
         )
         data = []
@@ -184,7 +181,7 @@ def getAllSectionUnderEnrolment(enrolment_id):
                 "data": data,
             }
         ), 200
-    except Exception as e: 
+    except Exception as e:
         return jsonify(
             {
                 "code": 406,

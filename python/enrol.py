@@ -143,7 +143,7 @@ def addEnrolment(data=None):
                     db.session.add(result[0])
                     db.session.commit()
                     createProgressRecord(result[0].json())
-                elif not update: 
+                elif not update:
                     return result
                 elif update and result[1] != 407:
                     return result
