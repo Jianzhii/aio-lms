@@ -181,6 +181,7 @@
                 </div>
                 <div class="col-2">
                     <input type="button" value="Attempt Quiz" id="uquiz" onclick="window.location.href='ungradedquiz.html'">
+                    <a href="#" class="icon complete" title="Attempted Quiz"><i id="quiz_icon" data-feather="circle"></i></a>
                 </div>
             </div>
                 
@@ -288,7 +289,9 @@
                         
                         sessionStorage.setItem("section_title",data.section_name);
                         $("#sdes").append(data.description)
-
+                        if (data.quiz_attempt) {
+                            $("#quiz_icon").attr('data-feather', "check-circle")
+                        }
                         if (data.is_access) {
                             let materials = data.material_url
                             for (let material of materials) {
