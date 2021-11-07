@@ -29,9 +29,7 @@ class Quiz(db.Model):
 #Add one Quiz for section
 @app.route('/add_quiz', methods=["POST"])
 def addQuiz():
-    print(request.get_json())
     data = request.get_json()
-    print(data)
     try:
         quiz = Quiz(**data)
         db.session.add(quiz)

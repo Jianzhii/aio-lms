@@ -150,6 +150,11 @@
                     <h2 id="courseTitle"></h2>
                     <br>
                     <h3 id="sectionTitle"></h3>
+
+                    <div class='d-flex flex-row-reverse'>
+                        <div id='quiz-time-left'></div>
+                    </div>
+
                 </div>
                 <div class="col-2" style="padding-top: 65px ;">
                     <input type="button" value="Log Out" id="logout" onclick='logout()'>
@@ -191,6 +196,10 @@
             const api_endpoint = "http://52.55.242.44:8000/" 
             // const api_endpoint = "http://localhost:8000/"
 
+            let total_seconds;
+            let c_minutes;
+            let c_seconds;
+            let timer;
             /* retrieve list of questions */
             $(async () => {
                 $("#return").hide();
@@ -226,6 +235,10 @@
                                 row += "</div><br>"
                                 $('#questions').append(row)                    
                             }
+                            total_seconds = data[0].duration;
+                            c_minutes = parseInt(total_seconds / 60);
+                            c_seconds = parseInt(total_seconds % 60);                            
+                            timer = setTimeout(CheckTime, 1000);
                         }
                     } catch(err) {
                         alert(err)
@@ -293,6 +306,20 @@
                 $("#questions").show();
                 $('#loading').hide();
                 $('#return').show();
+            }
+
+
+            function CheckTime() {
+                document.getElementById("quiz-time-left").innerHTML = 'Time Left: ' + c_minutes + ' minutes ' + c_seconds + ' seconds ';
+
+                if (total_seconds <= 0) {
+                    validateQuiz();
+                } else {
+                    total_seconds = total_seconds - 1;
+                    c_minutes = parseInt(total_seconds / 60);
+                    c_seconds = parseInt(total_seconds % 60);
+                    timer = setTimeout(CheckTime, 1000);
+                }
             }
         </script>   
     </body>

@@ -121,7 +121,7 @@
                 margin-left: 10px;
             }
 
-            #loadingModal {
+            #loadingModal, #loading {
                 display: block;
                 width: 100%;
                 height: 100%;
@@ -182,22 +182,26 @@
 
             <br><br><br>
             <!-- Start of Course Materials table -->
+            <h5 id='tabletitle'></h5>
             <div class="row" id="table">
                 <table class="table">
                     <tbody id="tableheader"> 
-                    <tr>
-                        <th scope="col">S/N</th>
-                        <th scope="col">File Name</th>
-                        <th scope="col">File Type</th>
-                        <th scope="col">Actions</th>
-                    </tr>
+                        <tr>
+                            <th scope="col">S/N</th>
+                            <th scope="col">File Name</th>
+                            <th scope="col">File Type</th>
+                            <th scope="col">Actions</th>
+                        </tr>
                     </tbody>
                     <tbody id="tablecontent">
                         <tr>
                             <td>Please select a section to view details</td>
                         </tr>
                     </tbody>
-                </table>               
+                </table>  
+                <div id="loading">
+                    <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
+                </div>               
             </div>
             <!-- End of Course Materials table -->
 
@@ -288,7 +292,7 @@
             </div>  
 
             <!-- Modal for loading -->
-            <div id="loadingModal" class="modal fade">
+            <!-- <div id="loadingModal" class="modal fade">
                 <div class="modal-dialog modal-confirm">
                     <div class="modal-content">
                         <div class="modal-header flex-column">				
@@ -302,7 +306,7 @@
                         </div>
                     </div>
                 </div>
-            </div> 
+            </div>  -->
 
              <!-- Success modal -->
              <div id="successModal" class="modal fade">
@@ -344,7 +348,8 @@
                         </div>
                     </div>
                 </div>
-            </div> 
+            </div>             
+        </div>
 
         <!-- End of Main Content  -->
 
@@ -365,7 +370,7 @@
             // const api_endpoint = "http://localhost:8000/"
 
             $(async () => {
-                $("#loadingModal").modal('show');
+                $("#loading").show();
                 const courseAssignment = api_endpoint + `group/trainer/${user_id}/${course_id}`
 
                 try {
@@ -401,10 +406,7 @@
                                                 <a id="#" href="finalquiz.html">Final Quiz</a>
                                             </li>
                                             <li>
-                                                <a id="#" href="#">Forum Discussions</a>
-                                            </li>
-                                            <li>
-                                                <a id="#" href="course_progression.html">Course Progression</a>
+                                                <a id="#" href="#" onclick="courseProgression(${group.group_id})">Course Progression</a>
                                             </li>`
                                     
                                     if (!$.trim($('#tablecontent').html())) {
@@ -424,14 +426,13 @@
                         } 
                     }
                     $("#courseName").text(course_name);                    
-                    $("#loadingModal").modal('hide');
+                    $("#loading").hide();
                 } catch(err) {
                     alert(err);
                     console.log(err);
                     
-                    $("#loadingModal").modal('hide');
-                }                
-                $("#loadingModal").modal('hide');
+                    $("#loading").hide();
+                }
             });
 
             async function getSections(group_id) {
@@ -459,7 +460,7 @@
 
             async function getSectionDetails(section_id, section_no) {
                 
-                $("#loadingModal").modal('show');
+                $("#loading").show();
                 const sectionDetails = api_endpoint + `course_section/${section_id}`
 
                 try {
@@ -469,9 +470,9 @@
                             method: 'GET'
                         }
                     );
-
+                    
                     const result = await response.json();                    
-                    $("#loadingModal").modal('hide');
+                    $("#loading").hide();
                     if (response.status === 200) {
                         let data = result.data
                         $('#sectionTitle').text(data.description);
@@ -480,14 +481,20 @@
                         $('#addReadingButton').attr("href",`add_reading.html?id=${data.id}&groupId=${data.group_id}`);
                         $('#deleteSectionId').val(section_id);
                         $('#deleteConfirmation').text(data.description);
+                        $("#tabletitle").text(`Section Materials`)
                         $('#tablecontent').html('');
+                        $("#tableheader").html(`                        
+                                                <tr>
+                                                    <th scope="col">S/N</th>
+                                                    <th scope="col">File Name</th>
+                                                    <th scope="col">File Type</th>
+                                                    <th scope="col">Actions</th>
+                                                </tr>`)
                         if (!data.video_url.length && !data.material_url.length ) {
                             $('#tablecontent').html(`
                             <tr>
                                 <td>No materials have been added to this section yet. </td>
                             </tr>`);             
-
-                            $("#loadingModal").modal('hide');
                         } else {
                             let i = 1;
                             if (data.material_url) {
@@ -531,25 +538,22 @@
                                         <tr>
                                     `)
                                     i++;
-                                }
-                            
+                                }                            
                             } 
                         }
                     }
                      
                     feather.replace()
-                    $("#loadingModal").modal('hide');
                     return []
                 } catch(err) {
                     alert(err);
-                    console.log(err);                    
-                    $("#loadingModal").modal('hide');
+                    console.log(err);
+                    $("#loading").hide();
                 }
             }
         
             async function addSection() {
-                $("#loadingModal").modal("show");
-                $("#loadingModal").modal("show");
+                $("#loading").show();
                 let groups = $("#modelGroups").val()
                 try {
                     for (let group of groups) {
@@ -580,7 +584,7 @@
                         }
                     }
                     feather.replace()
-                    $("#loadingModal").modal("hide");
+                    $("#loading").hide();
                     $("#successModal").modal("show");
                 } catch (error) {
                     $("#failureMessage").text(err)
@@ -599,7 +603,7 @@
             async function deleteMaterial(id) {
 
                 $('#deletematerial').modal('hide');
-                $("#loadingModal").modal('show');
+                $("#loading").show();
                 var delete_api = api_endpoint + "material/" + id
                 try {
                     const response =
@@ -611,7 +615,7 @@
 
                     const result = await response.json();
                     
-                    $("#loadingModal").modal('hide');
+                    $("#loading").hide();
                     if (response.status === 200 && result.code === 200) {
                         $("#successMessage").text(result.message)
                         $('#successModal').modal('show');
@@ -632,7 +636,7 @@
             async function deleteSection(id) {
 
                 $('#deleteSection').modal('hide');
-                $("#loadingModal").modal('show');
+                $("#loading").show();
                 var delete_api = api_endpoint + "course_section/" + id
                 try {
                     const response =
@@ -643,7 +647,7 @@
                     );
                     const result = await response.json();
                     
-                    $("#loadingModal").modal('hide');
+                    $("#loading").hide();
                     if (response.status === 200 && result.code === 200) {
                         $("#successMessage").text(result.message)
                         $('#successModal').modal('show');
@@ -660,6 +664,69 @@
 
                 feather.replace();
             }
+
+            async function courseProgression(group_id) {
+                
+                $("#loading").show();
+                var course_progression = api_endpoint + `enrolment/group/${group_id}`
+                let result;
+                try {
+                    const response =
+                        await fetch(
+                            course_progression, {
+                            method: 'GET'
+                        }
+                    );
+
+                    result = await response.json();                    
+                    $("#loading").hide();
+                    if (response.status === 200 && result.code === 200) {
+                        let data = result.data;
+                        $("#tabletitle").text(`Learners' Progress`)
+                        $('#tablecontent').html('');
+                        $("#tableheader").html(`                        
+                                                <tr>
+                                                    <th scope="col">S/N</th>
+                                                    <th scope="col">Learner's Name</th>
+                                                    <th scope="col">Enrolment Date</th>
+                                                    <th scope="col">Progress</th>
+                                                </tr>`)
+                        if (data.length) {
+                            let i = 1;
+                            for (let learner of data) { 
+                                row = `
+                                        <tr>
+                                            <td>${i}</td>
+                                            <td>${learner.learner_name}</td>
+                                            <td>${learner.enrolled_dt}</td>
+                                            <td>
+                                                <div class="progress">
+                                                    <div class="progress-bar" role="progressbar" style="width: ${(learner.completion_status*100).toFixed(0)}%;" aria-valuenow="${(learner.completion_status*100).toFixed(0)}" aria-valuemin="0" aria-valuemax="100">${(learner.completion_status*100).toFixed(0)}%</div>
+                                                </div>
+                                            </td>
+                                        </tr>`
+                                $("#tablecontent").append(row);
+                                i++;
+                            }
+                        } else { 
+                            row = `
+                                    <tr>
+                                        <td>No learner has been enrolled in this group yet.</td>
+                                    </tr>`
+                            $("#tablecontent").append(row);
+                        }
+                    } 
+              
+                    $("#loading").hide();
+                } catch(err) {
+                    $("#failureMessage").text(result.message)
+                    $('#failureModal').modal('show');
+                    console.log(err);
+                }
+
+                feather.replace();
+            }
+
         </script>
     </body>
 

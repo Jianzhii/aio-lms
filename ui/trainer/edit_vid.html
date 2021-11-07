@@ -96,7 +96,7 @@
         <div class="row">
             <div class="col-6">
                 <!-- Start of Form  -->
-                <form action="uploadCM.html" class="form" id="myForm">
+                <form action="section_management.html" class="form" id="myForm">
                     <!-- Start of Title Field -->
                     <div class="mb-3">
                         <label for="formGroupExampleInput" class="form-label">Title</label>
@@ -226,7 +226,7 @@
                 const result = await response.json();
                 if (response.status === 200) {
                     console.log(result)                    
-                    window.location.href = `uploadCM.html?id=${course_id}&courseName=${course_name}`;
+                    window.location.href = `section_management.html?id=${course_id}&courseName=${course_name}`;
                 }                 
                 $('#loadingModal').modal('hide');
                 $("#failureMessage").text(result.message)
