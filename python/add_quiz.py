@@ -1,6 +1,6 @@
 from app import app, db
 from flask import jsonify, request
-from section_progress import SectionProgress
+from section_progress import SectionProgress, checkCompletionOfSection
 
 
 class Quiz(db.Model):
@@ -83,6 +83,7 @@ def getQuiz(section_id):
 sample request
 {   
     "section_id": 3,
+    "enrolment_id": 3,
     answers: [
        {
            "question_no": 1,
@@ -113,6 +114,14 @@ def validateQuiz():
                 total_correct += 1
             answer['answer'] = quiz_answer.answer
         data['result'] = f"{total_correct}/{total_questions}"
+
+        section_progress = SectionProgress.query.filter_by(section_id = section_id, course_enrolment_id = data['enrolment_id']).first()
+        section_progress.quiz_attempt = 1
+        if not section_progress.is_quiz_pass and (total_correct/total_questions) >= 0.8:
+            section_progress.is_quiz_pass = 1
+            
+        checkCompletionOfSection(section_progress)
+        db.session.commit()
         
         return jsonify(
             {
