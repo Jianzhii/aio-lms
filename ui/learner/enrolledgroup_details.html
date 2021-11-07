@@ -228,6 +228,7 @@
             var enrollmentid = query[2].slice(8,)
 
             var user_id = sessionStorage.getItem("user_id")
+            sessionStorage.setItem("url", window.location.search.substring(1));
 
             /* retrieve information of group */
             $(async() => { 
@@ -247,6 +248,8 @@
                         // console.log(data)
                         var cname = data.course_name + " - Group " + groupid
                         $('#cname').append(cname)
+                        
+                        sessionStorage.setItem("course_title",cname);
                         $('#gsize').append(data.size)
                         $('#trainer').append(data.trainer_name)
                         $('#eperiod').append(data.enrol_start_date.slice(0,data.enrol_start_date.length - 3) + " - " + data.enrol_end_date.slice(0,data.enrol_end_date.length - 3) )

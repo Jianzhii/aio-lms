@@ -185,7 +185,8 @@
             const section_id = sessionStorage.getItem("section_id") || 3;
             const course_title = sessionStorage.getItem("course_title") || "Some course";
             const section_title = sessionStorage.getItem("section_title") || "help";
-            const enrolment_id = sessionStorage.getItem("enrolment_id") || 12;
+            const enrolment_id = sessionStorage.getItem("enrolment_id") || 12;            
+            const group_id = sessionStorage.getItem("group_id") || 12;
 
             const api_endpoint = "http://52.55.242.44:8000/" 
             // const api_endpoint = "http://localhost:8000/"
@@ -195,6 +196,8 @@
                 $("#return").hide();
                 $("#courseTitle").text(course_title);
                 $("#sectionTitle").text(`${section_title} (Ungraded Quiz)`);
+                // console.log(enrolment_id)
+                $("#return").attr('onclick',`window.location.href='coursematerials.html?groupid=${group_id}&sectionid=${section_id}&enrolid=${enrolment_id}'`)
 
                 // API Endpoint
                 var get_quiz = api_endpoint + `quiz/${section_id}`

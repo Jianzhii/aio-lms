@@ -152,7 +152,7 @@
         <div class="container" id="sidebar">
             <div class="sidenav">
                 <div>
-                    <img id="logo" src="../../static/imgs/All-In-One 1.png" width="270px" height="125px">
+                    <img id="logo" src="../../static/imgs/All-In-One 1.png" width="270px" height="125px" onclick="learnerHome()" style='cursor:pointer;'>
                 </div>
                 <h3 id="coursegroup"></h3>
                 <ul id="groups"></ul>
@@ -165,9 +165,9 @@
         </div>
         <div class="container" id="content">
 
-            <div class="row">
+            <div class="row d-flex align-items-center">
                 <div class="col">
-                    <h2 class="sname"></h2>
+                    <h2 class="sname"> <a id="return" class='icon' href="course.html"><i data-feather="chevron-left"></i></a>  </h2>
                 </div>
                 <div class="col-2" style="padding-top: 65px ;">
                     <input type="button" value="Log Out" id="logout" onclick="logout()">
@@ -215,12 +215,19 @@
             let query = window.location.search.substring(1).split('&') ;
             var groupid = query[0].slice(8,)
             var sectionid = query[1].slice(10,)
-            var enrolid = query[2].slice(7,)
+            var enrolid = query[2].slice(8,)
+            var url = sessionStorage.getItem('url');
+            sessionStorage.removeItem('url')
+
+            sessionStorage.setItem("section_id", sectionid);
+            sessionStorage.setItem("enrolment_id", enrolid);
+            sessionStorage.setItem("group_id", groupid);
 
             /* populate sidebar */
             $(async() => {
                 var group_api = api_endpoint + "group/" + groupid
                 var all_sections_api = api_endpoint + "all_section/" + groupid
+                $("#return").attr('href',`enrolledgroup_details.html?${url}`)
 
                 try {
                     
@@ -249,7 +256,7 @@
                         let data = result2.data
                         $("#sectiondetails").append(data.name)
                         for (i = 0 ; i < data.length ; i++) {
-                            list = `<li><a href="coursematerials.html?groupid=${groupid}&sectionid=${data[i].id}">${data[i].name}</a></li>`
+                            list = `<li><a href="coursematerials.html?groupid=${groupid}&sectionid=${data[i].id}&enrolid=${enrolid}">${data[i].name}</a></li>`
                             $("#groups").append(list)
                         }
                     }
@@ -277,6 +284,8 @@
                         let data = result.data
                         let i = 1
                         $(".sname").append(data.name)
+                        
+                        sessionStorage.setItem("section_title",data.name);
                         $("#sdes").append(data.description)
                         let materials = data.material_url
                         for (let material of materials) {
@@ -299,7 +308,7 @@
                             i++
                         }
                         let videos = data.video_url
-                        console.log(videos)
+                        // console.log(videos)
                         for (let video of videos) {
                             row = `<tr>
                                         <td>${i}</td>
