@@ -95,42 +95,43 @@
     // API Endpoint
     const login_api = "http://52.55.242.44:8000/" + "login" // server
     // var login_api = "http://localhost:8000/"  + "login" // localhost  
-  feather.replace()
- async function validate_user(){
-    try{
-      body = {}
-      $("form :input").each((i, field) => {
-        body[field.name] = field.value
-      })
-      console.log(body)
-      const response =
-              await fetch(
-                  login_api, {
-                  method: 'POST',
-                  headers: { "Content-Type":"application/json"},
-                  body: JSON.stringify(body)
-              }
-          );
-      let userObj = await response.json();
-      if(userObj.code == 200){
-        user_id = userObj.data.id
-        role_name = userObj.data.role_name.toLowerCase();
-        sessionStorage.setItem('user_id', userObj.data.id)
-        if(role_name == "admin"){
-          window.location.href = './ui/admin/admin_home.html';
-        }else if(role_name == "trainer"){
-          window.location.href = './ui/trainer/trainer_home.html';
-        }else{
-          window.location.href = './ui/learner/learner_home.html';
-        }
-      } else { 
-        $('#failureModal').modal('show');
-      }
-    }catch(err){
-        alert(err)
-        console.log(err)
-    }
- }
+	feather.replace()
+
+	async function validate_user(){
+		try{
+			body = {}
+			$("form :input").each((i, field) => {
+				body[field.name] = field.value
+			})
+			const response =
+					await fetch(
+						login_api, {
+						method: 'POST',
+						headers: { "Content-Type":"application/json"},
+						body: JSON.stringify(body)
+					}
+				);
+			let userObj = await response.json();
+			if(userObj.code == 200){
+				user_id = userObj.data.id
+				role_name = userObj.data.role_name.toLowerCase();
+				sessionStorage.setItem('user_id', userObj.data.id)
+				
+				if(role_name == "admin"){
+					window.location.href = './ui/admin/admin_home.html';
+				}else if(role_name == "trainer"){
+					window.location.href = './ui/trainer/trainer_home.html';
+				}else{
+					window.location.href = './ui/learner/learner_home.html';
+				}
+			} else { 
+				$('#failureModal').modal('show');
+			}
+		}catch(err){
+			alert(err)
+			console.log(err)
+		}
+	}
 
 </script>
 </html>
