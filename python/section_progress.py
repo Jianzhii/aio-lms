@@ -109,21 +109,9 @@ def markCompleted(progress_id, material_id):
             .first()
         )
         progress.material[str(material_id)] = True
-        # check all complete, dhen mark second true
-        check_all_complete = True
-        for material_id in progress.material: 
-            if not progress.material[material_id]:
-                check_all_complete = False
-                break
-        if not progress.quiz_attempt: 
-            check_all_complete = False
-
-        if check_all_complete:
-            next = db.session.query(SectionProgress).filter(SectionProgress.id > progress_id, SectionProgress.course_enrolment_id == progress.course_enrolment_id).first()
-            if next:
-                next.is_access = True
-
+        checkCompletionOfSection(progress)
         db.session.commit()
+
         return jsonify(
                 {
                     "code": 200,
@@ -139,6 +127,23 @@ def markCompleted(progress_id, material_id):
                 }
             ), 406
 
+def checkCompletionOfSection(section_progress):
+    try:
+        # check all complete, dhen mark second true
+        check_all_complete = True
+        for material_id in section_progress.material: 
+            if not section_progress.material[material_id]:
+                check_all_complete = False
+                break
+        if not section_progress.quiz_attempt: 
+            check_all_complete = False
+
+        if check_all_complete:
+            next = db.session.query(SectionProgress).filter(SectionProgress.id > section_progress.id, SectionProgress.course_enrolment_id == section_progress.course_enrolment_id).first()
+            if next:
+                next.is_access = True
+    except Exception as e:
+        raise e
 
 #  Get all section under learner
 @app.route("/section_progress/all_section/<int:enrolment_id>", methods=["GET"])
