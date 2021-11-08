@@ -15,6 +15,7 @@ db_password = os.environ.get("DB_PASSWORD")
 app.config[
     "SQLALCHEMY_DATABASE_URI"
 ] = f"mysql+mysqlconnector://{db_username}:{db_password}@{db_host}:{db_port}/lms"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
@@ -44,7 +45,7 @@ def test():
     ), 200
 
 
-os.environ["FLASK_RUN_FROM_CLI"] = "false"
+# os.environ["FLASK_RUN_FROM_CLI"] = "false"
 
 if os.environ.get("ENVIRONMENT") == "deploy":
     app.run(host="0.0.0.0", port=8000)
