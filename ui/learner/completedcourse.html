@@ -169,7 +169,7 @@
             const api_endpoint = "http://52.55.242.44:8000/" 
             // const api_endpoint = "http://localhost:8000/"
 
-            var user_id = sessionStorage.getItem("user_id")
+            var user_id = sessionStorage.getItem("user_id") || 7
 
             // retrieve completed courses
             $(async () => {
@@ -201,7 +201,7 @@
                                     <div class="card-header">Group ${data[i].group_id}</div>
                                     <div class="card-body">
                                         <h6 class="card-title">${data[i].course_name}</h6>
-                                        <input type="button" value="View Details" onclick="window.location.href='group_details.html?id=' + ${data[i].id} + '&groupId=' + ${data[i].group_id}">
+                                        <input type="button" value="View Details" onclick="window.location.href='enrolledgroup_details.html?id=' + ${data[i].course_id} + '&groupId=' + ${data[i].group_id} + '&enrolID=' + ${data[i].id}">
                                     </div>
                                     </div>
                                 </div>` 
