@@ -122,6 +122,9 @@ def markCompleted(progress_id, material_id):
         progress.material[str(material_id)] = True
         checkCompletionOfSection(progress)
         db.session.commit()
+        
+        from enrol import checkCompletionOfCourse
+        checkCompletionOfCourse(progress.course_enrolment_id)
 
         return jsonify(
                 {

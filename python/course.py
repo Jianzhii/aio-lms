@@ -42,7 +42,7 @@ class UserBadge(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, nullable=False)
     badges_id = db.Column(db.Integer, nullable=False)
-    assigned_dt = db.Column(db.DateTime, nullable=False)
+    assigned_dt = db.Column(db.DateTime, nullable=True)
 
     def json(self):
         return {

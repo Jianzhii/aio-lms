@@ -1,6 +1,7 @@
 from app import app, db
 from flask import jsonify, request
 from section_progress import SectionProgress, checkCompletionOfSection
+from enrol import checkCompletionOfCourse
 
 
 class Quiz(db.Model):
@@ -122,10 +123,12 @@ def validateQuiz():
         checkCompletionOfSection(section_progress)
         db.session.commit()
 
+        checkCompletionOfCourse(data['enrolment_id'])
+
         return jsonify(
             {
                 "code": 200,
-                "message": "Quiz successfully retrieved!",
+                "message": "Quiz successfully validated!",
                 "data": data
             }
         ), 200
