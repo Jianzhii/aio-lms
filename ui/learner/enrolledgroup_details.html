@@ -312,7 +312,7 @@
                                         <td>Section ${i+1}</td>
                                         <td>${section_progress[i].section_description}</td>`
                                     if (section_progress[i].is_access == true) {
-                                        row += `<td><input type="button" value="View Materials" onclick="window.location.href='coursematerials.html?groupid=${groupid}&sectionid=${section_progress[0].section_id}&enrolid=${enrollmentid}'"></td>`
+                                        row += `<td><input type="button" value="View Materials" onclick="window.location.href='coursematerials.html?groupid=${groupid}&sectionid=${section_progress[i].section_id}&enrolid=${enrollmentid}'"></td>`
                                     } else {
                                         row += `<td><input type="button" value="View Materials" disabled></td>`
                                     }
