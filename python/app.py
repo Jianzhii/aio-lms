@@ -45,7 +45,7 @@ def test():
     ), 200
 
 
-# os.environ["FLASK_RUN_FROM_CLI"] = "false"
+os.environ["FLASK_RUN_FROM_CLI"] = "false"
 
 if os.environ.get("ENVIRONMENT") == "deploy":
     app.run(host="0.0.0.0", port=8000)
