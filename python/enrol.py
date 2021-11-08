@@ -341,7 +341,7 @@ def checkCompletionOfCourse(enrol_id):
                 return False
 
         enrolment = Enrolment.query.filter_by(id = enrol_id).first()
-        if not enrolment.is_quiz_pass: 
+        if not enrolment.is_quiz_pass:
             return False
         enrolment.completed = True
         db.session.commit()
@@ -353,7 +353,7 @@ def checkCompletionOfCourse(enrol_id):
         raise e
 
 def assignBadges(user_id, group_id):
-    try: 
+    try:
         group = Group.query.filter_by(id = group_id).first()
         course_id = group.course_id
         badge = Badge.query.filter_by(course_id = course_id).first()
