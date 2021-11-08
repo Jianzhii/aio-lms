@@ -1,11 +1,11 @@
 """
-Note: 
+Note:
     - Will need to install pytest to run test.
     - Run "pytest" in terminal to run all test cases in respective test files.
 """
 
 """
-Author: 
+Author:
 """
 
 import os
@@ -17,6 +17,7 @@ from dotenv import load_dotenv
 # Set up app and connection to DB
 def load_env():
     load_dotenv()
+
 
 db_host = os.environ.get("DB_HOSTNAME")
 db_port = os.environ.get("DB_PORT")
