@@ -97,7 +97,6 @@ def getQuiz(section_id):
 #         ), 406
 
 
-
 # Validate quiz answer
 """
 sample request
