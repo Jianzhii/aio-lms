@@ -31,7 +31,7 @@ def initalise_db():
 
     app.config[
         "SQLALCHEMY_DATABASE_URI"
-    ] = f"mysql+mysqlconnector://{db_username}:{db_password}@{db_host}:{db_port}/lms"
+    ] = f"mysql+mysqlconnector://{db_username}:{db_password}@{db_host}:{db_port}/lms_test"
 
 
 # Test cases
