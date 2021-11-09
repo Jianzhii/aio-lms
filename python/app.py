@@ -6,6 +6,7 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+
 CORS(app)
 
 db_host = os.environ.get("DB_HOSTNAME")
@@ -44,12 +45,3 @@ def test():
             "data": "test"
         }
     ), 200
-
-
-os.environ["FLASK_RUN_FROM_CLI"] = "false"
-
-if "pytest" not in sys.modules:
-    if os.environ.get("ENVIRONMENT") == "deploy":
-        app.run(host="0.0.0.0", port=8000)
-    else:
-        app.run(host="0.0.0.0", port=8000, debug=True)

@@ -12,22 +12,27 @@ import os
 
 from app import app
 from dotenv import load_dotenv
+import pytest
 from flask import json
 
 
-# Set up app and connection to DB
+#  Load function to read from .env
+@pytest.fixture(scope='session', autouse=True)
 def load_env():
     load_dotenv()
 
 
-db_host = os.environ.get("DB_HOSTNAME")
-db_port = os.environ.get("DB_PORT")
-db_username = os.environ.get("DB_USERNAME")
-db_password = os.environ.get("DB_PASSWORD")
+# Set up connection to DB
+@pytest.fixture(autouse=True)
+def initalise_db():
+    db_host = os.environ.get("DB_HOSTNAME")
+    db_port = os.environ.get("DB_PORT")
+    db_username = os.environ.get("DB_USERNAME")
+    db_password = os.environ.get("DB_PASSWORD")
 
-app.config[
-    "SQLALCHEMY_DATABASE_URI"
-] = f"mysql+mysqlconnector://{db_username}:{db_password}@{db_host}:{db_port}/lms"
+    app.config[
+        "SQLALCHEMY_DATABASE_URI"
+    ] = f"mysql+mysqlconnector://{db_username}:{db_password}@{db_host}:{db_port}/lms"
 
 
 # Test cases
