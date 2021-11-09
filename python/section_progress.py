@@ -123,6 +123,9 @@ def markCompleted(progress_id, material_id):
         checkCompletionOfSection(progress)
         db.session.commit()
 
+        from enrol import checkCompletionOfCourse
+        checkCompletionOfCourse(progress.course_enrolment_id)
+
         return jsonify(
                 {
                     "code": 200,

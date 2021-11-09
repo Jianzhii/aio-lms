@@ -3,10 +3,9 @@ from datetime import datetime
 from flask import jsonify, request
 
 from app import app, db
-from course import Course
+from course import Course, Badge, UserBadge
 from group import Group
 from section_progress import SectionProgress, createProgressRecord
-from sqlalchemy.sql.expression import false
 from user import User
 
 
@@ -16,6 +15,7 @@ class Enrolment(db.Model):
     group_id = db.Column(db.Integer, primary_key=True, nullable=False)
     user_id = db.Column(db.Integer, nullable=False)
     enrolled_dt = db.Column(db.DateTime, nullable=True)
+    is_quiz_pass = db.Column(db.Boolean, nullable=True)
     completed = db.Column(db.Boolean, nullable=True)
 
     def json(self):
@@ -24,6 +24,7 @@ class Enrolment(db.Model):
             "group_id": self.group_id,
             "user_id": self.user_id,
             "enrolled_dt": self.enrolled_dt.strftime("%d/%m/%Y, %H:%M:%S"),
+            "is_quiz_pass": self.is_quiz_pass,
             "completed": self.completed,
         }
 
@@ -326,3 +327,42 @@ def deleteEnrolment(id):
                     "message": f"An error occurred while deleting enrolment: {e}"
                 }
             ), 406
+
+
+def checkCompletionOfCourse(enrol_id):
+    try:
+        section_progress = SectionProgress.query.filter_by(course_enrolment_id = enrol_id).all()
+        for i in range(len(section_progress)):
+            section = section_progress[i]
+            for material in section.material:
+                if not section.material[material]:
+                    return False
+            if not section.quiz_attempt:
+                return False
+
+        enrolment = Enrolment.query.filter_by(id = enrol_id).first()
+        if not enrolment.is_quiz_pass:
+            return False
+        enrolment.completed = True
+        db.session.commit()
+
+        assignBadges(enrolment.user_id, enrolment.group_id)
+
+        return True
+    except Exception as e:
+        raise e
+
+def assignBadges(user_id, group_id):
+    try:
+        group = Group.query.filter_by(id = group_id).first()
+        course_id = group.course_id
+        badge = Badge.query.filter_by(course_id = course_id).first()
+        badge_assignment = UserBadge(
+            user_id = user_id,
+            badges_id = badge.id,
+            assigned_dt = datetime.now()
+        )
+        db.session.add(badge_assignment)
+        db.session.commit()
+    except Exception as e:
+        raise e

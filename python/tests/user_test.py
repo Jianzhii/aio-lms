@@ -31,7 +31,6 @@ app.config[
 
 # Test cases
 def test_get_all_user():
-    # Create a test client using the Flask application configured for testing
     with app.test_client() as test_client:
         response = test_client.get('/test')
         assert response.status_code == 200
