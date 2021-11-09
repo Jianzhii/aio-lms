@@ -1,4 +1,5 @@
 import os
+import sys
 
 from flask import Flask, jsonify
 from flask_cors import CORS
@@ -47,7 +48,8 @@ def test():
 
 os.environ["FLASK_RUN_FROM_CLI"] = "false"
 
-if os.environ.get("ENVIRONMENT") == "deploy":
-    app.run(host="0.0.0.0", port=8000)
-else:
-    app.run(host="0.0.0.0", port=8000, debug=True)
+if "pytest" not in sys.modules:
+    if os.environ.get("ENVIRONMENT") == "deploy":
+        app.run(host="0.0.0.0", port=8000)
+    else:
+        app.run(host="0.0.0.0", port=8000, debug=True)
