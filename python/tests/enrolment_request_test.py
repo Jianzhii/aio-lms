@@ -190,11 +190,3 @@ def test_delete_requests():
     with app.test_client() as test_client:
         response = test_client.delete(f"/enrolment_request/user/{enrolment_request['user_id']}")
         assert response.status_code == 200
-
-
-
-
-
-
-
-
