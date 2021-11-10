@@ -196,7 +196,7 @@ def approveRequest(request_id):
                 group_id = enrolment_request.group_id
                 data["user_id"] = user_id
                 data["group_id"] = group_id
-                result = addEnrolment(data)    
+                result = addEnrolment(data)
                 db.session.commit()
                 enrolment_request.course_enrolment_id = result[0].get_json()["data"]["id"]
                 db.session.commit()
