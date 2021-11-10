@@ -1,6 +1,6 @@
 from flask import jsonify, request
 
-from app import app
+from app import app, db
 from user import User, UserRole
 
 
