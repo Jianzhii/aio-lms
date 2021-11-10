@@ -77,8 +77,7 @@ def group(course):
 
 def tearDown(): 
     print('\n Tearing Down')
-    from app import course, group, course_section    
-    db.session.query(course_section.CourseSection).delete()
+    from app import course, group, course_section
     db.session.query(group.Group).delete()
     db.session.query(course.Course).delete()
     db.session.commit()
