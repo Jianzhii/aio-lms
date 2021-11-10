@@ -196,13 +196,21 @@ def approveRequest(request_id):
                 data["user_id"] = user_id
                 data["group_id"] = group_id
                 result = addEnrolment(data)
-                enrolment_request.course_enrolment_id = result[0].get_json()["data"][
-                    "id"
-                ]
+                
+                db.session.commit()
+                return jsonify(
+                    {
+                        "code": 200,
+                        "data": result[0].get_json(),
+                        "message": "Enrolment Request Successfully Approved",
+                    }
+                ), 200
+                enrolment_request.course_enrolment_id = result[0].get_json()["data"]["id"]
                 db.session.commit()
                 return jsonify(
                         {
                             "code": 200,
+                            "data": enrolment_request.json(),
                             "message": "Enrolment Request Successfully Approved",
                         }
                     ), 200

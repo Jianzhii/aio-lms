@@ -47,6 +47,7 @@ def initialise_db():
 # Set up test data in database
 @pytest.fixture(autouse=True)
 def course(initialise_db):
+    print('course')
     from app import course
     test_course = course.Course(
         name = "Test Course",
