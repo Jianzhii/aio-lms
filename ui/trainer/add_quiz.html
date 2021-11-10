@@ -66,9 +66,10 @@
         </label>
 
         <!-- Input Type Text -->
-        <input type="chapter_no"
+        <input type="text"
             id="chapter_no"
             placeholder="Enter the chapter number" />
+
     </div>
 
     <div class="form-control">
@@ -77,10 +78,23 @@
         </label>
 
         <!-- Input Type Chapter Name-->
-        <input type="chapter_name"
+        <input type="text"
             id="chapter_name"
             placeholder="Enter the Chapter Name" />
     </div>
+
+    
+    <div class="form-control">
+        <label for="DR" id="DR">
+            Duration
+        </label>
+
+        <!-- Input Type Chapter Name-->
+        <input type="number"
+            id="duration"
+            placeholder="Please enter the duration" />
+    </div>
+
     
     <div class="three">
         <div id="" class="two">
@@ -372,6 +386,7 @@ async function add_Quiz(){
         if ($("#TF1_" + count).val()) {
             data.append({
                 section_id: $("#chapter_no").val(),
+                duration: $("duration").value(),
                 question_choice: [$("#TF1_" + count).val(), $("#TF2_" + count).val()],
                 answer: $('#ans' + count).val() 
             })
@@ -379,6 +394,7 @@ async function add_Quiz(){
         else {
             data.append({
                 section_id: $("#chapter_no").val(),
+                duration: $("duration").value(),
                 question_choice: [$("#FQ1_" + count).val(), $("#FQ2_" + count).val(), $("#FQ3_" + count).val(), $("#FQ4_" + count).val()],
                 answer: $('#ans' + count).val() 
             })

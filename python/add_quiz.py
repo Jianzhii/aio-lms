@@ -76,26 +76,30 @@ def getQuiz(section_id):
 
 # Update quiz for section
 # (delete all questions from section and re-add again)
-# @app.route('/quiz/<int:section_id>', methods=["GET"])
-# def delQuiz(section_id):
-#     try:
-#         quiz_question = Quiz.query.filter_by(section_id = section_id).order_by(Quiz.question_no.asc()).all()
-#         data = [question.json() for question in quiz_question]
-#         return jsonify(
-#             {
-#                 "code": 200,
-#                 "message": "Quiz successfully retrieved!",
-#                 "data": data
-#             }
-#         ), 200
-#     except Exception as e:
-#         return jsonify(
-#             {
-#                 "code": 406,
-#                 "message": f"An error occurred while retrieving Quiz: {e}"
-#             }
-#         ), 406
+@app.route('/delete/<int:section_id>', methods=["GET"])
+def delQuiz(section_id):
+    quiz_del = Quiz.query.filter_by(section_id)
+    data = [question.json() for question in quiz_del]
+    try:
+        db.session.delete(quiz_del)
+        db.session.commit
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Quiz successfully deleted!",
+                "data": data
+            }
+        ), 200
+    except Exception as e:
+        return jsonify(
+            {
+                "code": 406,
+                "message": f"An error occurred while deleting Quiz: {e}"
+            }
+        ), 406
 
+
+    
 
 # Validate quiz answer
 """
