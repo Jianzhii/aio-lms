@@ -49,7 +49,7 @@ def initialise_db():
 def course(initialise_db):
     from app import course
     test_course = course.Course(
-        name = "One more",
+        name = "Test Course",
         description = "Test Description",
         prerequisite = []
     )
