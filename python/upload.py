@@ -51,6 +51,7 @@ def uploadFiles():
             ), 406
 
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
@@ -101,6 +102,7 @@ def uploadVideo():
             ), 406
 
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
@@ -132,6 +134,7 @@ def getFile(id):
                 }
             ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
@@ -188,6 +191,7 @@ def updateFile():
             ), 406
 
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
@@ -226,6 +230,7 @@ def deleteMaterial(id):
         ), 200
 
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,

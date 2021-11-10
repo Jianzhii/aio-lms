@@ -152,6 +152,7 @@ def addRequest():
                 }
             ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
@@ -244,6 +245,7 @@ def deleteEnrolmentRequest(id):
             }
         ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
             {
                 "code": 406,

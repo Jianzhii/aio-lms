@@ -80,6 +80,7 @@ def getSpecificThreadsAndPosts(id):
             }
         ), 200
     else:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
@@ -132,6 +133,7 @@ def createThread():
                 }
             ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
@@ -165,6 +167,7 @@ def updateThread(id):
                 }
             )
         except Exception as e:
+            db.session.rollback()
             return jsonify(
                     {
                         "code": 406,
@@ -172,6 +175,7 @@ def updateThread(id):
                     }
                 ), 406
     else:
+        db.session.rollback()
         return jsonify(
             {
                 "code": 406,
@@ -203,6 +207,7 @@ def deleteThread(id):
                 }
             ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
@@ -245,6 +250,7 @@ def updatePost(id):
                     }
                 ), 200
         except Exception as e:
+            db.session.rollback()
             return jsonify(
                     {
                         "code": 406,
@@ -282,6 +288,7 @@ def deletePost(id):
             }
         ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,

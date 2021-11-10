@@ -102,6 +102,7 @@ def getProgress(enrolment_id, section_id):
                 }
             ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
@@ -134,6 +135,7 @@ def markCompleted(progress_id, material_id):
                 }
             ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
@@ -185,6 +187,7 @@ def getAllSectionUnderEnrolment(enrolment_id):
             }
         ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
             {
                 "code": 406,

@@ -118,6 +118,7 @@ def searchCourse():
                 }
             ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
             {
                 "code": 406,
@@ -148,6 +149,7 @@ def getoneCourse(id):
             }
         ), 200
     else:
+        db.session.rollback()
         return jsonify(
             {
                 "code": 406,
@@ -185,6 +187,7 @@ def addCourse():
                 }
             ), 200,
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
@@ -231,6 +234,7 @@ def updateCourse():
             ), 200
 
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
@@ -300,6 +304,7 @@ def deleteCourse(id):
             }
         ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
             {
                 "code": 406,
@@ -365,6 +370,7 @@ def courseAssignedToTrainer(trainer_id):
                     }
                 ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
             {
                 "code": 406,

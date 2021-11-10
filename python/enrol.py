@@ -177,6 +177,7 @@ def addEnrolment(data=None):
         enrolment = Enrolment.query.filter_by(id=result[0].json()["id"]).first()
         db.session.delete(enrolment)
         db.session.commit
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
@@ -292,6 +293,7 @@ def processEnrolmentEligibility(data):
         )
         return (enrol, 200)
     except Exception as e:
+        db.session.rollback()
         raise e
 
 
@@ -321,6 +323,7 @@ def deleteEnrolment(id):
             }
         ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
