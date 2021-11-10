@@ -152,6 +152,7 @@ def addRequest():
                 }
             ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
@@ -196,13 +197,21 @@ def approveRequest(request_id):
                 data["user_id"] = user_id
                 data["group_id"] = group_id
                 result = addEnrolment(data)
-                enrolment_request.course_enrolment_id = result[0].get_json()["data"][
-                    "id"
-                ]
+                
+                db.session.commit()
+                return jsonify(
+                    {
+                        "code": 200,
+                        "data": result[0].get_json(),
+                        "message": "Enrolment Request Successfully Approved",
+                    }
+                ), 200
+                enrolment_request.course_enrolment_id = result[0].get_json()["data"]["id"]
                 db.session.commit()
                 return jsonify(
                         {
                             "code": 200,
+                            "data": enrolment_request.json(),
                             "message": "Enrolment Request Successfully Approved",
                         }
                     ), 200
@@ -244,9 +253,40 @@ def deleteEnrolmentRequest(id):
             }
         ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
             {
                 "code": 406,
                 "message": f"An error occurred while deleting enrolment  request: {e}",
+            }
+        ), 406
+
+
+###### ADDED FOR TESTING PURPOSES ###### 
+@app.route("/enrolment_request/user/<int:user_id>", methods=["DELETE"])
+def deleteEnrolmentRequestByUser(user_id):
+    try:
+        enrolment_request = EnrolmentRequest.query.filter_by(user_id=user_id).first()
+        if not enrolment_request:
+            return jsonify(
+                    {
+                        "code": 406,
+                        "data": {"user_id": user_id},
+                        "message": "Enrolment Request not found for User.",
+                    }
+                ), 406
+        db.session.delete(enrolment_request)
+        db.session.commit()
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Enrolment Request successfully deleted for User"
+            }
+        ), 200
+    except Exception as e:
+        return jsonify(
+            {
+                "code": 406,
+                "message": f"An error occurred while deleting enrolment  request: {e} for user",
             }
         ), 406

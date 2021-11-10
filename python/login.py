@@ -37,6 +37,7 @@ def login():
             ), 406
 
     except Exception as e:
+        db.session.rollback()
         print(e)
         return jsonify(
             {

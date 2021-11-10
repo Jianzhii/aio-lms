@@ -81,6 +81,7 @@ def getAllGroups(id):
             }
         ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
@@ -127,6 +128,7 @@ def getOneGroup(id):
                     }
                 ), 406
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
@@ -195,6 +197,7 @@ def addGroup():
                 }
             ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
@@ -260,6 +263,7 @@ def updateGroup():
             ), 200
 
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
@@ -311,6 +315,7 @@ def deleteGroup(id):
             }
         ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
@@ -344,6 +349,7 @@ def groupsAssignedToTrainer(trainer_id, course_id):
                     }
                 ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,

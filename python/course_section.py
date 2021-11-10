@@ -111,6 +111,7 @@ def addSection():
                 }
         ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
@@ -146,6 +147,7 @@ def updateSection():
         ), 200
 
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
@@ -197,6 +199,7 @@ def deleteSection(id):
         ), 200
 
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
