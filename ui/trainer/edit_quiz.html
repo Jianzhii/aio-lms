@@ -104,13 +104,32 @@
         </div>
         <h2>Your Dynamic Form!</h2>
         <form action="" id="form" method="POST" name="form">
-            <span id="myForm"></span>
+            <div class="row">
+                <form id="questions" action="">
+                  
+                </form>
+            </div>            
+            
+            <div id='result'></div>
+
+            <div id="loading">
+                <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..."/>
+            </div>   
+            <hr>
+            <div class='text-center'> 
+                <input type="button" value="Submit" id="submit" onclick="validateQuiz()">       
+
+                <!-- TODO: add in redirection back to view section materials -->
+                <input type="button" value="Back to Section" id="return" onclick=""> 
+            </div>            
+            
             <div class="row" style="padding-top: 43px ; padding-left: 15px" >
                 <input type="button" value="Submit" onclick="add_Quiz()"> 
             </div>
             <div class="row" style="padding-top: 43px ; padding-left: 15px" >
                 <input type="button" value="Reset" onclick="resetElements()"> 
             </div>
+            
         </form>
     </div>
 
@@ -426,6 +445,58 @@ async function add_Quiz(){
             console.log(err)
         }
     }
+
+    const section_id = sessionStorage.getItem("section_id") || 3;
+    const course_title = sessionStorage.getItem("course_title") || "Some course";
+    const section_title = sessionStorage.getItem("section_title") || "help";
+    const enrolment_id = sessionStorage.getItem("enrolment_id") || 12;            
+    const group_id = sessionStorage.getItem("group_id") || 12;
+    /* retrieve list of questions */
+    $(async () => {
+                $("#return").hide();
+                $("#courseTitle").text(course_title);
+                $("#sectionTitle").text(`${section_title} (Ungraded Quiz)`);
+                // console.log(enrolment_id)
+                $("#return").attr('onclick',`window.location.href='coursematerials.html?groupid=${group_id}&sectionid=${section_id}&enrolid=${enrolment_id}'`)
+
+                // API Endpoint
+                var get_quiz = api_endpoint + `quiz/${section_id}`
+
+                    try {
+                        const response =
+                            await fetch(
+                                get_quiz, {
+                                method: 'GET'
+                            }
+                        );
+
+                        const result = await response.json();
+                        if (response.status === 200) {
+                            $('#loading').hide();
+                            let data = result.data                
+                            for (let question of data) {
+                                row = `<input type = "text" id="q${question.question_no}_div"> <p> Q${question.question_no}.  ${question.question}</p>`;
+
+                                for (let i = 1; i <= question.choice.length; i++) {
+                                    row += `
+                                        <input type="text" id="q${question.question_no}c${i}" name="question_${question.question_no}" value="${question.choice[i-1]}">
+                                        <label for="q${question.question_no}c${i}">${question.choice[i-1]}</label><br>`; 
+                                }                
+
+                                row += "</div><br>"
+                                $('#questions').append(row)                    
+                            }
+                            total_seconds = data[0].duration;
+                            c_minutes = parseInt(total_seconds / 60);
+                            c_seconds = parseInt(total_seconds % 60);                            
+                            timer = setTimeout(CheckTime, 1000);
+                        }
+                    } catch(err) {
+                        alert(err)
+                        console.log(err)
+                    }
+                // feather.replace()
+            });
 
     
 

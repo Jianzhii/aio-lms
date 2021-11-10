@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <title>Quiz - Ungraded</title>
+        <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+        <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+
+        <!-- Icons -->
+        <script src="https://unpkg.com/feather-icons"></script>
+
+        <!-- Bootstrap/ CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
+
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+        <!-- common js functions -->
+        <script src="../js/common.js"></script>
+
+        <style>
+
+            body {
+                font-family: 'Montserrat' ;
+                font-size: 12px ;
+            }
+
+            .sidenav {
+                height: 100% ;
+                width: 20% ;
+                position: fixed ;
+                top: 0 ;
+                left: 0 ;
+                z-index: 1 ;
+                overflow-x: hidden ;
+                border-right: solid lightgrey 2px ; 
+            }
+
+            h2 {
+                padding-top: 58px ;
+                padding-left: 10px ;
+                color: #FF922D ;
+            }
+
+            h3 {
+                text-indent: 34px ;
+                font-size: 13px ;
+                font-weight: bold ;
+            }
+
+            .sidenav a {
+                color: black ;
+                padding: 16px ;
+                display: block ;
+            }
+
+            a {
+                text-decoration: none ;
+            }
+
+            ul {
+                list-style-type: none ;
+            }
+
+            #logo {
+                height: 150px ;
+                width: 200px ;
+            }
+
+            #sidebar {
+                width: 30% ;
+            }
+
+            #content {
+                width: 80% ;
+                margin-left: 20% ;
+            }
+
+            #header {
+                padding: 12px ;
+            }
+
+            #questions {
+                padding: 40px ; 
+            }
+
+            input[type=button] {
+                background: #FF922D ;
+                color: white ; 
+                border: none ;
+                border-radius: 3px ; 
+                padding: 5px ;
+                width: 100px ;
+            }
+
+            .icon {
+                color: #FF922D ;
+                padding: 2px ;
+            }
+
+            #loading {
+                display: block;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                text-align: center;
+                opacity: 0.7;
+                background-color: #fff;
+                z-index: 99;
+            }
+
+            #loading-image {
+                margin-top: 50px;
+                z-index: 100;
+
+            }
+
+            #correct {
+                color: green;
+                font-weight: bold;
+            }
+
+            #incorrect {
+                color: red;
+                font-weight: bold;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <!-- start of side bar -->
+        <div class="container" id="sidebar">
+        </div>
+        <!-- end of side bar -->
+    
+        <div class="container" id="content">
+            <div class="row" id="header">
+                <div class="col">
+                    <h2 id="courseTitle"></h2>
+                    <br>
+                    <h3 id="sectionTitle"></h3>
+
+                    <div class='d-flex flex-row-reverse'>
+                        <div id='quiz-time-left'></div>
+                    </div>
+
+                </div>
+                <div class="col-2" style="padding-top: 65px ;">
+                    <input type="button" value="Log Out" id="logout" onclick='logout()'>
+                </div>
+            </div>
+            
+            <hr>
+            <div id="" class="two">
+                <p>Questions Input</p>
+                <button onclick="four_Question()">4MultipleChoices</button>
+                <button onclick="TFQuestion()">TrueFalseQuestions</button>
+            </div>
+            <!-- show list of questions for quiz -->
+            <div class="row">
+                <form id="myForm" action="">
+                  
+                </form>
+            </div>            
+            
+            <div id='result'></div>
+
+            <div id="loading">
+                <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..."/>
+            </div>   
+
+            <hr>
+            <div class='text-center'> 
+                <input type="button" value="Submit" id="addDel" onclick="add_Quiz()">       
+                <button id="addDel">Submit</button>
+                <!-- TODO: add in redirection back to view section materials -->
+                <input type="button" value="Back to Section" id="return" onclick=""> 
+            </div>
+            <br><br><br>
+        </div>
+
+        <script>
+            //Set functions to button
+            document.getElementById('addDel').addEventListener('click', function(){
+                del_Quiz();
+                add_Quiz()
+            })
+            var i = 0; /* Set Global Variable i */
+                function increment(){
+                    i += 1; /* Function for automatic increment of field's "Name" attribute. */
+            }
+
+            //delete 
+            function removeElement(parentDiv, childDiv){
+                if (childDiv == parentDiv){
+                    alert("The parent div cannot be removed.");
+                }
+                else if (document.getElementById(childDiv)){
+                    var child = document.getElementById(childDiv);
+                    var parent = document.getElementById(parentDiv);
+                    parent.removeChild(child);
+
+                    let q_no = +childDiv.substring(1);
+                    for (let q = q_no; q < i; q++) {
+                        document.getElementById(`Q${q+1}`).setAttribute('id', `Q${q}`);            
+                        document.getElementById(`ans${q+1}`).setAttribute("id", `ans${q}`);
+                        document.getElementById(`del${q+1}`).setAttribute("onclick", "removeElement('myForm','Q" + q + "')");            
+                        document.getElementById(`del${q+1}`).setAttribute("id", `del${q}`);
+                    }
+                    i--;
+                }
+                else{
+                    alert("Child div has already been removed or does not exist.");
+                    return false;
+                }
+            }
+
+            //TRUE FALSE QUESTIONS
+            function TFQuestion(){
+
+                increment();
+
+                var QN = document.createElement('span');
+                var QN_in = document.createElement("INPUT");
+                var first = document.createElement('span');
+                var first_in = document.createElement("INPUT");
+                var second = document.createElement('span');
+                var second_in = document.createElement("INPUT");
+                var answer = document.createElement('span');
+                var answer_in = document.createElement('INPUT');
+
+                QN_in.setAttribute("type", "text");
+                QN_in.setAttribute("placeholder", "TFQuestion");
+                first_in.setAttribute("type", "text");
+                first_in.setAttribute("placeholder", "FirstQn");
+                second_in.setAttribute("type", "text");
+                second_in.setAttribute("placeholder", "SecondQn");
+                answer_in.setAttribute("type", "text")
+                answer_in.setAttribute("placeholder", "Answer")
+
+                var g = document.createElement("IMG");
+                g.setAttribute("id","del" + i)
+                g.setAttribute("src", "delete.png");
+
+                var q_div = document.createElement('div')     
+                q_div.setAttribute("id", "Q" + i);
+                q_div.setAttribute("style", "padding-bottom: 20px");
+                document.getElementById("myForm").appendChild(q_div);
+
+                QN_in.setAttribute("id", "QN_in" + i);
+                QN.appendChild(QN_in);
+                QN.setAttribute("id", "id_" + i);
+                document.getElementById("Q" + i).appendChild(QN);
+
+                first_in.setAttribute("id", "TF1_" + i);
+                first.appendChild(first_in);
+                first.setAttribute("id", "id_" + i);
+                document.getElementById("Q" + i).appendChild(first);
+
+                second_in.setAttribute("id", "TF2_" + i);
+                second.appendChild(second_in);
+                second.setAttribute("id", "id_" + i);
+                document.getElementById("Q" + i).appendChild(second);
+
+                answer_in.setAttribute("id", "ans" + i);
+                answer.appendChild(answer_in);
+                answer.setAttribute("id", "id_" + i);
+                answer.appendChild(g);
+                g.setAttribute("onclick", "removeElement('myForm','Q" + i + "')");
+                document.getElementById("Q" + i).appendChild(answer)
+            }
+
+            // FOUR OPTION QUESTIONS
+            function four_Question(){
+                    
+                increment();
+
+                var QN = document.createElement('span');
+                var QN_in = document.createElement("INPUT");
+                var first = document.createElement('span');
+                var first_in = document.createElement("INPUT");
+                var second = document.createElement('span');
+                var second_in = document.createElement("INPUT");
+                var third = document.createElement('span');
+                var third_in = document.createElement("INPUT");
+                var fourth = document.createElement('span');
+                var fourth_in = document.createElement("INPUT");
+                var answer = document.createElement('span');
+                var answer_in = document.createElement('INPUT');
+
+                QN_in.setAttribute("type", "text");
+                QN_in.setAttribute("placeholder", "FourQuestion");
+                first_in.setAttribute("type", "text");
+                first_in.setAttribute("placeholder", "FirstQn");
+                second_in.setAttribute("type", "text");
+                second_in.setAttribute("placeholder", "SecondQn");
+                third_in.setAttribute("type", "text");
+                third_in.setAttribute("placeholder", "ThirdQn");
+                fourth_in.setAttribute("type", "text");
+                fourth_in.setAttribute("placeholder", "FourthQn");
+                answer_in.setAttribute("type", "text")
+                answer_in.setAttribute("placeholder", "Answer")
+
+                var g = document.createElement("IMG");    
+                g.setAttribute("id","del" + i)
+                g.setAttribute("src", "delete.png");
+
+                var q_div = document.createElement('div')     
+                q_div.setAttribute("id", "Q" + i);
+                q_div.setAttribute("style", "padding-bottom: 20px");
+                document.getElementById("myForm").appendChild(q_div);
+
+
+                QN_in.setAttribute("id", "QN_in" + i);
+                QN.appendChild(QN_in);
+                QN.setAttribute("id", "id_" + i);
+                document.getElementById("Q" + i).appendChild(QN);
+
+                first_in.setAttribute("id", "FQ1_" + i);
+                first.appendChild(first_in);
+                first.setAttribute("id", "id_" + i);
+                document.getElementById("Q" + i).appendChild(first);
+
+                second_in.setAttribute("id", "FQ2_" + i);
+                second.appendChild(second_in);
+                second.setAttribute("id", "id_" + i);
+                document.getElementById( "Q" + i).appendChild(second);
+
+                third_in.setAttribute("id", "FQ3_" + i);
+                third.appendChild(third_in);
+                third.setAttribute("id", "id_" + i);
+                document.getElementById("Q" + i).appendChild(third);
+
+                fourth_in.setAttribute("id", "FQ4_" + i);
+                fourth.appendChild(fourth_in);
+                fourth.setAttribute("id", "id_" + i);
+                document.getElementById("Q" + i).appendChild(fourth);
+
+                answer_in.setAttribute("id", "ans" + i);
+                answer.appendChild(answer_in);
+                answer.setAttribute("id", "id_" + i);
+                g.setAttribute("onclick", "removeElement('myForm','Q" + i + "')");
+                answer.appendChild(g);
+                document.getElementById("Q" + i).appendChild(answer);
+
+                }
+
+            const section_id = sessionStorage.getItem("section_id") || 3;
+            const course_title = sessionStorage.getItem("course_title") || "Some course";
+            const section_title = sessionStorage.getItem("section_title") || "help";
+            const enrolment_id = sessionStorage.getItem("enrolment_id") || 12;            
+            const group_id = sessionStorage.getItem("group_id") || 12;
+
+            const api_endpoint = "http://52.55.242.44:8000/" 
+            // const api_endpoint = "http://localhost:8000/"
+
+            /* retrieve list of questions */
+            $(async () => {
+                $("#return").hide();
+                $("#courseTitle").text(course_title);
+                $("#sectionTitle").text(`${section_title} (Ungraded Quiz)`);
+                // console.log(enrolment_id)
+                $("#return").attr('onclick',`window.location.href='coursematerials.html?groupid=${group_id}&sectionid=${section_id}&enrolid=${enrolment_id}'`)
+
+                // API Endpoint
+                var get_quiz = api_endpoint + `quiz/${section_id}`
+
+                    try {
+                        const response =
+                            await fetch(
+                                get_quiz, {
+                                method: 'GET'
+                            }
+                        );
+
+                        const result = await response.json();
+
+                        if (response.status === 200) {
+                            $('#loading').hide();
+                            let data = result.data        
+                            count = 1        
+                            for (let question of data) {
+                                // Question
+                                div = `<div id = Q${count}> Question${count}  
+                                <input type="text" id="q${question.question_no}" value="${question.question}" ><br>`;
+
+                                //QuestionChoices
+                                for (let i = 1; i <= question.choice.length; i++) {
+                                    div += `
+                                        Choice${i} 
+                                        <input type="text" id="q${question.question_no}c${i}" name="question_${question.question_no}" value="${question.choice[i-1]}">
+                                        <br>`; 
+                                }          
+
+                                //Answers
+                                div += `<row> Answer${count} </row>
+                                <input type="text" id="ans${count}" value = "${question.answer}" ><br>`;
+
+                                //del button
+                                div += `<img src="del.jpg" id="del${count}" height="150" size="150" onclick="removeElement('myForm','Q${count}')">`
+
+                                
+
+                                div += "</div><br>"
+                                $('#myForm').append(div)   
+                                count += 1                 
+                            }    
+                            i += data.length
+                        }
+                    } catch(err) {
+                        alert(err)
+                        console.log(err)
+                    }
+                // feather.replace()
+            });
+
+            //AddQuiz
+            async function add_Quiz(){
+                $('#loadingModal').modal("show");
+                data = []
+                for (let count = 1; count<=i; count++ ){
+                    if ($("#TF1_" + count).val()) {
+                        data.append({
+                            section_id: $("#chapter_no").val(),
+                            duration: $("duration").value(),
+                            question_choice: [$("#TF1_" + count).val(), $("#TF2_" + count).val()],
+                            answer: $('#ans' + count).val() 
+                        })
+                    }
+                    else {
+                        data.append({
+                            section_id: $("#chapter_no").val(),
+                            duration: $("duration").value(),
+                            question_choice: [$("#FQ1_" + count).val(), $("#FQ2_" + count).val(), $("#FQ3_" + count).val(), $("#FQ4_" + count).val()],
+                            answer: $('#ans' + count).val() 
+                        })
+                    }
+                }
+                const create_course_api = api_endpoint + "add_quiz"
+                    try {
+                        const response = await fetch(
+                            create_course_api, {
+                                method: 'POST',
+                                headers: {"Content-Type":"application/json"},
+                                body: JSON.stringify(data)
+                            }
+                        );
+
+                        const result = await response.json();
+                        console.log(result)
+                        $("#loadingModal").modal("hide");
+                        if (response.status === 200) {
+                            $("#successMessage").text(result.message)
+                            $("#successModal").modal("show");
+                        } else { 
+                            $("#failureMessage").text(result.message)
+                            $("#failureModal").modal("show");
+                        }
+                    } catch (err) {
+                        $("#failureMessage").text(result.message)
+                        $("#failureModal").modal("show");
+                        console.log(err)
+                    }
+                }
+
+            async function del_Quiz(){
+            $('#loadingModal').modal("show");
+            data = []
+            for (let count = 1; count<=i; count++){
+                try{
+                    const result = await response.json();
+                    console.log(result)
+                    $("#loadingModal").modal("hide");
+                    if (response.status === 200) {
+                        $("#successMessage").text(result.message)
+                        $("#successModal").modal("show");
+                    } else { 
+                        $("#failureMessage").text(result.message)
+                        $("#failureModal").modal("show");
+                    }
+                } catch (err) {
+                    $("#failureMessage").text(result.message)
+                    $("#failureModal").modal("show");
+                    console.log(err)
+                }
+            }
+
+ 
+
+
+        </script>   
+    </body>
+</html>
