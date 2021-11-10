@@ -101,7 +101,6 @@ def delQuiz(section_id):
 
     
 
-
 # Validate quiz answer
 """
 sample request

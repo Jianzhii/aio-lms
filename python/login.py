@@ -1,6 +1,6 @@
 from flask import jsonify, request
 
-from app import app
+from app import app, db
 from user import User, UserRole
 
 
@@ -37,6 +37,7 @@ def login():
             ), 406
 
     except Exception as e:
+        db.session.rollback()
         print(e)
         return jsonify(
             {

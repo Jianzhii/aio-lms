@@ -31,24 +31,25 @@ class SectionProgress(db.Model):
 def createProgressRecord(data):
     try:
         sections = CourseSection.query.filter_by(group_id=data["group_id"]).all()
-        first_section = min([section.id for section in sections])
-        for section in sections:
-            progress_check = SectionProgress.query.filter_by(course_enrolment_id=data['id'], section_id=section.id).first()
-            if not progress_check:
-                section_material = {}
-                materials = Materials.query.filter_by(section_id=section.id).all()
-                for material in materials:
-                    section_material[material.id] = False
-                progress = SectionProgress(
-                    section_id = section.id,
-                    course_enrolment_id = data["id"],
-                    material = section_material,
-                    quiz_attempt = False,
-                    is_quiz_pass = False,
-                    is_access = True if section.id == first_section else False
-                )
-                db.session.add(progress)
-        db.session.commit()
+        if sections:
+            first_section = min([section.id for section in sections])
+            for section in sections:
+                progress_check = SectionProgress.query.filter_by(course_enrolment_id=data['id'], section_id=section.id).first()
+                if not progress_check:
+                    section_material = {}
+                    materials = Materials.query.filter_by(section_id=section.id).all()
+                    for material in materials:
+                        section_material[material.id] = False
+                    progress = SectionProgress(
+                        section_id = section.id,
+                        course_enrolment_id = data["id"],
+                        material = section_material,
+                        quiz_attempt = False,
+                        is_quiz_pass = False,
+                        is_access = True if section.id == first_section else False
+                    )
+                    db.session.add(progress)
+            db.session.commit()
     except Exception as e:
         raise e
 
@@ -102,6 +103,7 @@ def getProgress(enrolment_id, section_id):
                 }
             ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
@@ -134,6 +136,7 @@ def markCompleted(progress_id, material_id):
                 }
             ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
@@ -185,6 +188,7 @@ def getAllSectionUnderEnrolment(enrolment_id):
             }
         ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
             {
                 "code": 406,

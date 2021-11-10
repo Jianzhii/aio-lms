@@ -1,4 +1,5 @@
 from datetime import datetime
+from operator import ixor
 
 from flask import jsonify, request
 
@@ -176,7 +177,8 @@ def addEnrolment(data=None):
     except Exception as e:
         enrolment = Enrolment.query.filter_by(id=result[0].json()["id"]).first()
         db.session.delete(enrolment)
-        db.session.commit
+        db.session.commit()
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
@@ -289,9 +291,11 @@ def processEnrolmentEligibility(data):
             user_id=data["user_id"],
             enrolled_dt=datetime.now(),
             completed=False,
+            is_quiz_pass=False
         )
         return (enrol, 200)
     except Exception as e:
+        db.session.rollback()
         raise e
 
 
@@ -321,6 +325,7 @@ def deleteEnrolment(id):
             }
         ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
                 {
                     "code": 406,
