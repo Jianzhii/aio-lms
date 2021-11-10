@@ -32,18 +32,23 @@ class Quiz(db.Model):
 def addQuiz():
     data = request.get_json()
     try:
-        quiz = Quiz(**data)
-        db.session.add(quiz)
-        db.session.commit()
+        result = []
+        for quiz in data:
+            question = Quiz(**quiz)
+            db.session.add(question)
+            result.append(question.json())
 
+        db.session.commit()
+        print(result)
         return jsonify(
             {
                 "code": 200,
                 "message": "Quiz successfully created!",
-                "data": quiz.json()
+                "data": result
             }
         ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
             {
                 "code": 406,
