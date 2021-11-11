@@ -6,7 +6,7 @@ from enrol import checkCompletionOfCourse
 
 class Quiz(db.Model):
 
-    __tablename__ = 'quiz'
+    __tablename__ = 'section_quiz'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     section_id = db.Column(db.Integer, primary_key=True, nullable=False)
     question_no = db.Column(db.Integer, nullable=False)
