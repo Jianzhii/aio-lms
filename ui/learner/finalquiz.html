@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
 
-        <title>Quiz - Ungraded</title>
+        <title>Quiz - graded</title>
         <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
 
         <meta charset="utf-8">
@@ -125,12 +125,12 @@
 
             }
 
-            #correct {
+            .correct {
                 color: green;
                 font-weight: bold;
             }
 
-            #incorrect {
+            .incorrect {
                 color: red;
                 font-weight: bold;
             }
@@ -180,7 +180,7 @@
                 <input type="button" value="Submit" id="submit" onclick="validateQuiz()">       
 
                 <!-- TODO: add in redirection back to view section materials -->
-                <input type="button" value="Back to Section" id="return" onclick=""> 
+                <input type="button" value="Back to Course Detailss" id="return" onclick=""> 
             </div>
             <br><br><br>
         </div>
@@ -191,8 +191,8 @@
             const enrolment_id = sessionStorage.getItem("enrolment_id") || 12;            
             const group_id = sessionStorage.getItem("group_id") || 12;
 
-            // const api_endpoint = "http://52.55.242.44:8000/" 
-            const api_endpoint = "http://localhost:8000/"
+            const api_endpoint = "http://52.55.242.44:8000/" 
+            // const api_endpoint = "http://localhost:8000/"
 
             let total_seconds;
             let c_minutes;
@@ -204,7 +204,7 @@
                 $("#courseTitle").text(course_title);
                 $("#GroupTitle").text(`Group ${group_id} (Graded Quiz)`);
                 // console.log(enrolment_id)
-                $("#return").attr('onclick',`window.location.href='coursematerials.html?${sessionStorage.getItem('url')}`)
+                $("#return").attr('onclick',`window.location.href='enrolledgroup_details.html?${sessionStorage.getItem('url')}'`)
                 sessionStorage.removeItem('url');
 
                 // API Endpoint
@@ -221,8 +221,7 @@
                         const result = await response.json();
                         if (response.status === 200) {
                             $('#loading').hide();
-                            let data = result.data;
-                            console.log(data);             
+                            let data = result.data;        
                             for (let question of data) {
                                 row = `<div id="q${question.question_no}_div"> <p> Q${question.question_no}.  ${question.question}</p>`;
 
@@ -262,12 +261,11 @@
                 }
                 let body = {
                     enrolment_id: enrolment_id,
-                    section_id: section_id,
+                    group_id: group_id,
                     answer: data
                 }
-
                 // API Endpoint
-                var validate_quiz = api_endpoint + `validate_quiz`
+                var validate_quiz = api_endpoint + `validate_group_quiz`
                 try {
                     const response =
                         await fetch(
@@ -281,19 +279,18 @@
                     const result = await response.json();
                     if (response.status === 200) {
                         $('#loading').hide();
-                        const data = result.data       
-                        // console.log(data)         
+                        const data = result.data; 
                         for (let question of data.answer) {
                             let question_result;
                             if (question.is_correct) {
-                                question_result = `<br> <p id='correct'> CORRECT! </p>`
+                                question_result = `<br> <p class='correct'> CORRECT! </p>`
                             } else {
-                                question_result = `<br> <p id='incorrect'> INCORRECT! </p>
+                                question_result = `<br> <p class='incorrect'> INCORRECT! </p>
                                 <p>The correct answer is: ${question.answer}</p>`
                             }
                             $(`#q${question.question_no}_div`).append(question_result)
                         }
-                        $("#result").text(`Quiz Result: ${data.result} (Ungraded)`)
+                        $("#result").html(`Quiz Result: ${data.result}  ${data.is_pass ? '<span class="correct"> (PASSED) </span>' : '<span class="incorrect"> (FAILED) </span>'}`)
                     } else { 
                         console.log("no go")
                         throw new Error(data.message)
