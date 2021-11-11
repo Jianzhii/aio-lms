@@ -206,54 +206,59 @@
     })
 
     async function add_Quiz() {
-        $('#loadingModal').modal("show");
-        data = []
-        for (let count = 1; count<=i; count++ ){
-            if ($("#TF1_" + count).val()) {
-                data.push({
-                    section_id: section_id,
-                    question_no: count,
-                    question: $(`#QN_in${i}`).val(),
-                    duration: $("#duration").val() * 60,
-                    choice: [$("#TF1_" + count).val(), $("#TF2_" + count).val()],
-                    answer: $('#ans' + count).val() 
-                })
-            }
-            else {
-                data.push({
-                    section_id: section_id,
-                    question_no: count,
-                    question: $(`#QN_in${i}`).val(),
-                    duration: $("#duration").val() * 60,
-                    choice: [$("#FQ1_" + count).val(), $("#FQ2_" + count).val(), $("#FQ3_" + count).val(), $("#FQ4_" + count).val()],
-                    answer: $('#ans' + count).val() 
-                })
-            }
-        }
-        const create_course_api = api_endpoint + "add_quiz"
-        try {
-            const response = await fetch(
-                create_course_api, {
-                    method: 'POST',
-                    headers: {"Content-Type":"application/json"},
-                    body: JSON.stringify(data)
+        if (!document.getElementById('myForm').innerHTML) {            
+            $("#failureMessage").text(`There are not questions added yet!`)
+            $("#failureModal").modal("show");
+        } else {
+            $('#loadingModal').modal("show");
+            data = []
+            for (let count = 1; count<=i; count++ ){
+                if ($("#TF1_" + count).val()) {
+                    data.push({
+                        section_id: section_id,
+                        question_no: count,
+                        question: $(`#QN_in${i}`).val(),
+                        duration: $("#duration").val() * 60,
+                        choice: [$("#TF1_" + count).val(), $("#TF2_" + count).val()],
+                        answer: $('#ans' + count).val() 
+                    })
                 }
-            );
+                else {
+                    data.push({
+                        section_id: section_id,
+                        question_no: count,
+                        question: $(`#QN_in${i}`).val(),
+                        duration: $("#duration").val() * 60,
+                        choice: [$("#FQ1_" + count).val(), $("#FQ2_" + count).val(), $("#FQ3_" + count).val(), $("#FQ4_" + count).val()],
+                        answer: $('#ans' + count).val() 
+                    })
+                }
+            }
+            const create_course_api = api_endpoint + "add_quiz"
+            try {
+                const response = await fetch(
+                    create_course_api, {
+                        method: 'POST',
+                        headers: {"Content-Type":"application/json"},
+                        body: JSON.stringify(data)
+                    }
+                );
 
-            const result = await response.json();
-            console.log(result)
-            $("#loadingModal").modal("hide");
-            if (response.status === 200) {
-                $("#successMessage").text(result.message)
-                $("#successModal").modal("show");
-            } else { 
+                const result = await response.json();
+                console.log(result)
+                $("#loadingModal").modal("hide");
+                if (response.status === 200) {
+                    $("#successMessage").text(result.message)
+                    $("#successModal").modal("show");
+                } else { 
+                    $("#failureMessage").text(result.message)
+                    $("#failureModal").modal("show");
+                }
+            } catch (err) {
                 $("#failureMessage").text(result.message)
                 $("#failureModal").modal("show");
+                console.log(err)
             }
-        } catch (err) {
-            $("#failureMessage").text(result.message)
-            $("#failureModal").modal("show");
-            console.log(err)
         }
     }
     
@@ -315,7 +320,6 @@
         g.setAttribute("id","del" + i)
         g.setAttribute("class","icon")
         g.appendChild(icon)
-
 
         var q_div = document.createElement('div')     
         q_div.setAttribute("id", "Q" + i);
