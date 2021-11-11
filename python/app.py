@@ -33,7 +33,8 @@ import forum
 import chat
 import upload
 import section_progress
-import add_quiz
+import section_quiz
+import group_quiz
 
 
 @app.route("/test", methods=["GET"])

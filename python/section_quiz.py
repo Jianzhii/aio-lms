@@ -4,9 +4,9 @@ from section_progress import SectionProgress, checkCompletionOfSection
 from enrol import checkCompletionOfCourse
 
 
-class Quiz(db.Model):
+class SectionQuiz(db.Model):
 
-    __tablename__ = 'quiz'
+    __tablename__ = 'section_quiz'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     section_id = db.Column(db.Integer, primary_key=True, nullable=False)
     question_no = db.Column(db.Integer, nullable=False)
@@ -34,12 +34,11 @@ def addQuiz():
     try:
         result = []
         for quiz in data:
-            question = Quiz(**quiz)
+            question = SectionQuiz(**quiz)
             db.session.add(question)
             result.append(question.json())
 
         db.session.commit()
-        print(result)
         return jsonify(
             {
                 "code": 200,
@@ -61,7 +60,7 @@ def addQuiz():
 @app.route('/quiz/<int:section_id>', methods=["GET"])
 def getQuiz(section_id):
     try:
-        quiz_question = Quiz.query.filter_by(section_id = section_id).order_by(Quiz.question_no.asc()).all()
+        quiz_question = SectionQuiz.query.filter_by(section_id = section_id).order_by(SectionQuiz.question_no.asc()).all()
         data = [question.json() for question in quiz_question]
         return jsonify(
             {
@@ -83,7 +82,7 @@ def getQuiz(section_id):
 # (delete all questions from section and re-add again)
 @app.route('/delete/<int:section_id>', methods=["GET"])
 def delQuiz(section_id):
-    quiz_del = Quiz.query.filter_by(section_id)
+    quiz_del = SectionQuiz.query.filter_by(section_id)
     data = [question.json() for question in quiz_del]
     try:
         db.session.delete(quiz_del)
@@ -130,7 +129,7 @@ def validateQuiz():
         total_correct = 0
         total_questions = len(data['answer'])
         for answer in data['answer']:
-            quiz_answer = Quiz.query.filter_by(section_id = section_id, question_no = answer['question_no']).first()
+            quiz_answer = SectionQuiz.query.filter_by(section_id = section_id, question_no = answer['question_no']).first()
             if not quiz_answer:
                 raise Exception('Unable to find question in database')
 
