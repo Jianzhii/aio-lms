@@ -1,7 +1,7 @@
 from app import app, db
 from flask import jsonify, request
 from section_progress import SectionProgress, checkCompletionOfSection
-from enrol import checkCompletionOfCourse
+from enrol import Enrolment, checkCompletionOfCourse
 
 
 class GroupQuiz(db.Model):
@@ -124,15 +124,15 @@ sample request
     ]
 }
 """
-@app.route('/validate_quiz', methods=["POST"])
+@app.route('/validate_group_quiz', methods=["POST"])
 def validateGroupQuiz():
     data = request.get_json()
     try:
-        section_id = data['section_id']
+        group_id = data['group_id']
         total_correct = 0
         total_questions = len(data['answer'])
         for answer in data['answer']:
-            quiz_answer = GroupQuiz.query.filter_by(section_id = section_id, question_no = answer['question_no']).first()
+            quiz_answer = GroupQuiz.query.filter_by(group_id = group_id, question_no = answer['question_no']).first()
             if not quiz_answer:
                 raise Exception('Unable to find question in database')
 
@@ -143,12 +143,15 @@ def validateGroupQuiz():
             answer['answer'] = quiz_answer.answer
         data['result'] = f"{total_correct}/{total_questions}"
 
-        section_progress = SectionProgress.query.filter_by(section_id = section_id, course_enrolment_id = data['enrolment_id']).first()
-        section_progress.quiz_attempt = 1
-        if not section_progress.is_quiz_pass and (total_correct / total_questions) >= 0.8:
-            section_progress.is_quiz_pass = 1
+        is_pass = total_correct / total_questions > 0.85
+        print(is_pass)
+        if is_pass:
+            enrolment = Enrolment.query.filter_by(id = data['enrolment_id']).first()
+            enrolment.is_quiz_pass = True
+            db.session.commit()
 
-        checkCompletionOfSection(section_progress)
+        data['is_pass'] = is_pass
+
         db.session.commit()
 
         checkCompletionOfCourse(data['enrolment_id'])

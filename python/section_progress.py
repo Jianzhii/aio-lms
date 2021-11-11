@@ -169,6 +169,7 @@ def checkCompletionOfSection(section_progress):
 @app.route("/section_progress/all_section/<int:enrolment_id>", methods=["GET"])
 def getAllSectionUnderEnrolment(enrolment_id):
     try:
+        from enrol import checkCompletionOfMaterial
         all_section = (db.session.query(SectionProgress, CourseSection)
             .filter(SectionProgress.course_enrolment_id == enrolment_id)
             .outerjoin(CourseSection, CourseSection.id == SectionProgress.section_id)
@@ -187,7 +188,10 @@ def getAllSectionUnderEnrolment(enrolment_id):
             {
                 "code": 200,
                 "message": "Successfully retrieved all sections.",
-                "data": data,
+                "data": {
+                    "section": data,
+                    "final_quiz_access": checkCompletionOfMaterial(enrolment_id)
+                },
             }
         ), 200
     except Exception as e:

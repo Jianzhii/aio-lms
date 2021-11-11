@@ -333,8 +333,7 @@ def deleteEnrolment(id):
                 }
             ), 406
 
-
-def checkCompletionOfCourse(enrol_id):
+def checkCompletionOfMaterial(enrol_id):
     try:
         section_progress = SectionProgress.query.filter_by(course_enrolment_id = enrol_id).all()
         for i in range(len(section_progress)):
@@ -344,13 +343,19 @@ def checkCompletionOfCourse(enrol_id):
                     return False
             if not section.quiz_attempt:
                 return False
+        return True
+    except Exception as e:
+        raise e
 
+def checkCompletionOfCourse(enrol_id):
+    try:
+        if not checkCompletionOfMaterial(enrol_id):
+            return False
         enrolment = Enrolment.query.filter_by(id = enrol_id).first()
         if not enrolment.is_quiz_pass:
             return False
         enrolment.completed = True
         db.session.commit()
-
         assignBadges(enrolment.user_id, enrolment.group_id)
 
         return True
