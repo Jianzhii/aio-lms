@@ -249,6 +249,7 @@ def deleteCourse(id):
     try:
         from enrol import Enrolment
         from group import Group, TrainerAssignment
+        from course_section import CourseSection
         from enrolment_request import EnrolmentRequest
         from section_progress import SectionProgress
 
@@ -305,7 +306,11 @@ def deleteCourse(id):
                             Enrolment.group_id == group.id
                         )
                     )
-                db.session.delete(group)
+                db.session.execute(
+                    CourseSection.__table__.delete().where(
+                        CourseSection.group_id == group.id
+                    )
+                )
         db.session.delete(badge)
         db.session.delete(course)
         db.session.commit()
