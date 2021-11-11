@@ -71,6 +71,7 @@ def getGroupQuiz(group_id):
             }
         ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
             {
                 "code": 406,
@@ -81,7 +82,7 @@ def getGroupQuiz(group_id):
 
 # Update quiz for section
 # (delete all questions from section and re-add again)
-@app.route('/group_quiz/<int:group_id>', methods=["GET"])
+@app.route('/group_quiz/<int:group_id>', methods=["DELETE"])
 def delGroupQuiz(group_id):
     quiz_del = GroupQuiz.query.filter_by(group_id)
     data = [question.json() for question in quiz_del]
@@ -96,6 +97,7 @@ def delGroupQuiz(group_id):
             }
         ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
             {
                 "code": 406,
@@ -159,6 +161,7 @@ def validateGroupQuiz():
             }
         ), 200
     except Exception as e:
+        db.session.rollback()
         return jsonify(
             {
                 "code": 406,
