@@ -80,7 +80,7 @@ def getQuiz(section_id):
 
 # Update quiz for section
 # (delete all questions from section and re-add again)
-@app.route('/delete/<int:section_id>', methods=["GET"])
+@app.route('/delete/<int:section_id>', methods=["DELETE"])
 def delQuiz(section_id):
     quiz_del = SectionQuiz.query.filter_by(section_id)
     data = [question.json() for question in quiz_del]
