@@ -472,7 +472,8 @@
                     );
                     
                     const result = await response.json();
-                    const quiz_details = await getQuiz(section_id);                    
+                    const quiz_details = await getQuiz(section_id);                       
+                    $("#addQuizButton").show()                 
                     $("#loading").hide();
                     if (response.status === 200) {
                         let data = result.data
@@ -544,6 +545,7 @@
                             }                             
 
                             if (quiz_details) {
+                                $("#addQuizButton").hide()
                                 $('#tablecontent').append(`                             
                                         <tr>
                                             <td> ${i} </td>
