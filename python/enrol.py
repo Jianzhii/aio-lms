@@ -53,7 +53,7 @@ def getEnrolmentByGroup(group_id):
         total_completed = 0
         for section_progress in all_section_progress:
             total_materials += 1
-            if section_progress.quiz_attempt and section_progress.is_quiz_pass:
+            if section_progress.quiz_attempt:
                 total_completed += 1
             for material in section_progress.material:
                 total_materials += 1
@@ -64,6 +64,8 @@ def getEnrolmentByGroup(group_id):
             enrolment["completion_status"] = round(total_completed / total_materials, 2)
         else:
             enrolment["completion_status"] = 0
+        if enrolment['is_quiz_pass']:
+            total_completed += 1
         data.append(enrolment)
     return jsonify(
         {
