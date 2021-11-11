@@ -294,41 +294,48 @@
                         }
                         if (data.is_access) {
                             let materials = data.material_url
-                            for (let material of materials) {
-                                row = `<tr>
-                                            <td>${i}</td>
-                                            <td> ${material.title} </td>
-                                            <td> ${material.material_type} </td>
-                                            <td>
-                                                <!-- download -->
-                                                <a href="${material.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
-
-                                                <a href="#" class="icon complete" title="Mark as Completed" onclick="markCompleted(${data.id}, ${material.id})"><i id="${material.id}" data-feather=${material.completed ? "check-circle" : "circle"}></i></a>
-                                            </td>
-                                            <td>
-                                                <!-- view -->
-                                                <iframe src="https://docs.google.com/gview?url=${material.url}&embedded=true"><class="icon" title="View File"><i data-feather="eye"></iframe></i>
-                                            </td>
-                                        <tr>`
-                                $("#tablecontent").append(row)
-                                i++
-                            }
                             let videos = data.video_url
-                            // console.log(videos)
-                            for (let video of videos) {
-                                row = `<tr>
-                                            <td>${i}</td>
-                                            <td>${video.title}</td>
-                                            <td> ${video.material_type} </td>
-                                            <td>
-                                                <!-- download -->
-                                                <a href="${video.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
+                            if (!materials.length && !videos.length) {
+                                $('#tablecontent').html(`
+                                <tr>
+                                    <td>No materials have been added to this section yet. </td>
+                                </tr>`);  
+                            } else {
+                                for (let material of materials) {
+                                    row = `<tr>
+                                                <td>${i}</td>
+                                                <td> ${material.title} </td>
+                                                <td> ${material.material_type} </td>
+                                                <td>
+                                                    <!-- download -->
+                                                    <a href="${material.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
 
-                                                <a href="#" class="icon complete" title="Mark as Completed" onclick="markCompleted(${data.id}, ${video.id})"><i id="${video.id}" data-feather="${video.completed ? "check-circle" : "circle"}"></i></a>
-                                            </td><td></td>
-                                        <tr>`
-                                $("#tablecontent").append(row)
-                                i++
+                                                    <a href="#" class="icon complete" title="Mark as Completed" onclick="markCompleted(${data.id}, ${material.id})"><i id="${material.id}" data-feather=${material.completed ? "check-circle" : "circle"}></i></a>
+                                                </td>
+                                                <td>
+                                                    <!-- view -->
+                                                    <iframe src="https://docs.google.com/gview?url=${material.url}&embedded=true"><class="icon" title="View File"><i data-feather="eye"></iframe></i>
+                                                </td>
+                                            <tr>`
+                                    $("#tablecontent").append(row)
+                                    i++
+                                }
+                                // console.log(videos)
+                                for (let video of videos) {
+                                    row = `<tr>
+                                                <td>${i}</td>
+                                                <td>${video.title}</td>
+                                                <td> ${video.material_type} </td>
+                                                <td>
+                                                    <!-- download -->
+                                                    <a href="${video.url}" class="icon" title="Download File"><i data-feather="download"></i></a>
+
+                                                    <a href="#" class="icon complete" title="Mark as Completed" onclick="markCompleted(${data.id}, ${video.id})"><i id="${video.id}" data-feather="${video.completed ? "check-circle" : "circle"}"></i></a>
+                                                </td><td></td>
+                                            <tr>`
+                                    $("#tablecontent").append(row)
+                                    i++
+                                }
                             }
                         } else  { 
                             row = `<tr>
