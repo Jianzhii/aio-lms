@@ -230,7 +230,7 @@
                     data.push({
                         section_id: section_id,
                         question_no: count,
-                        question: $(`#QN_in${i}`).val(),
+                        question: $(`#QN_in${count}`).val(),
                         duration: $("#duration").val() * 60,
                         choice: [$("#TF1_" + count).val(), $("#TF2_" + count).val()],
                         answer: $('#ans' + count).val() 
@@ -240,7 +240,7 @@
                     data.push({
                         section_id: section_id,
                         question_no: count,
-                        question: $(`#QN_in${i}`).val(),
+                        question: $(`#QN_in${count}`).val(),
                         duration: $("#duration").val() * 60,
                         choice: [$("#FQ1_" + count).val(), $("#FQ2_" + count).val(), $("#FQ3_" + count).val(), $("#FQ4_" + count).val()],
                         answer: $('#ans' + count).val() 
