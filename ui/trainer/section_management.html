@@ -136,7 +136,6 @@
             #loading-image {
                 margin-top: 50px;
                 z-index: 100;
-
             }
 
             #deleteBtn {
@@ -357,7 +356,8 @@
             var user_id = sessionStorage.getItem("user_id")
             let query = window.location.search.substring(1).split("&") ;
             let course_id = query[0].slice(3,)
-            let course_name = query[1].slice(11,).replaceAll('%20', ' ')
+            let course_name = query[1].slice(11,).replaceAll('%20', ' ')            
+            sessionStorage.setItem('url', `section_management.html?${window.location.search.substring(1)}`);
             sessionStorage.setItem('course_id', course_id)
             sessionStorage.setItem('course_name', course_name)
 
@@ -366,8 +366,8 @@
                 $("#sidebar").load("./trainer_nav.html");
             });
 
-            const api_endpoint = "http://52.55.242.44:8000/" 
-            // const api_endpoint = "http://localhost:8000/"
+            // const api_endpoint = "http://52.55.242.44:8000/" 
+            const api_endpoint = "http://localhost:8000/"
 
             $(async () => {
                 $("#loading").show();
@@ -392,6 +392,7 @@
                                             <ul>`
 
                                 const sections = await getSections(group.group_id);
+                                const groupQuiz = await getGroupQuiz(group.group_id);
                                 
                                 if (sections.length) {
                                     for (let i = 0; i < sections.length ; i++) {
@@ -401,23 +402,38 @@
                                             </li>
                                         `
                                     }
-                                    row += `
+                                    if (groupQuiz) {
+                                        row += `
                                             <li>
                                                 <a id="#" href="finalquiz.html">Final Quiz</a>
-                                            </li>
+                                            </li>`
+                                    } else {
+                                        row += `
+                                            <li>
+                                                <a href="add_finalquiz.html?groupId=${group.group_id}" class="icon" title="Add Final Quiz"><i>+ Add Final Quiz</i></a>
+                                            </li>`
+                                    }    
+                                    row += `
                                             <li>
                                                 <a id="#" href="#" onclick="courseProgression(${group.group_id})">Course Progression</a>
                                             </li>`
-                                    
-                                    if (!$.trim($('#tablecontent').html())) {
-                                        console.log('tes')
-                                    } 
                                 } else {
                                     row += `
                                             <li>
                                                 <a> <i>No Sections Yet</i> </a>
                                             </li>
                                         `
+                                    if (groupQuiz) {
+                                        row += `
+                                            <li>
+                                                <a id="#" href="finalquiz.html">Final Quiz</a>
+                                            </li>`
+                                    } else {
+                                        row += `
+                                            <li>
+                                                <a href="add_finalquiz.html?groupId=${group.group_id}" class="icon" title="Add Final Quiz"><i>+ Add Final Quiz</i></a>
+                                            </li>`
+                                    }   
                                 }
 
                                 row += `</ul>`;
@@ -462,7 +478,6 @@
                 
                 $("#loading").show();
                 const sectionDetails = api_endpoint + `course_section/${section_id}`
-                sessionStorage.setItem('url', `section_management.html?${window.location.search.substring(1)}`);
                 try {
                     const response =
                         await fetch(
@@ -773,6 +788,30 @@
                 }
             }
 
+            async function getGroupQuiz(group_id) {
+                const groupQuizDetails = api_endpoint + `group_quiz/${group_id}`
+
+                try {
+                    const response =
+                        await fetch(
+                            groupQuizDetails, {
+                            method: 'GET'
+                        }
+                    );
+                    
+                    const result = await response.json();       
+                    if (response.status === 200) {                        
+                        let data = result.data
+                        if (data.length) {
+                            return data
+                        }
+                        return false
+                    }
+                } catch(err) {
+                    alert(err);
+                    console.log(err);
+                }
+            }
         </script>
     </body>
 
