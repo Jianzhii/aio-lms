@@ -311,6 +311,7 @@ def deleteCourse(id):
                         CourseSection.group_id == group.id
                     )
                 )
+                db.session.delete(group)
         db.session.delete(badge)
         db.session.delete(course)
         db.session.commit()
