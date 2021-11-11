@@ -249,6 +249,8 @@ def deleteCourse(id):
     try:
         from enrol import Enrolment
         from group import Group, TrainerAssignment
+        from enrolment_request import EnrolmentRequest
+        from section_progress import SectionProgress
 
         course = Course.query.filter_by(id=id).first()
         badge = Badge.query.filter_by(course_id=id).first()
@@ -287,6 +289,14 @@ def deleteCourse(id):
 
                 enrolment = Enrolment.query.filter_by(group_id=group.id).all()
                 if enrolment:
+                    request = EnrolmentRequest.query.filter_by(course_enrolment_id = enrolment.id).first()
+                    if request:
+                        db.session.delete(request)
+                        db.session.commit()
+                    section_progress = SectionProgress.query.filter_by(course_enrolment_id = enrolment.id).first()
+                    if section_progress:
+                        db.session.delete(section_progress)
+                        db.session.commit()
                     db.session.execute(
                         Enrolment.__table__.delete().where(
                             Enrolment.group_id == group.id
