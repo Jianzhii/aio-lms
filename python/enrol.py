@@ -58,7 +58,7 @@ def getEnrolmentByGroup(group_id):
             for material in section_progress.material:
                 total_materials += 1
                 if section_progress.material[material]:
-                    total_completed += 1        
+                    total_completed += 1
         if enrolment['is_quiz_pass']:
             total_completed += 1
         if total_materials and total_completed:
