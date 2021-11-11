@@ -4,11 +4,11 @@ from section_progress import SectionProgress, checkCompletionOfSection
 from enrol import checkCompletionOfCourse
 
 
-class SectionQuiz(db.Model):
+class GroupQuiz(db.Model):
 
-    __tablename__ = 'section_quiz'
+    __tablename__ = 'group_quiz'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    section_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    group_id = db.Column(db.Integer, primary_key=True, nullable=False)
     question_no = db.Column(db.Integer, nullable=False)
     question = db.Column(db.Text, nullable=False)
     choice = db.Column(db.JSON, nullable=False)
@@ -18,7 +18,7 @@ class SectionQuiz(db.Model):
     def json(self):
         return {
             'id': self.id,
-            'section_id': self.section_id,
+            'group_id': self.group_id,
             'question_no': self.question_no,
             'question': self.question,
             'choice': self.choice,
@@ -28,17 +28,18 @@ class SectionQuiz(db.Model):
 
 
 # Add one Quiz for section
-@app.route('/add_quiz', methods=["POST"])
-def addQuiz():
+@app.route('/group_quiz', methods=["POST"])
+def addGroupQuiz():
     data = request.get_json()
     try:
         result = []
         for quiz in data:
-            question = SectionQuiz(**quiz)
+            question = GroupQuiz(**quiz)
             db.session.add(question)
             result.append(question.json())
 
         db.session.commit()
+        print(result)
         return jsonify(
             {
                 "code": 200,
@@ -57,10 +58,10 @@ def addQuiz():
 
 
 #  Get all quiz questions under section
-@app.route('/quiz/<int:section_id>', methods=["GET"])
-def getQuiz(section_id):
+@app.route('/group_quiz/<int:group_id>', methods=["GET"])
+def getGroupQuiz(group_id):
     try:
-        quiz_question = SectionQuiz.query.filter_by(section_id = section_id).order_by(SectionQuiz.question_no.asc()).all()
+        quiz_question = GroupQuiz.query.filter_by(group_id = group_id).order_by(GroupQuiz.question_no.asc()).all()
         data = [question.json() for question in quiz_question]
         return jsonify(
             {
@@ -80,9 +81,9 @@ def getQuiz(section_id):
 
 # Update quiz for section
 # (delete all questions from section and re-add again)
-@app.route('/delete/<int:section_id>', methods=["GET"])
-def delQuiz(section_id):
-    quiz_del = SectionQuiz.query.filter_by(section_id)
+@app.route('/group_quiz/<int:group_id>', methods=["GET"])
+def delGroupQuiz(group_id):
+    quiz_del = GroupQuiz.query.filter_by(group_id)
     data = [question.json() for question in quiz_del]
     try:
         db.session.delete(quiz_del)
@@ -122,14 +123,14 @@ sample request
 }
 """
 @app.route('/validate_quiz', methods=["POST"])
-def validateQuiz():
+def validateGroupQuiz():
     data = request.get_json()
     try:
         section_id = data['section_id']
         total_correct = 0
         total_questions = len(data['answer'])
         for answer in data['answer']:
-            quiz_answer = SectionQuiz.query.filter_by(section_id = section_id, question_no = answer['question_no']).first()
+            quiz_answer = GroupQuiz.query.filter_by(section_id = section_id, question_no = answer['question_no']).first()
             if not quiz_answer:
                 raise Exception('Unable to find question in database')
 
