@@ -297,7 +297,7 @@ def deleteCourse(id):
                         )
                         db.session.execute(
                             SectionProgress.__table__.delete().where(
-                                SectionProgress.grocourse_enrolment_idup_id == enrolment.id
+                                SectionProgress.course_enrolment_id == enrolment.id
                             )
                         )
                     db.session.execute(
