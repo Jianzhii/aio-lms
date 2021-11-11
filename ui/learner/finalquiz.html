@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <title>Quiz - Ungraded</title>
+        <link rel="icon" href="static/imgs/All-In-One 1.png" type="image/icon type">
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+        <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+
+        <!-- Icons -->
+        <script src="https://unpkg.com/feather-icons"></script>
+
+        <!-- Bootstrap/ CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
+
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+        <!-- common js functions -->
+        <script src="../js/common.js"></script>
+
+        <style>
+
+            body {
+                font-family: 'Montserrat' ;
+                font-size: 12px ;
+            }
+
+            .sidenav {
+                height: 100% ;
+                width: 20% ;
+                position: fixed ;
+                top: 0 ;
+                left: 0 ;
+                z-index: 1 ;
+                overflow-x: hidden ;
+                border-right: solid lightgrey 2px ; 
+            }
+
+            h2 {
+                padding-top: 58px ;
+                padding-left: 10px ;
+                color: #FF922D ;
+            }
+
+            h3 {
+                text-indent: 34px ;
+                font-size: 13px ;
+                font-weight: bold ;
+            }
+
+            .sidenav a {
+                color: black ;
+                padding: 16px ;
+                display: block ;
+            }
+
+            a {
+                text-decoration: none ;
+            }
+
+            ul {
+                list-style-type: none ;
+            }
+
+            #logo {
+                height: 150px ;
+                width: 200px ;
+            }
+
+            #sidebar {
+                width: 30% ;
+            }
+
+            #content {
+                width: 80% ;
+                margin-left: 20% ;
+            }
+
+            #header {
+                padding: 12px ;
+            }
+
+            #questions {
+                padding: 40px ; 
+            }
+
+            input[type=button] {
+                background: #FF922D ;
+                color: white ; 
+                border: none ;
+                border-radius: 3px ; 
+                padding: 5px ;
+                width: 100px ;
+            }
+
+            .icon {
+                color: #FF922D ;
+                padding: 2px ;
+            }
+
+            #loading {
+                display: block;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                text-align: center;
+                opacity: 0.7;
+                background-color: #fff;
+                z-index: 99;
+            }
+
+            #loading-image {
+                margin-top: 50px;
+                z-index: 100;
+
+            }
+
+            #correct {
+                color: green;
+                font-weight: bold;
+            }
+
+            #incorrect {
+                color: red;
+                font-weight: bold;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <!-- start of side bar -->
+        <div class="container" id="sidebar">
+        </div>
+        <!-- end of side bar -->
+    
+        <div class="container" id="content">
+            <div class="row" id="header">
+                <div class="col">
+                    <h2 id="courseTitle"></h2>
+                    <br>
+                    <h3 id="GroupTitle"></h3>
+
+                    <div class='d-flex flex-row-reverse'>
+                        <div id='quiz-time-left'></div>
+                    </div>
+
+                </div>
+                <div class="col-2" style="padding-top: 65px ;">
+                    <input type="button" value="Log Out" id="logout" onclick='logout()'>
+                </div>
+            </div>
+            
+            <hr>
+            <!-- show list of questions for quiz -->
+            <div class="row">
+                <form id="questions" action="">
+                  
+                </form>
+            </div>            
+            
+            <div id='result'></div>
+
+            <div id="loading">
+                <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..."/>
+            </div>   
+
+            <hr>
+            <div class='text-center'> 
+                <input type="button" value="Submit" id="submit" onclick="validateQuiz()">       
+
+                <!-- TODO: add in redirection back to view section materials -->
+                <input type="button" value="Back to Section" id="return" onclick=""> 
+            </div>
+            <br><br><br>
+        </div>
+
+        <script>
+            
+            const course_title = sessionStorage.getItem("course_title") || "Some course";
+            const enrolment_id = sessionStorage.getItem("enrolment_id") || 12;            
+            const group_id = sessionStorage.getItem("group_id") || 12;
+
+            // const api_endpoint = "http://52.55.242.44:8000/" 
+            const api_endpoint = "http://localhost:8000/"
+
+            let total_seconds;
+            let c_minutes;
+            let c_seconds;
+            let timer;
+            /* retrieve list of questions */
+            $(async () => {
+                $("#return").hide();
+                $("#courseTitle").text(course_title);
+                $("#GroupTitle").text(`Group ${group_id} (Graded Quiz)`);
+                // console.log(enrolment_id)
+                $("#return").attr('onclick',`window.location.href='coursematerials.html?${sessionStorage.getItem('url')}`)
+                sessionStorage.removeItem('url');
+
+                // API Endpoint
+                var get_quiz = api_endpoint + `group_quiz/${group_id}`
+
+                    try {
+                        const response =
+                            await fetch(
+                                get_quiz, {
+                                method: 'GET'
+                            }
+                        );
+
+                        const result = await response.json();
+                        if (response.status === 200) {
+                            $('#loading').hide();
+                            let data = result.data;
+                            console.log(data);             
+                            for (let question of data) {
+                                row = `<div id="q${question.question_no}_div"> <p> Q${question.question_no}.  ${question.question}</p>`;
+
+                                for (let i = 1; i <= question.choice.length; i++) {
+                                    row += `
+                                        <input type="radio" id="q${question.question_no}c${i}" name="question_${question.question_no}" value="${question.choice[i-1]}">
+                                        <label for="q${question.question_no}c${i}">${question.choice[i-1]}</label><br>`; 
+                                }                
+
+                                row += "</div><br>"
+                                $('#questions').append(row)                    
+                            }
+                            total_seconds = data[0].duration;
+                            c_minutes = parseInt(total_seconds / 60);
+                            c_seconds = parseInt(total_seconds % 60);                            
+                            timer = setTimeout(CheckTime, 1000);
+                        }
+                    } catch(err) {
+                        alert(err)
+                        console.log(err)
+                    }
+                // feather.replace()
+            });
+
+            async function validateQuiz() {
+                $("#questions").hide();
+                $('#loading').show();
+                $('#submit').hide();
+                let questions = $("#questions").children("div");
+                data = []
+                for (let i = 0; i < questions.length; i++) {
+                    answer = {
+                        question_no: i+1,
+                        selected: $(`input[name="question_${i+1}"]:checked`).val()
+                    };
+                    data.push (answer)
+                }
+                let body = {
+                    enrolment_id: enrolment_id,
+                    section_id: section_id,
+                    answer: data
+                }
+
+                // API Endpoint
+                var validate_quiz = api_endpoint + `validate_quiz`
+                try {
+                    const response =
+                        await fetch(
+                            validate_quiz, {
+                            method: 'POST',
+                            headers: {"Content-Type":"application/json"},
+                            body: JSON.stringify(body)
+                        }
+                    );
+
+                    const result = await response.json();
+                    if (response.status === 200) {
+                        $('#loading').hide();
+                        const data = result.data       
+                        // console.log(data)         
+                        for (let question of data.answer) {
+                            let question_result;
+                            if (question.is_correct) {
+                                question_result = `<br> <p id='correct'> CORRECT! </p>`
+                            } else {
+                                question_result = `<br> <p id='incorrect'> INCORRECT! </p>
+                                <p>The correct answer is: ${question.answer}</p>`
+                            }
+                            $(`#q${question.question_no}_div`).append(question_result)
+                        }
+                        $("#result").text(`Quiz Result: ${data.result} (Ungraded)`)
+                    } else { 
+                        console.log("no go")
+                        throw new Error(data.message)
+                    }
+                } catch(err) {
+                    alert(err)
+                    console.log(err)
+                }
+
+                $("#questions").show();
+                $('#loading').hide();
+                $('#return').show();
+            }
+
+
+            function CheckTime() {
+                document.getElementById("quiz-time-left").innerHTML = 'Time Left: ' + c_minutes + ' minutes ' + c_seconds + ' seconds ';
+
+                if (total_seconds <= 0) {
+                    validateQuiz();
+                } else {
+                    total_seconds = total_seconds - 1;
+                    c_minutes = parseInt(total_seconds / 60);
+                    c_seconds = parseInt(total_seconds % 60);
+                    timer = setTimeout(CheckTime, 1000);
+                }
+            }
+        </script>   
+    </body>
+</html>

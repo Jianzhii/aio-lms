@@ -112,6 +112,10 @@
                 width: 100px ;
             }
 
+            #quiz {
+                width: 200px ;
+            }
+
             #tableheader{
                 background-color: #FF922D ;
                 color: white ;
@@ -189,8 +193,13 @@
             </div>
 
             <!-- Sections  -->
-            <div class="row" id="section">
-                <h4>Sections</h4><br>   
+            <div class="row" id="section">                 
+                <div class="col">
+                    <h4>Sections</h4>
+                </div>
+                <div class="col-3">
+                    <input type="button" value="Attempt Final Quiz" id="quiz" onclick="window.location.href='finalquiz.html'">
+                </div>
             </div> 
 
             <div class="row" id="table">
@@ -229,9 +238,11 @@
 
             var user_id = sessionStorage.getItem("user_id")
             sessionStorage.setItem("url", window.location.search.substring(1));
+            sessionStorage.setItem("group_id", groupid);
+            sessionStorage.setItem("enrolment_id", enrollmentid);
 
             /* retrieve information of group */
-            $(async() => { 
+            $(async() => {
                 var coursegroup_api = api_endpoint + "group/" + groupid
 
                 try {
@@ -249,7 +260,7 @@
                         var cname = data.course_name + " - Group " + groupid
                         $('#cname').append(cname)
                         
-                        sessionStorage.setItem("course_title",cname);
+                        sessionStorage.setItem("course_title",data.course_name);
                         $('#gsize').append(data.size)
                         $('#trainer').append(data.trainer_name)
                         $('#eperiod').append(data.enrol_start_date.slice(0,data.enrol_start_date.length - 3) + " - " + data.enrol_end_date.slice(0,data.enrol_end_date.length - 3) )
