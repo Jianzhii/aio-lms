@@ -172,7 +172,7 @@
                 <div class='col'>
                     <a  id='addVideoButton'><img src="../../static/imgs/Video-btn.png" style="width:75px;height:28px;"></a>
                     <a  id='addReadingButton'><img src="../../static/imgs/Reading-btn.png" style="width:92px;height:28px;"></a>
-                    <a href="add_quiz.html"><img src="../../static/imgs/Quiz-btn.png" style="width:75px;height:28px;"></a>
+                    <a id='addQuizButton'><img src="../../static/imgs/Quiz-btn.png" style="width:75px;height:28px;"></a>
                 </div>
 
                 <div class="col-2">                    
@@ -462,7 +462,7 @@
                 
                 $("#loading").show();
                 const sectionDetails = api_endpoint + `course_section/${section_id}`
-
+                sessionStorage.setItem('url', `section_management.html?${window.location.search.substring(1)}`);
                 try {
                     const response =
                         await fetch(
@@ -471,7 +471,8 @@
                         }
                     );
                     
-                    const result = await response.json();                    
+                    const result = await response.json();
+                    const quiz_details = await getQuiz(section_id);                    
                     $("#loading").hide();
                     if (response.status === 200) {
                         let data = result.data
@@ -479,6 +480,7 @@
                         $('#sectionNo').text(section_no);
                         $('#addVideoButton').attr("href",`add_vid.html?id=${data.id}&groupId=${data.group_id}`);
                         $('#addReadingButton').attr("href",`add_reading.html?id=${data.id}&groupId=${data.group_id}`);
+                        $('#addQuizButton').attr("href",`add_quiz.html?id=${data.id}&groupId=${data.group_id}&sectionNo=${section_no}`);
                         $('#deleteSectionId').val(section_id);
                         $('#deleteConfirmation').text(data.description);
                         $("#tabletitle").text(`Section Materials`)
@@ -490,13 +492,13 @@
                                                     <th scope="col">File Type</th>
                                                     <th scope="col">Actions</th>
                                                 </tr>`)
-                        if (!data.video_url.length && !data.material_url.length ) {
+                        let i = 1;
+                        if (!data.video_url.length && !data.material_url.length && !quiz_details) {
                             $('#tablecontent').html(`
                             <tr>
                                 <td>No materials have been added to this section yet. </td>
                             </tr>`);             
                         } else {
-                            let i = 1;
                             if (data.material_url) {
                                 for (let material of data.material_url) {
                                     $('#tablecontent').append(`
@@ -539,7 +541,24 @@
                                     `)
                                     i++;
                                 }                            
-                            } 
+                            }                             
+
+                            if (quiz_details) {
+                                $('#tablecontent').append(`                             
+                                        <tr>
+                                            <td> ${i} </td>
+                                            <td> Section Quiz (Ungraded) </td>
+                                            <td> Quiz </td>
+                                            <td>  
+                                                <!-- edit -->
+                                                <a href="update_quiz.html" class="icon" title="Edit Course Details"><i data-feather="edit"></i></a>
+
+                                                <!-- delete/retire -->
+                                                <a href="#deletematerial" class="trigger-btn icon" data-id="" data-toggle="modal" title="Delete quiz?"><i data-feather="trash-2"></i></a>
+                                            </td>
+                                        <tr>
+                                `)
+                            }
                         }
                     }
                      
@@ -725,6 +744,31 @@
                 }
 
                 feather.replace();
+            };
+
+            async function getQuiz(section_id) {
+                const quizDetails = api_endpoint + `quiz/${section_id}`
+
+                try {
+                    const response =
+                        await fetch(
+                            quizDetails, {
+                            method: 'GET'
+                        }
+                    );
+                    
+                    const result = await response.json();       
+                    if (response.status === 200) {                        
+                        let data = result.data
+                        if (data.length) {
+                            return data
+                        }
+                        return false
+                    }
+                } catch(err) {
+                    alert(err);
+                    console.log(err);
+                }
             }
 
         </script>
