@@ -287,16 +287,19 @@ def deleteCourse(id):
                         )
                     )
 
-                enrolment = Enrolment.query.filter_by(group_id=group.id).all()
-                if enrolment:
-                    request = EnrolmentRequest.query.filter_by(course_enrolment_id = enrolment.id).first()
-                    if request:
-                        db.session.delete(request)
-                        db.session.commit()
-                    section_progress = SectionProgress.query.filter_by(course_enrolment_id = enrolment.id).first()
-                    if section_progress:
-                        db.session.delete(section_progress)
-                        db.session.commit()
+                enrolments = Enrolment.query.filter_by(group_id=group.id).all()
+                if enrolments:
+                    for enrolment in enrolments: 
+                        db.session.execute(
+                            EnrolmentRequest.__table__.delete().where(
+                                EnrolmentRequest.course_enrolment_id == enrolment.id
+                            )
+                        )
+                        db.session.execute(
+                            SectionProgress.__table__.delete().where(
+                                SectionProgress.grocourse_enrolment_idup_id == enrolment.id
+                            )
+                        )
                     db.session.execute(
                         Enrolment.__table__.delete().where(
                             Enrolment.group_id == group.id
