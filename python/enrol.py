@@ -264,7 +264,7 @@ def processEnrolmentEligibility(data):
         # check if learner has alr fulfilled prerequisite
         if course_info.prerequisite:
             completed_course = [
-                course.id
+                int(course.id)
                 for enrolment, group, course in db.session.query(
                     Enrolment, Group, Course
                 )
@@ -275,7 +275,7 @@ def processEnrolmentEligibility(data):
             ]
             incomplete = []
             for each in course_info.prerequisite:
-                if each not in completed_course:
+                if int(each) not in completed_course:
                     prerequisite_course_info = Course.query.filter_by(id=each).first()
                     incomplete.append(prerequisite_course_info.name)
             if len(incomplete):
