@@ -289,7 +289,7 @@ def deleteCourse(id):
 
                 enrolments = Enrolment.query.filter_by(group_id=group.id).all()
                 if enrolments:
-                    for enrolment in enrolments: 
+                    for enrolment in enrolments:
                         db.session.execute(
                             EnrolmentRequest.__table__.delete().where(
                                 EnrolmentRequest.course_enrolment_id == enrolment.id
