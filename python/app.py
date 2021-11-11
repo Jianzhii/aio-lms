@@ -36,7 +36,6 @@ import section_progress
 import section_quiz
 import group_quiz
 
-
 @app.route("/test", methods=["GET"])
 def test():
 
