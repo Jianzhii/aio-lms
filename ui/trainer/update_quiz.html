@@ -182,8 +182,7 @@
 
             <hr>
             <div class='text-center'> 
-                <input type="button" value="Submit" id="addDel" onclick="add_Quiz()">       
-                <button id="addDel">Submit</button>
+                <input type="button" value="Submit" id="addDel">       
                 <!-- TODO: add in redirection back to view section materials -->
                 <input type="button" value="Back to Section" id="return" onclick=""> 
             </div>
@@ -251,7 +250,11 @@
 
                 var g = document.createElement("IMG");
                 g.setAttribute("id","del" + i)
-                g.setAttribute("src", "delete.png");
+                // g.setAttribute("src", "../../static/imgs/delete.png")
+                g.setAttribute("href", "#deletematerial")
+                g.setAttribute("class","trigger-btn icon")
+                g.setAttribute("height", "50")
+                g.setAttribute("size", "50")
 
                 var q_div = document.createElement('div')     
                 q_div.setAttribute("id", "Q" + i);
@@ -314,7 +317,11 @@
 
                 var g = document.createElement("IMG");    
                 g.setAttribute("id","del" + i)
-                g.setAttribute("src", "delete.png");
+                g.setAttribute("src", "../../static/imgs/delete.png")
+                // g.setAttribute("href", "#deletematerial")
+                // g.setAttribute("class","trigger-btn icon")
+                g.setAttribute("height", "50")
+                g.setAttribute("size", "50");
 
                 var q_div = document.createElement('div')     
                 q_div.setAttribute("id", "Q" + i);
@@ -393,14 +400,22 @@
                             for (let question of data) {
                                 // Question
                                 div = `<div id = Q${count}> Question${count}  
-                                <input type="text" id="q${question.question_no}" value="${question.question}" ><br>`;
+                                <input type="text" id="QN_in${question.question_no}" value="${question.question}" ><br>`;
 
                                 //QuestionChoices
                                 for (let i = 1; i <= question.choice.length; i++) {
-                                    div += `
-                                        Choice${i} 
-                                        <input type="text" id="q${question.question_no}c${i}" name="question_${question.question_no}" value="${question.choice[i-1]}">
-                                        <br>`; 
+                                    if (question.choice.length < 3){
+                                        div += `
+                                            Choice${i} 
+                                            <input type="text" id="TF${i}_${question.question_no}" name="question_${question.question_no}" value="${question.choice[i-1]}">
+                                            <br>`; 
+                                    }
+                                    else{
+                                        div += `
+                                            Choice${i} 
+                                            <input type="text" id="FQ${i}_${question.question_no}" name="question_${question.question_no}" value="${question.choice[i-1]}">
+                                            <br>`; 
+                                    }
                                 }          
 
                                 //Answers
@@ -408,8 +423,8 @@
                                 <input type="text" id="ans${count}" value = "${question.answer}" ><br>`;
 
                                 //del button
-                                div += `<img src="del.jpg" id="del${count}" height="150" size="150" onclick="removeElement('myForm','Q${count}')">`
-
+                                div += `<img src="../../static/imgs/delete.png" id="del${count}" height="50" size="50" onclick="removeElement('myForm','Q${count}')">`
+                                //  div += `<href="#deletematerial" class="trigger-btn icon" id="del${count}" height="50" size="50" onclick="removeElement('myForm','Q${count}')">`
                                 
 
                                 div += "</div><br>"
@@ -476,9 +491,15 @@
 
             async function del_Quiz(){
             $('#loadingModal').modal("show");
-            data = []
-            for (let count = 1; count<=i; count++){
+            var del_api = api_endpoint + `/delete/${section_id}`
                 try{
+                    const response =
+                        await fetch(
+                            del_api,{
+                                method: 'DELETE'
+                            }
+                        )
+
                     const result = await response.json();
                     console.log(result)
                     $("#loadingModal").modal("hide");
