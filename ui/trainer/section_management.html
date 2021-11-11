@@ -136,7 +136,6 @@
             #loading-image {
                 margin-top: 50px;
                 z-index: 100;
-
             }
 
             #deleteBtn {
@@ -357,7 +356,8 @@
             var user_id = sessionStorage.getItem("user_id")
             let query = window.location.search.substring(1).split("&") ;
             let course_id = query[0].slice(3,)
-            let course_name = query[1].slice(11,).replaceAll('%20', ' ')
+            let course_name = query[1].slice(11,).replaceAll('%20', ' ')            
+            sessionStorage.setItem('url', `section_management.html?${window.location.search.substring(1)}`);
             sessionStorage.setItem('course_id', course_id)
             sessionStorage.setItem('course_name', course_name)
 
@@ -422,10 +422,18 @@
                                             <li>
                                                 <a> <i>No Sections Yet</i> </a>
                                             </li>
+                                        `
+                                    if (groupQuiz) {
+                                        row += `
+                                            <li>
+                                                <a id="#" href="finalquiz.html">Final Quiz</a>
+                                            </li>`
+                                    } else {
+                                        row += `
                                             <li>
                                                 <a href="add_finalquiz.html?groupId=${group.group_id}" class="icon" title="Add Final Quiz"><i>+ Add Final Quiz</i></a>
-                                            </li>
-                                        `
+                                            </li>`
+                                    }   
                                 }
 
                                 row += `</ul>`;
@@ -470,7 +478,6 @@
                 
                 $("#loading").show();
                 const sectionDetails = api_endpoint + `course_section/${section_id}`
-                sessionStorage.setItem('url', `section_management.html?${window.location.search.substring(1)}`);
                 try {
                     const response =
                         await fetch(

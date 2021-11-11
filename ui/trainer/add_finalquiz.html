@@ -64,6 +64,19 @@
                 color: #FF922D ;
                 padding: 2px ;
             }
+
+            #loadingModal, #loading {
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                text-align: center;
+                background-color: #fff;
+            }
+
+            #loading-image {
+                margin-top: 50px;
+            }
         </style>
     </head>
     <body>
@@ -177,7 +190,7 @@
                     </div>
                     <div class="modal-body">
                         <div id="modalloading">
-                            <img id="loading-image" src="static/imgs/loading.gif" alt="Loading..." />
+                            <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..." />
                         </div>  
                     </div>
                 </div>
@@ -213,7 +226,7 @@
             for (let count = 1; count<=i; count++ ){
                 if ($("#TF1_" + count).val()) {
                     data.push({
-                        section_id: section_id,
+                        group_id: group_id,
                         question_no: count,
                         question: $(`#QN_in${i}`).val(),
                         duration: $("#duration").val() * 60,
@@ -223,7 +236,7 @@
                 }
                 else {
                     data.push({
-                        section_id: section_id,
+                        group_id: group_id,
                         question_no: count,
                         question: $(`#QN_in${i}`).val(),
                         duration: $("#duration").val() * 60,
@@ -232,7 +245,7 @@
                     })
                 }
             }
-            const create_course_api = api_endpoint + "add_quiz"
+            const create_course_api = api_endpoint + "group_quiz"
             try {
                 const response = await fetch(
                     create_course_api, {
