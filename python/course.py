@@ -313,7 +313,7 @@ def deleteCourse(id):
                 )
                 db.session.delete(group)
                 db.session.commit()
-        db.session.delete(badge)        
+        db.session.delete(badge)     
         db.session.commit()
         db.session.delete(course)
         db.session.commit()
