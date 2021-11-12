@@ -108,21 +108,16 @@
             }
 
             #loading {
-                display: block;
                 width: 100%;
                 height: 100%;
                 top: 0;
                 left: 0;
                 text-align: center;
-                opacity: 0.7;
                 background-color: #fff;
-                z-index: 99;
             }
 
             #loading-image {
                 margin-top: 50px;
-                z-index: 100;
-
             }
 
             .correct {
@@ -173,14 +168,13 @@
 
             <div id="loading">
                 <img id="loading-image" src="../../static/imgs/loading.gif" alt="Loading..."/>
-            </div>   
+            </div> 
 
             <hr>
             <div class='text-center'> 
                 <input type="button" value="Submit" id="submit" onclick="validateQuiz()">       
-
-                <!-- TODO: add in redirection back to view section materials -->
-                <input type="button" value="Back to Course Detailss" id="return" onclick=""> 
+                <input type="button" value="Back to Course Details" id="return" onclick=""> 
+                <input type="button" value="Re-attempt" id="reattempt" onclick="location.reload()"> 
             </div>
             <br><br><br>
         </div>
@@ -191,8 +185,8 @@
             const enrolment_id = sessionStorage.getItem("enrolment_id") || 12;            
             const group_id = sessionStorage.getItem("group_id") || 12;
 
-            const api_endpoint = "http://52.55.242.44:8000/" 
-            // const api_endpoint = "http://localhost:8000/"
+            // const api_endpoint = "http://52.55.242.44:8000/" 
+            const api_endpoint = "http://localhost:8000/"
 
             let total_seconds;
             let c_minutes;
@@ -200,12 +194,12 @@
             let timer;
             /* retrieve list of questions */
             $(async () => {
+                $("#reattempt").hide();
                 $("#return").hide();
                 $("#courseTitle").text(course_title);
                 $("#GroupTitle").text(`Group ${group_id} (Graded Quiz)`);
                 // console.log(enrolment_id)
-                $("#return").attr('onclick',`window.location.href='enrolledgroup_details.html?${sessionStorage.getItem('url')}'`)
-                sessionStorage.removeItem('url');
+                $("#return").attr('onclick',`window.location.href='enrolledgroup_details.html?${sessionStorage.getItem('url')}'`);
 
                 // API Endpoint
                 var get_quiz = api_endpoint + `group_quiz/${group_id}`
@@ -250,6 +244,7 @@
                 $("#questions").hide();
                 $('#loading').show();
                 $('#submit').hide();
+                $("#quiz-time-left").hide();
                 let questions = $("#questions").children("div");
                 data = []
                 for (let i = 0; i < questions.length; i++) {
@@ -291,6 +286,9 @@
                             $(`#q${question.question_no}_div`).append(question_result)
                         }
                         $("#result").html(`Quiz Result: ${data.result}  ${data.is_pass ? '<span class="correct"> (PASSED) </span>' : '<span class="incorrect"> (FAILED) </span>'}`)
+                        if (!data.is_pass) {
+                            $("#reattempt").show();
+                        }
                     } else { 
                         console.log("no go")
                         throw new Error(data.message)
@@ -299,7 +297,6 @@
                     alert(err)
                     console.log(err)
                 }
-
                 $("#questions").show();
                 $('#loading').hide();
                 $('#return').show();

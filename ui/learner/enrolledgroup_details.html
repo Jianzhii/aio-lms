@@ -116,7 +116,7 @@
                 width: 200px ;
             }
 
-            #tableheader{
+            #tableheader {
                 background-color: #FF922D ;
                 color: white ;
                 padding-left: 35px ;
@@ -198,7 +198,7 @@
                     <h4>Sections</h4>
                 </div>
                 <div class="col-3">
-                    <input type="button" value="Attempt Final Quiz" id="quiz" onclick="window.location.href='finalquiz.html'">
+                    <input type="button" value="Attempt Final Quiz" id="quiz" onclick="window.location.href='finalquiz.html'" disabled>
                 </div>
             </div> 
 
@@ -230,6 +230,7 @@
             });
 
             const api_endpoint = "http://52.55.242.44:8000/" 
+            // const api_endpoint = "http://localhost:8000/" 
 
             let query = window.location.search.substring(1).split('&') ;
             var courseid = query[0].slice(3,) 
@@ -301,6 +302,7 @@
             /* check if section has been unlocked */
             $(async() => {
                 
+                let final_quiz = false;
                 var section_progress_api = api_endpoint + "section_progress/all_section/" + enrollmentid
 
                 try {
@@ -314,7 +316,7 @@
                     const result = await response.json() ;
                     $('#loading').hide()
                     if (response.status === 200) {
-                        let section_progress = result.data
+                        let section_progress = result.data.section
                         // console.log(section_progress)
                         if (section_progress.length) {
 
@@ -335,6 +337,9 @@
                                 <td>Trainer has yet to upload sections</td>
                                 </tr>`
                             $("#tablecontent").append(row)
+                        }
+                        if (result.data.final_quiz_access) {
+                            $("#quiz").prop('disabled', false);
                         }
                     }
                 } catch(err) {
