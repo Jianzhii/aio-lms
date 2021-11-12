@@ -199,7 +199,7 @@
                 $("#courseTitle").text(course_title);
                 $("#GroupTitle").text(`Group ${group_id} (Graded Quiz)`);
                 // console.log(enrolment_id)
-                $("#return").attr('onclick',`window.location.href='enrolledgroup_details.html?${sessionStorage.getItem('url')}'`);
+                $("#return").attr('onclick',`window.location.href='${sessionStorage.getItem('url')}'`);
 
                 // API Endpoint
                 var get_quiz = api_endpoint + `group_quiz/${group_id}`

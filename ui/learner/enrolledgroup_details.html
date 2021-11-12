@@ -238,7 +238,7 @@
             var enrollmentid = query[2].slice(8,)
 
             var user_id = sessionStorage.getItem("user_id")
-            sessionStorage.setItem("url", window.location.search.substring(1));
+            sessionStorage.setItem("url", `enrolledgroup_details.html?${window.location.search.substring(1)}`);
             sessionStorage.setItem("group_id", groupid);
             sessionStorage.setItem("enrolment_id", enrollmentid);
 

@@ -223,6 +223,7 @@
             sessionStorage.setItem("section_id", sectionid);
             sessionStorage.setItem("enrolment_id", enrolid);
             sessionStorage.setItem("group_id", groupid);
+            sessionStorage.setItem("url", `coursematerials.html?${window.location.search.substring(1)}`);
 
             /* populate sidebar */
             $(async() => {
