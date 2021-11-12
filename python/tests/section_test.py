@@ -5,11 +5,10 @@ Note:
 """
 
 """
-Author:
+Author: Shum Jian Zhi
 """
 
 import os
-from _pytest.fixtures import fixture
 
 from app import app
 from dotenv import load_dotenv
@@ -26,6 +25,7 @@ def load_env():
 
 
 # Set up connection to DB
+
 @pytest.fixture(autouse=True)
 def initialise_db():
     db_host = os.environ.get("DB_HOSTNAME")
@@ -77,8 +77,9 @@ def group(course):
 
 def tearDown(): 
     print('\n Tearing Down')
-    from app import course, group, course_section
+    from app import course, group
     db.session.query(group.Group).delete()
+    db.session.query(course.Badge).delete()
     db.session.query(course.Course).delete()
     db.session.commit()
     print('\n Tearing Down Complete')

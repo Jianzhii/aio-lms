@@ -5,7 +5,7 @@ Note:
 """
 
 """
-Author:
+Author: Javier Yong
 """
 
 import os
@@ -44,30 +44,30 @@ def initialise_db():
 
 
 # Set up test data in database
-@pytest.fixture(autouse=True)
-def user(initialise_db):
-    from app import user
-    test_user = user.User(
-        name = "javier_learner",
-        phone_number = "123456",
-        email = "abc@gmail.com",
-        password = 'javier_learner',
-        user_role_id = '3',
-        job_title ='Junior Engineer'
-    )
-    test_hr = user.User(
-        name = "admin",
-        phone_number = "123456",
-        email = "abc@gmail.com",
-        password = "admin",
-        user_role_id = '1',
-        job_title ='HR'
-    )
+# @pytest.fixture(autouse=True)
+# def user(initialise_db):
+#     from app import user
+#     test_user = user.User(
+#         name = "javier_learner",
+#         phone_number = "123456",
+#         email = "abc@gmail.com",
+#         password = 'javier_learner',
+#         user_role_id = '3',
+#         job_title ='Junior Engineer'
+#     )
+#     test_hr = user.User(
+#         name = "admin",
+#         phone_number = "123456",
+#         email = "abc@gmail.com",
+#         password = "admin",
+#         user_role_id = '1',
+#         job_title ='HR'
+#     )
 
-    db.session.add(test_user)
-    db.session.add(test_hr)
-    db.session.commit()
-    return test_user,test_hr 
+#     db.session.add(test_user)
+#     db.session.add(test_hr)
+#     db.session.commit()
+#     return test_user,test_hr 
 
 
 @pytest.fixture(autouse=True)
@@ -115,11 +115,13 @@ def section(group):
 
 def tearDown(): 
     print('\n Tearing Down')
-    from app import course, group, user, enrolment_request,course_section
-    db.session.query(group.Group).delete()
+    from app import course, group, enrolment_request, enrol, course_section, section_progress    
+    db.session.query(section_progress.SectionProgress).delete()    
+    db.session.query(enrolment_request.EnrolmentRequest).delete()    
+    db.session.query(enrol.Enrolment).delete()    
     db.session.query(course_section.CourseSection).delete()
-    db.session.query(user.User).delete()
-    db.session.query(enrolment_request.EnrolmentRequest).delete()
+    db.session.query(group.Group).delete()
+    db.session.query(course.Badge).delete()
     db.session.query(course.Course).delete()
     db.session.commit()
     print('\n Tearing Down Complete')
@@ -134,11 +136,11 @@ def tearDown():
 
 
 ### Creation of Enrolment Requests with All Conditions Satisfied ###
-def test_create_enrolment_request(group,user):
+def test_create_enrolment_request(group):
     with app.test_client() as test_client:
         response = test_client.post('/enrolment_request',
                             data = json.dumps({
-                                "user_id": user[0].id,
+                                "user_id": 3,
                                 "group_id" : group.id
                             }),
                             headers = {
@@ -166,17 +168,14 @@ def test_pending_enrolment_request():
         assert len(pending_requests) > 0
 
 
-
-
-
 # Approve Enrolment Requests ###
-def test_approve_requests(user):
+def test_approve_requests():
     with app.test_client() as test_client:
         # print(user[1].id)
         print(f"/enrolment_request/approve/{enrolment_request['id']}")
         response = test_client.put(f"/enrolment_request/approve/{enrolment_request['id']}",
                             data = json.dumps({
-                                "approved_by": user[1].id
+                                "approved_by": 1
                             }),
                             headers = {
                                 "Content-Type": "application/json"
@@ -188,5 +187,6 @@ def test_approve_requests(user):
 # Delete Enrolment Request ###
 def test_delete_requests():
     with app.test_client() as test_client:
-        response = test_client.delete(f"/enrolment_request/user/{enrolment_request['user_id']}")
+        response = test_client.delete(f"/enrolment_request/{enrolment_request['id']}")
         assert response.status_code == 200
+        tearDown()
