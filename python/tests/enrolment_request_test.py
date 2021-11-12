@@ -43,33 +43,6 @@ def initialise_db():
     return db
 
 
-# Set up test data in database
-# @pytest.fixture(autouse=True)
-# def user(initialise_db):
-#     from app import user
-#     test_user = user.User(
-#         name = "javier_learner",
-#         phone_number = "123456",
-#         email = "abc@gmail.com",
-#         password = 'javier_learner',
-#         user_role_id = '3',
-#         job_title ='Junior Engineer'
-#     )
-#     test_hr = user.User(
-#         name = "admin",
-#         phone_number = "123456",
-#         email = "abc@gmail.com",
-#         password = "admin",
-#         user_role_id = '1',
-#         job_title ='HR'
-#     )
-
-#     db.session.add(test_user)
-#     db.session.add(test_hr)
-#     db.session.commit()
-#     return test_user,test_hr 
-
-
 @pytest.fixture(autouse=True)
 def course(initialise_db):
     from app import course

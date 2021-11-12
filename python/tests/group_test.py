@@ -5,7 +5,7 @@ Note:
 """
 
 """
-Author:
+Author: Chua Ruo Lin
 """
 
 import os
@@ -45,7 +45,7 @@ def initialise_db():
 
 # Set up test data in database
 @pytest.fixture(autouse=True)
-def course (initialise_db):
+def course(initialise_db):
     from app import course
     test_course = course.Course(
         name = "Test Course",
@@ -81,7 +81,7 @@ def test_create_group(course):
                             "end_date": end_date.strftime("%Y/%m/%d, %H:%M:%S"),
                             "enrol_start_date": enrol_start_date.strftime("%Y/%m/%d, %H:%M:%S"),
                             "enrol_end_date": enrol_end_date.strftime("%Y/%m/%d, %H:%M:%S"),
-                            "trainer_id": 25
+                            "trainer_id": 2
                         }),
                         headers = {
                             "Content-Type": "application/json"
