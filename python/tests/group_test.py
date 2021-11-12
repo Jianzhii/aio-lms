@@ -98,6 +98,34 @@ def test_get_one_group():
         response = test_client.get(f"/group/{group['id']}")
         assert response.status_code == 200
 
+# Update of Group
+def test_update_group(course):    
+    start_date = datetime.now() + timedelta(days=50)
+    end_date = datetime.now() + timedelta(days=80)
+    enrol_start_date = datetime.now() - timedelta(days=10)
+    enrol_end_date = datetime.now() + timedelta(days=30)
+    update_group_size = 30
+    with app.test_client() as test_client:
+        response = test_client.put('/group',
+                        data = json.dumps({
+                            "id": group["id"],
+                            "course_id": course.id,
+                            "size": update_group_size,
+                            "start_date": start_date.strftime("%Y/%m/%d, %H:%M:%S"),
+                            "end_date": end_date.strftime("%Y/%m/%d, %H:%M:%S"),
+                            "enrol_start_date": enrol_start_date.strftime("%Y/%m/%d, %H:%M:%S"),
+                            "enrol_end_date": enrol_end_date.strftime("%Y/%m/%d, %H:%M:%S"),
+                            "trainer_id": 2
+                        }),
+                        headers = {
+                            "Content-Type": "application/json"
+                        }
+        )
+
+        print(response.get_json())
+        assert response.status_code == 200
+        retrieve_group = test_client.get(f"/group/{group['id']}")
+        assert retrieve_group.get_json()['data']['size'] == update_group_size
 
 # Delete one Group
 def test_delete_one_group():
